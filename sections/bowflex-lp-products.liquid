@@ -46,13 +46,6 @@
             </div>
 
             <div class="bfx-products__body">
-              {%- if product.description != blank -%}
-                <div class="bfx-products__desc-wrap">
-                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ product.description }}</div>
-                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
-                </div>
-              {%- endif -%}
-
               <div class="bfx-products__media">
                 <a href="{{ product.url }}" class="bfx-products__main-img">
                   {{- product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: product.title, style: 'width:100%;aspect-ratio:1/1;object-fit:contain;' -}}
@@ -86,7 +79,17 @@
                   </div>
                 </form>
               </div>
-              <a href="{{ product.url }}" class="bfx-products__readmore">Read more</a>
+
+              {%- if product.description != blank -%}
+                <div class="bfx-products__desc-wrap">
+                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ product.description }}</div>
+                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+                </div>
+              {%- endif -%}
+
+              {%- if product.url != blank -%}
+                <a href="{{ product.url }}" class="bfx-products__readmore">View full details</a>
+              {%- endif -%}
             </div>
 
           {%- else -%}
@@ -100,13 +103,6 @@
             </div>
 
             <div class="bfx-products__body">
-              {%- if fb_desc != blank -%}
-                <div class="bfx-products__desc-wrap">
-                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ fb_desc }}</div>
-                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
-                </div>
-              {%- endif -%}
-
               <div class="bfx-products__media">
                 {%- if fb_image != blank -%}
                   <div class="bfx-products__main-img">
@@ -133,7 +129,17 @@
                     <a href="{{ fb_url }}" class="bfx-products__btn">Add to Cart</a>
                   </div>
                 </div>
-                <a href="{{ fb_url }}" class="bfx-products__readmore">Read more</a>
+              {%- endif -%}
+
+              {%- if fb_desc != blank -%}
+                <div class="bfx-products__desc-wrap">
+                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ fb_desc }}</div>
+                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+                </div>
+              {%- endif -%}
+
+              {%- if fb_url != blank -%}
+                <a href="{{ fb_url }}" class="bfx-products__readmore">View full details</a>
               {%- endif -%}
             </div>
 

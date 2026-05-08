@@ -32,7 +32,7 @@
               {%- if block.settings.spec_8 != blank -%}<li>{{ block.settings.spec_8 }}</li>{%- endif -%}
             </ul>
 
-            {%- if block.settings.read_more_label != blank -%}
+            {%- if block.settings.read_more_label != blank and block.settings.read_more_link != blank -%}
               <a href="{{ block.settings.read_more_link }}" class="bfx-specs__readmore">{{ block.settings.read_more_label }}</a>
             {%- endif -%}
 
