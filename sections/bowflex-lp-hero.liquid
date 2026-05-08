@@ -1,23 +1,22 @@
 <div class="bfx-hero bfx-hero--{{ section.id }}">
-  {%- if section.settings.image_desktop != blank -%}
-    <div class="bfx-hero__desktop">
-      {{- section.settings.image_desktop | image_url: width: 1920 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920', style: 'width:100%;height:auto;display:block;' -}}
-    </div>
-  {%- endif -%}
-  {%- if section.settings.image_mobile != blank -%}
-    <div class="bfx-hero__mobile">
-      {{- section.settings.image_mobile | image_url: width: 750 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '375,750', style: 'width:100%;height:auto;display:block;' -}}
-    </div>
-  {%- endif -%}
+  <picture>
+    {%- if section.settings.image_mobile != blank -%}
+      <source
+        media="(max-width: 749px)"
+        srcset="{{ section.settings.image_mobile | image_url: width: 375 }} 375w, {{ section.settings.image_mobile | image_url: width: 750 }} 750w"
+        sizes="100vw"
+      >
+    {%- endif -%}
+    {%- if section.settings.image_desktop != blank -%}
+      {{- section.settings.image_desktop | image_url: width: 1920 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920', sizes: '100vw', style: 'width:100%;height:auto;display:block;' -}}
+    {%- elsif section.settings.image_mobile != blank -%}
+      {{- section.settings.image_mobile | image_url: width: 750 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '375,750', sizes: '100vw', style: 'width:100%;height:auto;display:block;' -}}
+    {%- endif -%}
+  </picture>
 </div>
 
 <style>
   .bfx-hero--{{ section.id }} { line-height: 0; }
-  .bfx-hero__mobile { display: none; }
-  @media (max-width: 749px) {
-    .bfx-hero__desktop { display: none; }
-    .bfx-hero__mobile { display: block; }
-  }
 </style>
 
 {% schema %}
