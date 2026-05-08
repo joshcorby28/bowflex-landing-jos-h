@@ -1,0 +1,175 @@
+<div class="bfx-usp-jrny bfx-usp-jrny--{{ section.id }}">
+  <div class="container">
+    <div class="bfx-usp-jrny__grid">
+
+      <div class="bfx-usp-jrny__usp" style="background:{{ section.settings.usp_background }};">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'usp_item' -%}
+              <div class="bfx-usp-jrny__item" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon_svg != blank -%}
+                  <span class="bfx-usp-jrny__icon" aria-hidden="true">{{ block.settings.icon_svg }}</span>
+                {%- endif -%}
+                <div>
+                  {%- if block.settings.title != blank -%}
+                    <strong style="display:block;font-size:15px;font-weight:700;">{{ block.settings.title }}</strong>
+                  {%- endif -%}
+                  {%- if block.settings.subtitle != blank -%}
+                    <span style="font-size:14px;color:#666;">
+                      {%- if block.settings.link != blank -%}
+                        <a href="{{ block.settings.link }}" style="color:inherit;text-decoration:underline;">{{ block.settings.subtitle }}</a>
+                      {%- else -%}
+                        {{ block.settings.subtitle }}
+                      {%- endif -%}
+                    </span>
+                  {%- endif -%}
+                </div>
+              </div>
+
+            {%- when 'klarna' -%}
+              <div class="bfx-usp-jrny__item bfx-usp-jrny__klarna" {{ block.shopify_attributes }}>
+                {%- if block.settings.klarna_logo != blank -%}
+                  {{- block.settings.klarna_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'Klarna', style: 'height:24px;width:auto;display:block;flex-shrink:0;' -}}
+                {%- else -%}
+                  <span style="font-size:20px;font-weight:900;letter-spacing:-0.02em;flex-shrink:0;">klarna</span>
+                {%- endif -%}
+                <div style="margin-left:10px;">
+                  <span style="font-size:14px;color:#444;">
+                    {{ block.settings.text }}
+                    {%- if block.settings.learn_more_link != blank -%}
+                      <a href="{{ block.settings.learn_more_link }}" style="color:inherit;text-decoration:underline;margin-left:4px;">Learn more</a>
+                    {%- endif -%}
+                  </span>
+                  {%- if block.settings.small_print != blank -%}
+                    <span style="display:block;font-size:12px;color:#999;margin-top:2px;">{{ block.settings.small_print }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="bfx-usp-jrny__jrny">
+        <div class="bfx-usp-jrny__jrny-inner">
+          <div>
+            {%- if section.settings.jrny_eyebrow != blank -%}
+              <span style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.75;margin-bottom:4px;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_eyebrow }}</span>
+            {%- endif -%}
+            <p style="font-size:clamp(24px,3vw,34px);font-weight:900;margin:0 0 4px;line-height:1.1;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_headline }}</p>
+            {%- if section.settings.jrny_subtext != blank -%}
+              <p style="font-size:15px;margin:0 0 16px;opacity:0.85;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_subtext }}</p>
+            {%- endif -%}
+            {%- if section.settings.jrny_cta_label != blank -%}
+              <a href="{{ section.settings.jrny_cta_link }}" style="font-size:14px;font-weight:700;text-decoration:none;color:{{ section.settings.jrny_cta_color }};display:inline-flex;align-items:center;gap:4px;">
+                {{ section.settings.jrny_cta_label }}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            {%- endif -%}
+          </div>
+          {%- if section.settings.jrny_app_logo != blank -%}
+            <div style="background:#1b1b1b;padding:16px;border-radius:24px;flex-shrink:0;">
+              {{- section.settings.jrny_app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'height:64px;width:auto;border-radius:14px;display:block;' -}}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .bfx-usp-jrny--{{ section.id }} {
+    padding: 24px 0;
+  }
+  .bfx-usp-jrny__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .bfx-usp-jrny__usp {
+    border: 1px solid #1b1b1b;
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    justify-content: center;
+  }
+  .bfx-usp-jrny__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bfx-usp-jrny__klarna {
+    align-items: flex-start;
+  }
+  .bfx-usp-jrny__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .bfx-usp-jrny__icon svg { width: 28px; height: 28px; }
+  .bfx-usp-jrny__jrny {
+    background: linear-gradient(90deg, #FF5C7A 0%, #D95AA7 45%, #8B5CF6 100%);
+    border-radius: 20px;
+    padding: 28px;
+  }
+  .bfx-usp-jrny__jrny-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 100%;
+  }
+  @media (max-width: 749px) {
+    .bfx-usp-jrny__grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BFX LP — USP + JRNY Row",
+  "tag": "section",
+  "class": "bfx-lp-usp-jrny-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    { "type": "header", "content": "USP Bar" },
+    { "type": "color", "id": "usp_background", "label": "USP Background", "default": "#FFFFFF" },
+    { "type": "header", "content": "JRNY Banner" },
+    { "type": "color", "id": "jrny_text_color", "label": "Text Colour", "default": "#FFFFFF" },
+    { "type": "text", "id": "jrny_eyebrow", "label": "Eyebrow", "default": "For New Members Download" },
+    { "type": "text", "id": "jrny_headline", "label": "Headline", "default": "2 Month FREE Trial" },
+    { "type": "text", "id": "jrny_subtext", "label": "Subtext", "default": "The App Now" },
+    { "type": "text", "id": "jrny_cta_label", "label": "CTA Label", "default": "View JRNY" },
+    { "type": "url", "id": "jrny_cta_link", "label": "CTA Link" },
+    { "type": "color", "id": "jrny_cta_color", "label": "CTA Colour", "default": "#FFFFFF" },
+    { "type": "image_picker", "id": "jrny_app_logo", "label": "App Logo" }
+  ],
+  "blocks": [
+    {
+      "type": "usp_item",
+      "name": "USP Item",
+      "settings": [
+        { "type": "html", "id": "icon_svg", "label": "Icon SVG" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free Shipping" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "View Shipping Details" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "klarna",
+      "name": "Klarna",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "klarna_logo", "label": "Klarna Logo" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Pay over 12 months with Klarna" },
+        { "type": "url", "id": "learn_more_link", "label": "Learn More Link" },
+        { "type": "text", "id": "small_print", "label": "Small Print", "default": "18+. T&C apply. Credit subject to status." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "BFX LP — USP + JRNY Row" }]
+}
+{% endschema %}

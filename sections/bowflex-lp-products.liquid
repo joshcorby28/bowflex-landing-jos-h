@@ -17,6 +17,7 @@
           if i == 1
             assign product    = product_1
             assign fb_title   = section.settings.product_1_title
+            assign fb_desc    = section.settings.product_1_desc
             assign fb_image   = section.settings.product_1_image
             assign fb_price   = section.settings.product_1_price
             assign fb_was     = section.settings.product_1_was_price
@@ -24,6 +25,7 @@
           else
             assign product    = product_2
             assign fb_title   = section.settings.product_2_title
+            assign fb_desc    = section.settings.product_2_desc
             assign fb_image   = section.settings.product_2_image
             assign fb_price   = section.settings.product_2_price
             assign fb_was     = section.settings.product_2_was_price
@@ -37,6 +39,13 @@
 
             <p class="bfx-products__vendor">{{ product.vendor }}</p>
             <h3 class="bfx-products__title">{{ product.title }}</h3>
+
+            {%- if product.description != blank -%}
+              <div class="bfx-products__desc-wrap">
+                <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ product.description }}</div>
+                <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+              </div>
+            {%- endif -%}
 
             <div class="bfx-products__media">
               <a href="{{ product.url }}" class="bfx-products__main-img">
@@ -77,6 +86,13 @@
 
             <p class="bfx-products__vendor">BowFlex</p>
             <h3 class="bfx-products__title">{{ fb_title }}</h3>
+
+            {%- if fb_desc != blank -%}
+              <div class="bfx-products__desc-wrap">
+                <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ fb_desc }}</div>
+                <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+              </div>
+            {%- endif -%}
 
             <div class="bfx-products__media">
               {%- if fb_image != blank -%}
@@ -201,10 +217,30 @@
     margin: 0 0 14px;
   }
   .bfx-products__desc {
-    font-size: 14px;
+    font-size: 15px;
     color: #444;
     line-height: 1.55;
-    margin: 0 0 16px;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bfx-products__desc.is-expanded {
+    display: block;
+    overflow: visible;
+  }
+  .bfx-products__read-more {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 14px;
+    display: block;
   }
   .bfx-products__actions { margin-bottom: 10px; }
   .bfx-products__form { margin: 0; }
@@ -292,6 +328,14 @@
       var val = parseInt(input.value) || 1;
       if (this.dataset.action === 'plus') input.value = val + 1;
       else if (this.dataset.action === 'minus' && val > 1) input.value = val - 1;
+    });
+  });
+
+  document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__read-more').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var desc = document.getElementById(this.dataset.desc);
+      var expanded = desc.classList.toggle('is-expanded');
+      this.textContent = expanded ? 'Read less' : 'Read more';
     });
   });
 </script>

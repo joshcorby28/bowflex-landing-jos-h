@@ -48,36 +48,6 @@
         "padding_bottom": "s"
       }
     },
-    "usp_bfx": {
-      "type": "bowflex-lp-usp-bar",
-      "blocks": {
-        "usp_shipping": {
-          "type": "usp_item",
-          "settings": {
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"28\" height=\"28\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"3\" width=\"15\" height=\"13\"></rect><polygon points=\"16 8 20 8 23 11 23 16 16 16 16 8\"></polygon><circle cx=\"5.5\" cy=\"18.5\" r=\"2.5\"></circle><circle cx=\"18.5\" cy=\"18.5\" r=\"2.5\"></circle></svg>",
-            "title": "Free Shipping",
-            "subtitle": "View Shipping Details",
-            "link": ""
-          }
-        },
-        "usp_klarna": {
-          "type": "klarna",
-          "settings": {
-            "text": "Pay over 12 months with Klarna",
-            "learn_more_link": "",
-            "small_print": "18+. T&C apply. Credit subject to status."
-          }
-        }
-      },
-      "block_order": [
-        "usp_shipping",
-        "usp_klarna"
-      ],
-      "name": "USP Bar — Shipping & Klarna",
-      "settings": {
-        "background_color": "#ffffff"
-      }
-    },
     "text_cols_bfx": {
       "type": "bowflex-lp-text-columns",
       "blocks": {
@@ -100,10 +70,7 @@
           }
         }
       },
-      "block_order": [
-        "col_t9",
-        "col_t6"
-      ],
+      "block_order": ["col_t9", "col_t6"],
       "name": "Features Text — Two Columns",
       "settings": {
         "background_color": "#ffffff",
@@ -112,20 +79,39 @@
         "padding_bottom": "l"
       }
     },
-    "jrny_bfx": {
-      "type": "bowflex-lp-jrny-banner",
-      "name": "JRNY — 2 Month Free Trial",
+    "usp_jrny_bfx": {
+      "type": "bowflex-lp-usp-jrny-row",
+      "name": "USP + JRNY Row",
+      "blocks": {
+        "usp_shipping": {
+          "type": "usp_item",
+          "settings": {
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"28\" height=\"28\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"3\" width=\"15\" height=\"13\"></rect><polygon points=\"16 8 20 8 23 11 23 16 16 16 16 8\"></polygon><circle cx=\"5.5\" cy=\"18.5\" r=\"2.5\"></circle><circle cx=\"18.5\" cy=\"18.5\" r=\"2.5\"></circle></svg>",
+            "title": "Free Shipping",
+            "subtitle": "View Shipping Details",
+            "link": ""
+          }
+        },
+        "usp_klarna": {
+          "type": "klarna",
+          "settings": {
+            "text": "Pay over 12 months with Klarna",
+            "learn_more_link": "",
+            "small_print": "18+. T&C apply. Credit subject to status."
+          }
+        }
+      },
+      "block_order": ["usp_shipping", "usp_klarna"],
       "settings": {
-        "background_color": "#6b3fa0",
-        "text_color": "#ffffff",
-        "store_label": "iOS & Google Store",
-        "cta_label": "View JRNY",
-        "cta_link": "",
-        "cta_color": "#ffffff",
-        "eyebrow": "For New Members Download",
-        "headline": "2 Month FREE Trial",
-        "subtext": "The App Now",
-        "app_logo": "shopify://shop_images/6.png"
+        "usp_background": "#ffffff",
+        "jrny_text_color": "#ffffff",
+        "jrny_eyebrow": "For New Members Download",
+        "jrny_headline": "2 Month FREE Trial",
+        "jrny_subtext": "The App Now",
+        "jrny_cta_label": "View JRNY",
+        "jrny_cta_link": "",
+        "jrny_cta_color": "#ffffff",
+        "jrny_app_logo": "shopify://shop_images/6.png"
       }
     },
     "features_bfx": {
@@ -167,13 +153,7 @@
           }
         }
       },
-      "block_order": [
-        "tile_1",
-        "tile_2",
-        "tile_3",
-        "tile_4",
-        "tile_5"
-      ],
+      "block_order": ["tile_1", "tile_2", "tile_3", "tile_4", "tile_5"],
       "name": "Product Features",
       "settings": {
         "background_color": "#ffffff",
@@ -248,10 +228,7 @@
           }
         }
       },
-      "block_order": [
-        "specs_t9",
-        "specs_t6"
-      ],
+      "block_order": ["specs_t9", "specs_t6"],
       "name": "Specifications",
       "settings": {
         "background_color": "#ffffff",
@@ -289,9 +266,8 @@
     "main",
     "hero_bfx",
     "products_bfx",
-    "usp_bfx",
     "text_cols_bfx",
-    "jrny_bfx",
+    "usp_jrny_bfx",
     "features_bfx",
     "video_bfx",
     "specs_bfx",
