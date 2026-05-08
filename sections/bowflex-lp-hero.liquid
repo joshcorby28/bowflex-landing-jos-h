@@ -1,12 +1,12 @@
 <div class="bfx-hero bfx-hero--{{ section.id }}">
   {%- if section.settings.image_desktop != blank -%}
     <div class="bfx-hero__desktop">
-      {{- section.settings.image_desktop | image_url: width: 1920 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920', style: 'width:100%;display:block;' -}}
+      {{- section.settings.image_desktop | image_url: width: 1920 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920', style: 'width:100%;height:auto;display:block;' -}}
     </div>
   {%- endif -%}
   {%- if section.settings.image_mobile != blank -%}
     <div class="bfx-hero__mobile">
-      {{- section.settings.image_mobile | image_url: width: 750 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '375,750', style: 'width:100%;display:block;' -}}
+      {{- section.settings.image_mobile | image_url: width: 750 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '375,750', style: 'width:100%;height:auto;display:block;' -}}
     </div>
   {%- endif -%}
 </div>
