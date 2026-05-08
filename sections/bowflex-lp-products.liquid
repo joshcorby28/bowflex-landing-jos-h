@@ -17,7 +17,6 @@
           if i == 1
             assign product    = product_1
             assign fb_title   = section.settings.product_1_title
-            assign fb_desc    = section.settings.product_1_desc
             assign fb_image   = section.settings.product_1_image
             assign fb_price   = section.settings.product_1_price
             assign fb_was     = section.settings.product_1_was_price
@@ -25,7 +24,6 @@
           else
             assign product    = product_2
             assign fb_title   = section.settings.product_2_title
-            assign fb_desc    = section.settings.product_2_desc
             assign fb_image   = section.settings.product_2_image
             assign fb_price   = section.settings.product_2_price
             assign fb_was     = section.settings.product_2_was_price
@@ -47,7 +45,7 @@
               {%- if product.images.size > 1 -%}
                 <div class="bfx-products__thumbs">
                   {%- for img in product.images limit: 4 -%}
-                    <img src="{{ img | image_url: width: 90 }}" alt="{{ img.alt | escape }}" loading="lazy" class="bfx-products__thumb" style="width:64px;height:64px;object-fit:contain;border:1px solid #e5e5e5;border-radius:4px;">
+                    <img src="{{ img | image_url: width: 90 }}" alt="{{ img.alt | escape }}" loading="lazy" width="64" height="64" class="bfx-products__thumb" style="width:64px;height:64px;object-fit:contain;border:1px solid #e5e5e5;border-radius:4px;">
                   {%- endfor -%}
                 </div>
               {%- endif -%}
@@ -61,7 +59,7 @@
                 {%- endif -%}
               </div>
               <p class="bfx-products__tax-note">Taxes included. Shipping calculated at checkout.</p>
-              <form action="/cart/add" method="post" class="bfx-products__form">
+              <form action="{{ routes.cart_add_url }}" method="post" class="bfx-products__form">
                 <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                 <div class="bfx-products__atc-row">
                   <div class="bfx-products__qty">
@@ -125,7 +123,7 @@
   }
   .bfx-products__heading {
     text-align: left;
-    font-size: clamp(20px, 2.5vw, 28px);
+    font-size: clamp(22px, 2.8vw, 32px);
     font-weight: 700;
     font-style: normal;
     margin: 0 0 40px;
@@ -155,14 +153,14 @@
     letter-spacing: 0.06em;
   }
   .bfx-products__vendor {
-    font-size: 12px;
+    font-size: 13px;
     color: #888;
     margin: 0 0 4px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
   .bfx-products__title {
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 700;
     font-style: normal;
     margin: 0 0 16px;
@@ -189,16 +187,16 @@
     flex-wrap: wrap;
   }
   .bfx-products__price-current {
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 700;
     color: #E8632B;
   }
   .bfx-products__price-was {
-    font-size: 18px;
+    font-size: 20px;
     color: #999;
   }
   .bfx-products__tax-note {
-    font-size: 13px;
+    font-size: 14px;
     color: #666;
     margin: 0 0 14px;
   }

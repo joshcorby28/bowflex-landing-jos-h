@@ -32,7 +32,7 @@
               {%- if block.settings.spec_8 != blank -%}<li>{{ block.settings.spec_8 }}</li>{%- endif -%}
             </ul>
 
-            {%- if block.settings.read_more_label != blank and block.settings.read_more_link != blank -%}
+            {%- if block.settings.read_more_label != blank -%}
               <a href="{{ block.settings.read_more_link }}" class="bfx-specs__readmore">{{ block.settings.read_more_label }}</a>
             {%- endif -%}
 
@@ -50,7 +50,7 @@
     padding-bottom: var(--spacing-{{ section.settings.padding_bottom }}, 48px);
   }
   .bfx-specs__heading {
-    font-size: clamp(22px, 2.5vw, 30px);
+    font-size: clamp(24px, 2.8vw, 34px);
     font-weight: 700;
     font-style: normal;
     margin: 0 0 40px;
@@ -62,7 +62,7 @@
     gap: 40px;
   }
   .bfx-specs__product-name {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     font-style: normal;
     margin: 0 0 16px;
@@ -73,13 +73,13 @@
     margin: 0 0 20px;
   }
   .bfx-specs__list li {
-    font-size: 14px;
+    font-size: 15px;
     color: #444;
     line-height: 1.6;
     margin-bottom: 6px;
   }
   .bfx-specs__readmore {
-    font-size: 14px;
+    font-size: 15px;
     color: #111;
     text-decoration: underline;
     font-weight: 600;
