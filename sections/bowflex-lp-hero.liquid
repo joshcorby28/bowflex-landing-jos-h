@@ -23,7 +23,7 @@
     {%- endif -%}
 
     {%- if section.settings.heading_line1 != blank or section.settings.heading_line2 != blank or section.settings.heading_line3 != blank -%}
-      <h1 class="bfx-hero__heading" style="font-size:clamp(52px,8vw,96px);font-weight:900;line-height:0.95;margin:0 0 20px;text-transform:uppercase;color:{{ section.settings.text_color }};">
+      <h1 class="bfx-hero__heading" style="font-size:clamp(52px,8vw,96px);font-weight:900;line-height:0.95;margin:0 0 20px;text-transform:uppercase;color:{{ section.settings.text_color }};font-style:normal;">
         {%- if section.settings.heading_line1 != blank -%}
           <span style="display:block;">{{ section.settings.heading_line1 }}</span>
         {%- endif -%}
