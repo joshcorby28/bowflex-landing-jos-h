@@ -33,95 +33,109 @@
           endif
         -%}
 
-        <div class="bfx-products__card">
+        <div class="bfx-products__card{% if forloop.first %} is-open{% endif %}">
 
           {%- if product != blank -%}
 
-            <p class="bfx-products__vendor">{{ product.vendor }}</p>
-            <h3 class="bfx-products__title">{{ product.title }}</h3>
-
-            {%- if product.description != blank -%}
-              <div class="bfx-products__desc-wrap">
-                <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ product.description }}</div>
-                <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+            <div class="bfx-products__card-header">
+              <div>
+                <p class="bfx-products__vendor">{{ product.vendor }}</p>
+                <h3 class="bfx-products__title">{{ product.title }}</h3>
               </div>
-            {%- endif -%}
+              <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
 
-            <div class="bfx-products__media">
-              <a href="{{ product.url }}" class="bfx-products__main-img">
-                {{- product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: product.title, style: 'width:100%;aspect-ratio:1/1;object-fit:contain;' -}}
-              </a>
-              {%- if product.images.size > 1 -%}
-                <div class="bfx-products__thumbs">
-                  {%- for img in product.images limit: 4 -%}
-                    <img src="{{ img | image_url: width: 90 }}" alt="{{ img.alt | escape }}" loading="lazy" width="64" height="64" class="bfx-products__thumb" style="width:64px;height:64px;object-fit:contain;border:1px solid #e5e5e5;border-radius:4px;">
-                  {%- endfor -%}
+            <div class="bfx-products__body">
+              {%- if product.description != blank -%}
+                <div class="bfx-products__desc-wrap">
+                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ product.description }}</div>
+                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
                 </div>
               {%- endif -%}
-            </div>
 
-            <div class="bfx-products__actions">
-              <div class="bfx-products__price">
-                <span class="bfx-products__price-current">{{ product.price | money }}</span>
-                {%- if product.compare_at_price > product.price -%}
-                  <s class="bfx-products__price-was">{{ product.compare_at_price | money }}</s>
+              <div class="bfx-products__media">
+                <a href="{{ product.url }}" class="bfx-products__main-img">
+                  {{- product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: product.title, style: 'width:100%;aspect-ratio:1/1;object-fit:contain;' -}}
+                </a>
+                {%- if product.images.size > 1 -%}
+                  <div class="bfx-products__thumbs">
+                    {%- for img in product.images limit: 4 -%}
+                      <img src="{{ img | image_url: width: 90 }}" alt="{{ img.alt | escape }}" loading="lazy" width="64" height="64" class="bfx-products__thumb" style="width:64px;height:64px;object-fit:contain;border:1px solid #e5e5e5;border-radius:4px;">
+                    {%- endfor -%}
+                  </div>
                 {%- endif -%}
               </div>
-              <p class="bfx-products__tax-note">Taxes included. Shipping calculated at checkout.</p>
-              <form action="{{ routes.cart_add_url }}" method="post" class="bfx-products__form">
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                <div class="bfx-products__atc-row">
-                  <div class="bfx-products__qty">
-                    <button type="button" class="bfx-products__qty-btn" data-action="minus" aria-label="Decrease quantity">−</button>
-                    <input type="number" name="quantity" value="1" min="1" class="bfx-products__qty-input" aria-label="Quantity">
-                    <button type="button" class="bfx-products__qty-btn" data-action="plus" aria-label="Increase quantity">+</button>
-                  </div>
-                  <button type="submit" class="bfx-products__btn" aria-label="Add {{ product.title }} to cart">Add to Cart</button>
+
+              <div class="bfx-products__actions">
+                <div class="bfx-products__price">
+                  <span class="bfx-products__price-current">{{ product.price | money }}</span>
+                  {%- if product.compare_at_price > product.price -%}
+                    <s class="bfx-products__price-was">{{ product.compare_at_price | money }}</s>
+                  {%- endif -%}
                 </div>
-              </form>
+                <p class="bfx-products__tax-note">Taxes included. Shipping calculated at checkout.</p>
+                <form action="{{ routes.cart_add_url }}" method="post" class="bfx-products__form">
+                  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                  <div class="bfx-products__atc-row">
+                    <div class="bfx-products__qty">
+                      <button type="button" class="bfx-products__qty-btn" data-action="minus" aria-label="Decrease quantity">−</button>
+                      <input type="number" name="quantity" value="1" min="1" class="bfx-products__qty-input" aria-label="Quantity">
+                      <button type="button" class="bfx-products__qty-btn" data-action="plus" aria-label="Increase quantity">+</button>
+                    </div>
+                    <button type="submit" class="bfx-products__btn" aria-label="Add {{ product.title }} to cart">Add to Cart</button>
+                  </div>
+                </form>
+              </div>
+              <a href="{{ product.url }}" class="bfx-products__readmore">Read more</a>
             </div>
-            <a href="{{ product.url }}" class="bfx-products__readmore">Read more</a>
 
           {%- else -%}
 
-            <p class="bfx-products__vendor">BowFlex</p>
-            <h3 class="bfx-products__title">{{ fb_title }}</h3>
-
-            {%- if fb_desc != blank -%}
-              <div class="bfx-products__desc-wrap">
-                <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ fb_desc }}</div>
-                <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
+            <div class="bfx-products__card-header">
+              <div>
+                <p class="bfx-products__vendor">BowFlex</p>
+                <h3 class="bfx-products__title">{{ fb_title }}</h3>
               </div>
-            {%- endif -%}
-
-            <div class="bfx-products__media">
-              {%- if fb_image != blank -%}
-                <div class="bfx-products__main-img">
-                  {{- fb_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: fb_title, style: 'width:100%;aspect-ratio:1/1;object-fit:contain;' -}}
-                </div>
-              {%- else -%}
-                <div class="bfx-products__main-img">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
-              {%- endif -%}
+              <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
 
-            {%- if fb_url != blank -%}
-              <div class="bfx-products__actions">
-                <div class="bfx-products__price">
-                  {%- if fb_price != blank -%}<span class="bfx-products__price-current">{{ fb_price }}</span>{%- endif -%}
-                  {%- if fb_was != blank -%}<s class="bfx-products__price-was">{{ fb_was }}</s>{%- endif -%}
+            <div class="bfx-products__body">
+              {%- if fb_desc != blank -%}
+                <div class="bfx-products__desc-wrap">
+                  <div class="bfx-products__desc" id="bfx-desc-{{ section.id }}-{{ i }}">{{ fb_desc }}</div>
+                  <button class="bfx-products__read-more" data-desc="bfx-desc-{{ section.id }}-{{ i }}">Read more</button>
                 </div>
-                <p class="bfx-products__tax-note">Taxes included. Shipping calculated at checkout.</p>
-                <div class="bfx-products__atc-row">
-                  <div class="bfx-products__qty">
-                    <button type="button" class="bfx-products__qty-btn" data-action="minus" aria-label="Decrease quantity">−</button>
-                    <input type="number" value="1" min="1" class="bfx-products__qty-input" aria-label="Quantity">
-                    <button type="button" class="bfx-products__qty-btn" data-action="plus" aria-label="Increase quantity">+</button>
+              {%- endif -%}
+
+              <div class="bfx-products__media">
+                {%- if fb_image != blank -%}
+                  <div class="bfx-products__main-img">
+                    {{- fb_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: fb_title, style: 'width:100%;aspect-ratio:1/1;object-fit:contain;' -}}
                   </div>
-                  <a href="{{ fb_url }}" class="bfx-products__btn">Add to Cart</a>
-                </div>
+                {%- else -%}
+                  <div class="bfx-products__main-img">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+                {%- endif -%}
               </div>
-              <a href="{{ fb_url }}" class="bfx-products__readmore">Read more</a>
-            {%- endif -%}
+
+              {%- if fb_url != blank -%}
+                <div class="bfx-products__actions">
+                  <div class="bfx-products__price">
+                    {%- if fb_price != blank -%}<span class="bfx-products__price-current">{{ fb_price }}</span>{%- endif -%}
+                    {%- if fb_was != blank -%}<s class="bfx-products__price-was">{{ fb_was }}</s>{%- endif -%}
+                  </div>
+                  <p class="bfx-products__tax-note">Taxes included. Shipping calculated at checkout.</p>
+                  <div class="bfx-products__atc-row">
+                    <div class="bfx-products__qty">
+                      <button type="button" class="bfx-products__qty-btn" data-action="minus" aria-label="Decrease quantity">−</button>
+                      <input type="number" value="1" min="1" class="bfx-products__qty-input" aria-label="Quantity">
+                      <button type="button" class="bfx-products__qty-btn" data-action="plus" aria-label="Increase quantity">+</button>
+                    </div>
+                    <a href="{{ fb_url }}" class="bfx-products__btn">Add to Cart</a>
+                  </div>
+                </div>
+                <a href="{{ fb_url }}" class="bfx-products__readmore">Read more</a>
+              {%- endif -%}
+            </div>
 
           {%- endif -%}
 
@@ -168,6 +182,13 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
+  .bfx-products__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .bfx-products__arrow { display: none; }
   .bfx-products__vendor {
     font-size: 13px;
     color: #888;
@@ -318,6 +339,32 @@
   }
   @media (max-width: 749px) {
     .bfx-products__grid { grid-template-columns: 1fr; }
+    .bfx-products__card {
+      border-bottom: 1px solid #e5e5e5;
+      padding: 16px 0;
+    }
+    .bfx-products__card-header {
+      cursor: pointer;
+      padding-bottom: 0;
+    }
+    .bfx-products__title { margin-bottom: 0; }
+    .bfx-products__arrow {
+      display: block;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+    .bfx-products__card.is-open .bfx-products__arrow {
+      transform: rotate(180deg);
+    }
+    .bfx-products__body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .bfx-products__card.is-open .bfx-products__body {
+      max-height: 2000px;
+    }
+    .bfx-products__body > *:first-child { margin-top: 16px; }
   }
 </style>
 
@@ -338,6 +385,14 @@
       this.textContent = expanded ? 'Read less' : 'Read more';
     });
   });
+
+  if (window.innerWidth <= 749) {
+    document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__card-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        header.closest('.bfx-products__card').classList.toggle('is-open');
+      });
+    });
+  }
 </script>
 
 {% schema %}
