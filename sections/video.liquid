@@ -7,6 +7,19 @@
   .video-section__overlay {
      background-color: rgba(var(--color-overlay), {{ section.settings.opacity_overlay }});
    }
+
+  .video-section__above-video {
+    padding-bottom: 20px;
+  }
+  .video-section__above-subheading {
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .video-section__above-heading {
+    font-style: normal;
+    text-align: left;
+    margin: 0;
+  }
 {% endstyle %}
 
 {% liquid
@@ -24,6 +37,20 @@
 %}
 
 <div class="video-section">
+  {%- if section.settings.subheading != blank or section.settings.heading != blank -%}
+    <div class="video-section__above-video container">
+      {%- if section.settings.subheading != blank -%}
+        <div class="video-section__above-subheading badge {{ section.settings.badge_subheading_color }}">
+          {{ section.settings.subheading }}
+        </div>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <{{ section.settings.heading_level }} class="video-section__above-heading {{ section.settings.heading_size }}" style="font-style:normal;text-align:left;margin:0;">
+          {{ section.settings.heading }}
+        </{{ section.settings.heading_level }}>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
   <div class="{% if section.settings.full_width %}{% else %}container{% endif %}">
     <noscript>
       <div
@@ -68,17 +95,6 @@
           {%- endif -%}
 
           <div class="video-section__content">
-            {% if section.settings.subheading != blank %}
-              <div class="video-section__subheading badge {{ section.settings.badge_subheading_color }}">
-                {{ section.settings.subheading }}
-              </div>
-            {% endif %}
-
-            {% if section.settings.heading != blank %}
-              <{{ section.settings.heading_level }} class="title title--section video-section__heading">
-                {{ section.settings.heading }}
-              </{{ section.settings.heading_level }}>
-            {% endif %}
             <span class="video-section__play-button">
               {% render 'icon-play' %}
             </span>
@@ -143,17 +159,6 @@
             }}
           {%- endif -%}
           <div class="video-section__content">
-            {% if section.settings.subheading != blank %}
-              <div class="video-section__subheading badge {{ section.settings.badge_subheading_color }}">
-                {{ section.settings.subheading }}
-              </div>
-            {% endif %}
-
-            {% if section.settings.heading != blank %}
-              <{{ section.settings.heading_level }} class="video-section__heading {{ section.settings.heading_size }}">
-                {{ section.settings.heading }}
-              </{{ section.settings.heading_level }}>
-            {% endif %}
             <span class="video-section__play-button">
               {% render 'icon-play' %}
             </span>
