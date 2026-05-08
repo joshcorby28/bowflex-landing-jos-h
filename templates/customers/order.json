@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-order",
+      "settings": {}
+    },
+    "popular-products": {
+      "type": "popular-products",
+      "settings": {
+        "enable_slider": true,
+        "card_layout": "standard",
+        "columns_mobile": "2",
+        "padding_top": "no-indent",
+        "padding_bottom": "xl"
+      }
+    }
+  },
+  "order": ["main", "popular-products"]
+}

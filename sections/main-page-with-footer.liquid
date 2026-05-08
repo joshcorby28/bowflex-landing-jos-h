@@ -1,0 +1,231 @@
+{{ 'section-main-page.css' | asset_url | stylesheet_tag }}
+{{ 'section-main-page-with-footer.css' | asset_url | stylesheet_tag }}
+{{ 'component-rte.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'copy.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  {% render 'section-padding' %}
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding page-with-footer">
+  <div class="container">
+    <div class="page-with-footer__content {% if section.settings.full_width == false %} page-with-footer__content--compact {% endif %}">
+      <div class="page-header">
+        <div class="page-header__inner">
+          <h1 class="main-page-title page-title title--page h2">
+            {{- page.title | escape -}}
+          </h1>
+        </div>
+      </div>
+      <div class="rte body-large">
+        {{ page.content }}
+      </div>
+      {% liquid
+        assign show_share_block = false
+        assign has_at_least_one_share = false
+
+        if section.settings.show_share_facebook or section.settings.show_share_twitter or section.settings.show_share_copy or section.settings.show_share_telegram
+          assign has_at_least_one_share = true
+        endif
+
+        if section.settings.show_share and has_at_least_one_share
+          assign show_share_block = true
+        endif
+      %}
+      {%- if section.settings.show_date or show_share_block -%}
+        <div class="page-with-footer__footer">
+          {% if section.settings.show_date %}
+            <div class="page-with-footer__date body-large">
+              <span> {{ 'general.blog.publish' | t }}: </span>
+              {{ page.published_at | time_tag: format: 'abbreviated_date' }}
+            </div>
+          {% endif %}
+          {%- if show_share_block -%}
+            <div class="page-with-footer__share">
+              <ul class="share-buttons-simple list-unstyled">
+                {%- if section.settings.show_share_facebook -%}
+                  <li class="share-buttons-simple__item">
+                    <a
+                      href="https://www.facebook.com/sharer.php?u={{ shop.url | append: page.url }}"
+                      class="share-buttons-simple__button facebook-btn focus-inset"
+                      target="_blank"
+                    >
+                      {% render 'icon-facebook' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+
+                {%- if section.settings.show_share_twitter -%}
+                  <li class="share-buttons-simple__item">
+                    <a
+                      href="https://twitter.com/share?url={{ shop.url | append: page.url }}&text={{ page.title | escape }}"
+                      class="share-buttons-simple__button twitter-btn focus-inset"
+                      target="_blank"
+                    >
+                      {% render 'icon-twitter' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+
+                {%- if section.settings.show_share_telegram -%}
+                  <li class="share-buttons-simple__item">
+                    <a
+                      href="https://t.me/share/url?url={{ shop.url | append: page.url }}&text={{ page.title | escape }}"
+                      class="share-buttons-simple__button telegram-btn focus-inset"
+                      target="_blank"
+                    >
+                      {% render 'icon-telegram' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+
+                {%- if section.settings.show_share_copy -%}
+                  <li class="share-buttons-simple__item">
+                    <a
+                      href="{{ shop.url | append: page.url }}"
+                      class="share-buttons-simple__button copy-btn focus-inset"
+                    >
+                      <span class="page-with-footer__button__label copy-btn__label">
+                        {% render 'icon-share-link' %}
+                      </span>
+                      <span class="page-with-footer__button-success copy-btn__success color-background-2 body-small">
+                        {{ 'general.share.success_message' | t }}
+                      </span>
+                      <span class="page-with-footer__button-error copy-btn__error body-small">
+                        {{ 'general.share.error_message' | t }}
+                      </span>
+                    </a>
+                  </li>
+                {%- endif -%}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-page-with-footer.name",
+  "tag": "section",
+  "class": "page-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.main-page-with-footer.settings.full_width.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.main-page-with-footer.settings.show_date.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-page-with-footer.settings.header__share.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "default": true,
+      "label": "t:sections.main-page-with-footer.settings.show_share.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_facebook",
+      "default": true,
+      "label": "t:sections.main-page-with-footer.settings.show_share_facebook.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_twitter",
+      "default": true,
+      "label": "t:sections.main-page-with-footer.settings.show_share_twitter.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_telegram",
+      "default": false,
+      "label": "t:sections.main-page-with-footer.settings.show_share_telegram.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_copy",
+      "default": true,
+      "label": "t:sections.main-page-with-footer.settings.show_share_copy.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-padding.header.content"
+    },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-padding.padding_top.label"
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "xl",
+      "label": "t:sections.all.section-padding.padding_bottom.label"
+    }
+  ]
+}
+{% endschema %}

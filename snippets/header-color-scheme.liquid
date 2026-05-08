@@ -1,0 +1,76 @@
+{% comment %}
+  Renders color scheme toggle
+  Accepts:
+  * font_size: Font size: small/normal/large (default: small)
+      - small corresponds to 'body-small' class font size
+      - normal corresponds to 'body-normal' class font size
+      - large corresponds to 'body-large' class font size
+  * dm_btn_type: Button type: icon_and_text/icon/text (default: icon_and_text)
+  Usage:
+  {% render 'header-color-scheme', font_size: 'small', dm_btn_type: 'icon_and_text' %}
+  {% render 'header-color-scheme', font_size: 'small', dm_btn_type: section.settings.dark_mode_button_type %}
+{% endcomment %}
+
+{% liquid
+  assign font_size_class = 'body-normal'
+  assign icon_size = 'normal'
+  assign btn_type = 'icon_and_text'
+
+  if font_size == 'small'
+    assign font_size_class = 'body-small'
+    assign icon_size = 'small'
+  endif
+
+  if font_size == 'large'
+    assign font_size_class = 'body-large'
+    assign icon_size = 'large'
+  endif
+
+  if dm_btn_type == 'icon_and_text'
+    assign btn_type = 'icon_and_text'
+  endif
+
+  if dm_btn_type == 'icon'
+    assign btn_type = 'icon'
+  endif
+
+  if dm_btn_type == 'text'
+    assign btn_type = 'text'
+  endif
+%}
+
+{%- if settings.dark_mode_toggle -%}
+  <div class="header-toggle-scheme no-js-hidden">
+    <button
+      class="header-toggle-scheme-button header-toggle-scheme-button--type-{{ btn_type }} toggle-scheme-button focus-inset"
+      aria-label="{{ 'general.dark_mode.dark' | t }}"
+    >
+      {%- if btn_type == 'icon' -%}
+        <div class="header-toggle-scheme-button__icon header-toggle-scheme-button__icon--{{ icon_size }}"></div>
+      {%- elsif btn_type == 'text' -%}
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--dark {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.dark' | t -}}
+        </span>
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--light {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.light' | t -}}
+        </span>
+      {%- elsif btn_type == 'icon_and_text' -%}
+        <div class="header-toggle-scheme-button__icon header-toggle-scheme-button__icon--{{ icon_size }}"></div>
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--dark {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.dark' | t -}}
+        </span>
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--light {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.light' | t -}}
+        </span>
+      {%- else -%}
+        <div class="header-toggle-scheme-button__icon header-toggle-scheme-button__icon--{{ icon_size }}"></div>
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--dark {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.dark' | t -}}
+        </span>
+        <span class="header-toggle-scheme-button__label header-toggle-scheme-button__label--light {{ font_size_class }} link--hover-underline">
+          {{- 'general.dark_mode.light' | t -}}
+        </span>
+      {%- endif -%}
+    </button>
+  </div>
+{%- endif -%}

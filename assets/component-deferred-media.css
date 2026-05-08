@@ -1,0 +1,85 @@
+.deferred-media__poster {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+@media screen and (hover: hover) and (pointer: fine) {
+  .deferred-media__poster:hover .deferred-media__poster-button {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+  }
+}
+
+.media > .deferred-media__poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deferred-media__poster img {
+  width: auto;
+  height: 100%;
+}
+
+.deferred-media {
+  overflow: hidden;
+}
+
+.deferred-media:not([loaded]) template {
+  z-index: -1;
+}
+
+.deferred-media[loaded] > .deferred-media__poster {
+  display: none;
+}
+
+.deferred-media__poster:focus {
+  outline-offset: -0.3rem;
+}
+
+.deferred-media__poster-button {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(var(--color-background));
+  background-color: rgba(var(--color-foreground), 0.2);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity var(--duration-short) ease;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+@media screen and (hover: hover) and (pointer: fine) {
+  .deferred-media__poster-button {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 0;
+  }
+}
+
+.deferred-media__poster-button .icon {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.deferred-media__poster-button .icon-play {
+  margin-left: 0.2rem;
+  width: 1.6rem;
+  height: 1.6rem;
+}

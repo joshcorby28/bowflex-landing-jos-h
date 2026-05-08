@@ -1,0 +1,103 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": 22
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_tax_info": false
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "pills_shape": "square",
+            "swatch_type": "gallery",
+            "color_swatch_shape": "square",
+            "display_inventory": false,
+            "enable_size_guide": false
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "layout": "dropdown",
+            "default_opened_tab": "main",
+            "show_excerpt": false,
+            "description": "",
+            "display_sku": false,
+            "display_tags": false,
+            "display_custom_badges": false,
+            "additional_title": "",
+            "additional_info": "",
+            "display_rating_info": false
+          }
+        }
+      },
+      "block_order": [
+        "text",
+        "title",
+        "price",
+        "variant_picker",
+        "buy_buttons",
+        "description"
+      ],
+      "settings": {
+        "layout_type": "gallery",
+        "mobile_layout_type": "slider",
+        "badge_sale_show": false,
+        "badge_soldout_show": false,
+        "badge_new_show": false,
+        "badge_custom_show": false,
+        "mini_widgets_sticky": false,
+        "display_complementary": false,
+        "display_mini_card": false,
+        "padding_bottom": "no-indent"
+      }
+    },
+    "product_recommendations": {
+      "type": "product-recommendations",
+      "disabled": true,
+      "settings": {
+        "heading_size": "h3",
+        "description": "",
+        "products_limit": 6,
+        "show_vendor": false,
+        "show_desc": false,
+        "show_iventory": true,
+        "columns_mobile": "2",
+        "show_button": false,
+        "padding_top": "no-indent",
+        "padding_bottom": "xl"
+      }
+    }
+  },
+  "order": ["main-product", "product_recommendations"]
+}

@@ -1,0 +1,440 @@
+{{ 'section-brands.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'brands.js' | asset_url }}" defer></script>
+
+{% style %}
+  {% render 'section-margin' %}
+  {% render 'section-padding' %}
+{% endstyle %}
+
+<div class="brands section-{{ section.id }}-padding background color-{{ section.settings.color_scheme }}{% if section.settings.border_enable_top %} brands--border-top{% endif %}{% if section.settings.border_enable_bottom %} brands--border-bottom{% endif %}">
+  <div class="brands__container container">
+    {% render 'heading-group', section: section, class: 'brands' %}
+
+    <div class="brands__wrapper content">
+      {%- if section.blocks.size > 0 -%}
+        <div class="brands__logo-list{% if section.blocks.size > 1 %} swiper js-slider-brands{% endif %}">
+          <div class="brands__logo-list-wrapper swiper-wrapper">
+            {%- for block in section.blocks -%}
+              {% liquid
+                assign mobile_width = block.settings.mobile_image_width
+                assign desktop_width = block.settings.desktop_image_width
+              %}
+              {%- capture sizes -%}
+                (min-width: 576px) {{ desktop_width }}px, {{ mobile_width }}px
+              {%- endcapture -%}
+
+              <div
+                class="brands__item swiper-slide"
+                data-id="{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                {%- style -%}
+                  [data-id="{{ block.id }}"] .brands__image {
+                    width: {{ mobile_width }}px;
+                    height: auto;
+                  }
+
+                  @media screen and (min-width: 576px) {
+                    [data-id="{{ block.id }}"] .brands__image {
+                      width: {{ desktop_width }}px;
+                    }
+                  }
+                {%- endstyle -%}
+
+                {%- if block.settings.logo_link != blank -%}
+                  <a
+                    href="{{ block.settings.logo_link }}"
+                    class="brands__item-link"
+                    {% if settings.links_blank and block.settings.logo_link.type == 'external_link' %}
+                      rel="nofollow"
+                      target="_blank"
+                    {% endif %}
+                  >
+                {%- endif -%}
+
+                {% if block.settings.image_2 != blank or block.settings.image_1 != blank %}
+                  {% if block.settings.image_2 != blank %}
+                    {{
+                      block.settings.image_2
+                      | image_url: width: 400
+                      | image_tag:
+                        loading: 'lazy',
+                        sizes: sizes,
+                        widths: '200, 400, 600',
+                        class: 'brands__image brands__image--dark'
+                    }}
+                  {% endif %}
+                  {% if block.settings.image_1 != blank %}
+                    {{
+                      block.settings.image_1
+                      | image_url: width: 400
+                      | image_tag:
+                        loading: 'lazy',
+                        sizes: sizes,
+                        widths: '200, 400, 600',
+                        class: 'brands__image brands__image--light'
+                    }}
+                  {% endif %}
+                {% else %}
+                  <div class="brands__placeholder">
+                    {{- block.settings.placeholder -}}
+                  </div>
+                {% endif %}
+
+                {%- if block.settings.logo_link != blank -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_vendors -%}
+        {%- if shop.vendors.size > 0 -%}
+          {% liquid
+            assign first_chars = ''
+            assign symbols = "!@#$%^&*()_+-=[]{}|;:'\,.<>?/`~1234567890"
+
+            for vendor in shop.vendors
+              assign vendor_arr = vendor | split: ''
+              assign first_char = vendor_arr[0] | upcase
+              if symbols contains first_char
+                assign first_char = '#'
+              endif
+
+              unless first_chars contains first_char
+                assign first_chars = first_chars | append: first_char | append: ','
+              endunless
+            endfor
+
+            assign first_chars = first_chars | split: ','
+            assign first_chars = first_chars | sort
+          %}
+
+          <div class="brands__vendor-list">
+            {% for first_char in first_chars %}
+              <div>
+                <div class="brands__letter body-xl">
+                  {{ first_char }}
+                </div>
+                <ul class="brands__vendors list-unstyled">
+                  {% for vendor in shop.vendors %}
+                    {% liquid
+                      assign vendor_arr = vendor | split: ''
+                      assign vendor_first_char = vendor_arr[0] | upcase
+                      if symbols contains vendor_first_char
+                        assign vendor_first_char = '#'
+                      endif
+
+                      if vendor_first_char != first_char
+                        continue
+                      endif
+                    %}
+                    <li>
+                      {{- vendor | link_to_vendor: class: 'brands__vendor link--hover-underline' }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endfor %}
+          </div>
+        {%- else -%}
+          <div class="brands__vendor-list">
+            {% for i in (1..4) %}
+              <div>
+                <div class="brands__letter body-xl">
+                  {{- 'products.product.vendor' | t | split: '' | first -}}
+                </div>
+                <ul class="brands__vendors list-unstyled">
+                  <li>
+                    <span class="brands__vendor">{{ 'products.product.vendor' | t }}</span>
+                  </li>
+                  <li>
+                    <span class="brands__vendor">{{ 'products.product.vendor' | t }}</span>
+                  </li>
+                </ul>
+              </div>
+            {% endfor %}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.brands.name",
+  "class": "section-brands",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "background-1",
+      "label": "t:sections.all.color_scheme.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_enable_top",
+      "default": false,
+      "label": "t:sections.all.border.border_enable_top.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_enable_bottom",
+      "default": false,
+      "label": "t:sections.all.border.border_enable_bottom.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendors",
+      "default": true,
+      "label": "t:sections.brands.settings.show_vendors.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.all.heading.label",
+      "default": "t:sections.brands.settings.heading.default"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__2.label"
+        }
+      ],
+      "default": "h3",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_level",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_level.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_level.options__2.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_level.options__3.label"
+        }
+      ],
+      "default": "h2",
+      "label": "t:sections.all.heading_level.label"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.all.text.label",
+      "default": "t:sections.brands.settings.description.default"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-padding.header.content"
+    },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "l",
+      "label": "t:sections.all.section-padding.padding_top.label"
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-padding.padding_bottom.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-margin.header.content"
+    },
+    {
+      "type": "select",
+      "id": "margin_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_top.label"
+    },
+    {
+      "type": "select",
+      "id": "margin_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_bottom.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "t:sections.brands.blocks.logo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "t:sections.brands.blocks.logo.settings.image_1.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "t:sections.brands.blocks.logo.settings.image_2.label"
+        },
+        {
+          "type": "range",
+          "id": "mobile_image_width",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "default": 120,
+          "unit": "px",
+          "label": "t:sections.brands.blocks.logo.settings.mobile_image_width.label"
+        },
+        {
+          "type": "range",
+          "id": "desktop_image_width",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "default": 120,
+          "unit": "px",
+          "label": "t:sections.brands.blocks.logo.settings.desktop_image_width.label"
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "t:sections.brands.blocks.logo.settings.placeholder.label",
+          "info": "t:sections.brands.blocks.logo.settings.placeholder.info",
+          "default": "t:sections.brands.blocks.logo.settings.placeholder.default"
+        },
+        {
+          "type": "url",
+          "id": "logo_link",
+          "label": "t:sections.brands.blocks.logo.settings.logo_link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.brands.name",
+      "category": "t:sections.categories.storytelling"
+    }
+  ]
+}
+{% endschema %}

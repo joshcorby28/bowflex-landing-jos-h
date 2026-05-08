@@ -1,0 +1,86 @@
+.page-with-footer .page-header__inner {
+  margin-left: auto;
+  margin-right: auto;
+}
+.page-with-footer .main-page-title {
+  text-align: center;
+}
+@media screen and (min-width: 750px) {
+  .page-with-footer .main-page-title {
+    margin-bottom: 4.8rem;
+  }
+}
+.page-with-footer .rte {
+  line-height: 160%;
+  letter-spacing: 0;
+}
+.page-with-footer__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 2.4rem;
+  padding-top: 2.4rem;
+  margin-top: 4rem;
+  border-top: 0.1rem solid rgba(var(--color-border));
+}
+.page-with-footer__content--compact {
+  max-width: 68rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.page-with-footer__date span {
+  color: rgba(var(--color-foreground-secondary));
+}
+.page-with-footer__share .share-buttons-simple {
+  display: flex;
+  flex-direction: row;
+}
+@media screen and (min-width: 1200px) {
+  .page-with-footer__share .share-buttons-simple {
+    flex-direction: row;
+    margin-left: 0;
+  }
+}
+.page-with-footer__share .share-buttons-simple__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  transition: background-color var(--duration-default);
+}
+.page-with-footer__share .share-buttons-simple__button:hover {
+  background-color: rgba(var(--color-background-secondary));
+}
+.page-with-footer__share .share-buttons-simple .icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+.page-with-footer__share .share-buttons-simple .icon-share-link {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+.page-with-footer__share .page-with-footer__button-success,
+.page-with-footer__share .page-with-footer__button-error {
+  left: auto;
+  right: 0;
+}
+.page-with-footer__button-success, .page-with-footer__button-error {
+  min-width: max-content;
+  position: absolute;
+  top: calc(100% + 0.8rem);
+  left: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  line-height: 1;
+}
+.page-with-footer__button-success {
+  color: rgba(var(--color-foreground));
+}
+.page-with-footer__button-error {
+  color: #ff0000;
+  background-color: #ffffff;
+  border: 1px solid #ff0000;
+}

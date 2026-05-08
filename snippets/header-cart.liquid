@@ -1,0 +1,10 @@
+<div class="header-cart{% if request.page_type == 'cart' %} header-cart--page{% endif %}">
+  <a
+    href="{{ routes.cart_url }}"
+    class="header-cart__link header-cart__link--btn-type-{{ section.settings.cart_button_type }} focus-inset"
+    id="cart-icon-bubble"
+    aria-label="{{- 'general.cart.cart' | t -}}"
+  >
+    {% render 'cart-count-bubble' %}
+  </a>
+</div>

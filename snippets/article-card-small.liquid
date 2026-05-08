@@ -1,0 +1,113 @@
+{% comment %}
+  Renders a small blog post card for a given blog.
+
+  Accepts:
+  - article: {Object} Article object
+  - aspect_ratio: {String} Aspect ratio of the image. Default = landscape
+  - object_fit: {String} Object fit of the image. Default = cover
+  - show_image: {Boolean} Show the post image or not. Default = false
+  - show_date: {Boolean} Show the post date or not. Default = false
+  - show_author: {Boolean} Show the post author or not. Default = false
+  - show_tags: {Boolean} Show the post tags or not. Default = false
+
+  Usage:
+  {% render 'article-card', article: article, aspect_ratio: section.settings.aspect_ratio, object_fit: section.settings.object_fit,  show_image: section.settings.show_image, show_date: section.settings.show_date, show_author: section.settings.show_author, show_tags: section.settings.show_tags %}
+{% endcomment %}
+
+{% liquid
+  assign show_meta = false
+
+  if show_author == true or show_date == true
+    assign show_meta = true
+  endif
+
+  assign image_styles = 'object-fit: cover;'
+
+  if object_fit
+    assign image_styles = 'object-fit: ' | append: object_fit | append: ';'
+  endif
+%}
+
+<article
+  class="small-article-card"
+  aria-labelledby="Article-{{ article.id }}"
+>
+  <a
+    href="{{ article.url }}"
+    class="small-article-card-link focus-inset"
+    aria-label="{{ article.title }}"
+  >
+    {%- if show_image == true and article.image -%}
+      <div class="small-article-card-image-wrapper small-article-card-image-wrapper--{{ aspect_ratio }}">
+        {% liquid
+          assign aspect_ratio_img = 100 | divided_by: article.image.aspect_ratio | round: 2
+
+          assign calc_ratio = 1
+
+          if aspect_ratio == 'landscape'
+            if aspect_ratio_img < 56
+              assign calc_ratio = 56.0 | divided_by: aspect_ratio_img | round: 2
+            endif
+          endif
+          if aspect_ratio == 'square'
+            if aspect_ratio_img < 100
+              assign calc_ratio = 100.0 | divided_by: aspect_ratio_img | round: 2
+            endif
+          endif
+          if aspect_ratio == 'portrait'
+            if aspect_ratio_img < 125
+              assign calc_ratio = 125.0 | divided_by: aspect_ratio_img | round: 2
+            endif
+          endif
+        %}
+
+        {%- capture img_sizes -%}
+          (min-width: 420px) calc(120px * {{ calc_ratio }}), calc(100vw * {{ calc_ratio }})
+        {%- endcapture -%}
+
+        {{
+          article.image
+          | image_url: width: article.image.width
+          | image_tag:
+            loading: 'lazy',
+            widths: '308, 416, 632, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2560, 2800, 3000, 3200, 3400, 3600, 3800',
+            sizes: img_sizes,
+            class: 'small-article-card-image motion-reduce',
+            style: image_styles
+        }}
+      </div>
+    {%- endif -%}
+    <div class="small-article-card-content">
+      <h3
+        class="small-article-card-title h4"
+        id="Article-{{ article.id }}"
+      >
+        <span class="link--hover-underline">{{- article.title -}}</span>
+      </h3>
+      {%- if show_meta == true -%}
+        <div class="small-article-card-meta">
+          {%- if show_author == true -%}
+            <div class="small-article-card-author body-small">
+              {{ 'general.blog.author' | t }}
+              {{ article.author }}
+            </div>
+          {%- endif -%}
+          {%- if show_date == true -%}
+            <div class="small-article-card-date body-small">
+              {{ article.published_at | date: '%d.%m.%Y' }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if show_tags and article.tags.size > 0 -%}
+        <ul class="small-article-card-tags list-unstyled">
+          {%- for tag in article.tags -%}
+            <li class="small-article-card-tag">
+              {{- tag -}}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </a>
+</article>

@@ -1,0 +1,154 @@
+{% comment %}
+  Renders a collection card
+  Accepts:
+  - card_collection: {Object} Collection Liquid object
+  - color_scheme: {String} background-1 / background-2 / etc. Default: background-1
+  - title_size: {String} h1 / h2 / h3 / h4 / h5. Default: h2
+  - show_desc: {Boolean} Show the product description. Default: false
+  - image_ratio: {String} landscape / portrait / square. Default: landscape
+  - image_fit: {String} contain / cover. Default: cover
+  - overlay_opacity: {Integer} The opacity of the overlay. Default: 0.1
+  - columns: {Integer} The number of columns to display. Default: 1
+  - overwrite_image: {Object} Image Liquid object
+  - show_button: {Boolean} Show the button. Default: false
+  - button_label: {String} The button label.
+  - button_style: {String} primary/secondary/tertiary/link--primary/link--secondary/link--tertiary. Default: primary
+  Usage:
+  {% render 'collection-card', card_collection: collection %}
+{% endcomment %}
+
+{% if card_collection != blank %}
+  {% liquid
+    assign card_image_ratio = 'landscape'
+    if image_ratio != blank
+      assign card_image_ratio = image_ratio
+    endif
+
+    assign collection_overlay_opacity = 0
+    if overlay_opacity != blank
+      assign collection_overlay_opacity = overlay_opacity
+    endif
+
+    assign collection_color_scheme = 'background-1'
+    if color_scheme != blank
+      assign collection_color_scheme = color_scheme
+    endif
+
+    assign padding_bottom = '57.71%'
+    if card_image_ratio == 'square'
+      assign padding_bottom = '100%'
+    elsif card_image_ratio == 'portrait'
+      assign padding_bottom = '125%'
+    endif
+
+    assign card_image_fit = 'cover'
+    if image_fit != blank
+      assign card_image_fit = image_fit
+    endif
+
+    assign collection_product_image = card_collection.featured_image
+    if overwrite_image != blank
+      assign collection_product_image = overwrite_image
+    endif
+
+    assign collection_title_size = 'h3'
+    if title_size != blank
+      assign collection_title_size = title_size
+    endif
+  %}
+
+  <div
+    class="collection-card collection-card--{{ card_collection.id }} color-{{ collection_color_scheme }}"
+    style="--padding-bottom: {{ padding_bottom }}; --overlay-opacity: {{ collection_overlay_opacity }};"
+  >
+    <div class="collection-card__image-wrapper">
+      {%- if collection_product_image != blank -%}
+        {% liquid
+          if card_image_ratio == 'landscape'
+            assign settings_aspect_ratio = 1.73
+          elsif card_image_ratio == 'portrait'
+            assign settings_aspect_ratio = 0.8
+          else
+            assign settings_aspect_ratio = 1
+          endif
+
+          assign calc_ratio = 1
+          if card_image_fit == 'cover' and collection_product_image.aspect_ratio > settings_aspect_ratio
+            assign calc_ratio = collection_product_image.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+          endif
+        %}
+        {%- capture sizes -%}
+          {%- if columns == 4 -%}
+            (min-width: 1920px) calc({{ calc_ratio }} * 1840px / 4), (min-width: 1200px) calc({{ calc_ratio }} * (100vw - 40px) / 4), (min-width: 990px) calc({{ calc_ratio }} * (100vw - 40px) / 3), (min-width: 750px) calc({{ calc_ratio }} * (100vw - 40px) / 2), calc({{ calc_ratio }} * (100vw - 40px))
+          {%- endif -%}
+          {%- if columns == 3 -%}
+            (min-width: 1920px) calc({{ calc_ratio }} * 1840px / 3), (min-width: 990px) calc({{ calc_ratio }} * (100vw - 40px) / 3), (min-width: 750px) calc({{ calc_ratio }} * (100vw - 40px) / 2), calc({{ calc_ratio }} * (100vw - 40px))
+          {%- endif -%}
+          {%- if columns == 2 -%}
+            (min-width: 1920px) calc({{ calc_ratio }} * 1840px / 2), (min-width: 750px) calc({{ calc_ratio }} * (100vw - 40px) / 2), calc({{ calc_ratio }} * (100vw - 40px))
+          {%- endif -%}
+          (min-width: 1920px) calc({{ calc_ratio }} * 1840px), calc({{ calc_ratio }} * (100vw - 40px))
+        {%- endcapture -%}
+        {%- capture style -%}
+          object-fit: {{ image_fit }};
+        {%- endcapture -%}
+        {{
+          collection_product_image
+          | image_url: width: collection_product_image.width
+          | image_tag:
+            loading: 'lazy',
+            sizes: sizes,
+            widths: '360, 550, 750, 900, 1100, 1420, 1700, 1920, 2200, 2400, 2600, 3000',
+            style: style,
+            class: 'collection-card__image'
+        }}
+      {%- endif -%}
+    </div>
+
+    <div class="collection-card__information">
+      <div class="collection-card__information-text">
+        <h3 class="collection-card__title {{ collection_title_size }}">
+          {{- card_collection.title -}}
+        </h3>
+
+        {% comment %}TODO: CHECK LATER {% endcomment %}
+        {%- if show_desc -%}
+          {%- if section.settings.alt_desc and card_collection.metafields.custom.description != blank -%}
+            <p class="collection-card__desc body-small">
+              {{- card_collection.metafields.custom.description | strip_html | truncatewords: 50, '...' -}}
+            </p>
+          {%- elsif card_collection.description != blank -%}
+            <p class="collection-card__desc body-small">
+              {{- card_collection.description | strip_html | truncate: 150, '...' -}}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+
+        <a
+          class="collection-card__link"
+          href="{{ card_collection.url | default: '#' }}"
+          aria-label="{{ card_collection.title }}"
+        >
+          <span class="visually-hidden">{{- card_collection.title -}}</span>
+        </a>
+
+        {%- if show_button -%}
+          {% render 'button',
+            btn_link: card_collection.url,
+            btn_label: button_label,
+            btn_style: button_style,
+            class: 'collection-card__button'
+          %}
+        {%- endif -%}
+      </div>
+
+      {% if icon_sale == true %}
+        <div class="collection-card__sale">
+          <svg width="42" height="41" viewBox="0 0 42 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.77319 17.3768C7.50132 17.3768 5.5623 16.5737 3.95613 14.9675C2.34996 13.3618 1.54688 11.4228 1.54688 9.15047C1.54688 6.8786 2.34996 4.93958 3.95613 3.33341C5.5623 1.72767 7.50132 0.924805 9.77319 0.924805C12.0451 0.924805 13.9841 1.72767 15.5902 3.33341C17.1964 4.93958 17.9995 6.8786 17.9995 9.15047C17.9995 11.4228 17.1964 13.3618 15.5902 14.9675C13.9841 16.5737 12.0451 17.3768 9.77319 17.3768ZM9.77188 13.4762C10.9728 13.4762 11.9941 13.0558 12.8358 12.215C13.6779 11.3742 14.0989 10.3534 14.0989 9.15242C14.0989 7.95104 13.6785 6.92952 12.8377 6.08786C11.9969 5.24621 10.9759 4.82538 9.77449 4.82538C8.57354 4.82538 7.55203 5.24578 6.70994 6.08657C5.86828 6.92736 5.44745 7.94822 5.44745 9.14917C5.44745 10.3505 5.86784 11.3721 6.70863 12.2137C7.54943 13.0554 8.57051 13.4762 9.77188 13.4762ZM32.3517 39.9552C30.0794 39.9552 28.1403 39.1522 26.5346 37.546C24.9284 35.9398 24.1253 34.0008 24.1253 31.7289C24.1253 29.4571 24.9284 27.5181 26.5346 25.9119C28.1403 24.3057 30.0794 23.5026 32.3517 23.5026C34.6235 23.5026 36.5625 24.3057 38.1687 25.9119C39.7745 27.5181 40.5773 29.4571 40.5773 31.7289C40.5773 34.0008 39.7745 35.9398 38.1687 37.546C36.5625 39.1522 34.6235 39.9552 32.3517 39.9552ZM32.3497 36.0547C33.5511 36.0547 34.5726 35.6343 35.4143 34.7935C36.2559 33.9527 36.6767 32.9316 36.6767 31.7302C36.6767 30.5293 36.2564 29.508 35.4156 28.6663C34.5748 27.8242 33.5539 27.4032 32.353 27.4032C31.1516 27.4032 30.1301 27.8236 29.2884 28.6644C28.4468 29.5052 28.0259 30.5263 28.0259 31.7276C28.0259 32.9286 28.4463 33.9501 29.2871 34.7922C30.1279 35.6338 31.1488 36.0547 32.3497 36.0547ZM4.51261 39.705L1.79716 36.9895L37.6122 1.17444L40.3277 3.88989L4.51261 39.705Z" fill="currentColor" stroke="currentColor" stroke-width="1.60619"/>
+          </svg>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

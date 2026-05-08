@@ -1,0 +1,308 @@
+{%- for block in blocks -%}
+  {% assign mega_menu_tabs_trigger = block.settings.mega_menu_tabs_trigger | handle | strip %}
+
+  {%- if link.handle == mega_menu_tabs_trigger and block.type == 'mega_menu_tabs' -%}
+    {%- liquid
+      assign has_tabs = false
+      for i in (1..8)
+        assign enable_card_setting = 'enable_tab_' | append: i
+        assign heading_setting = 'tab_title_' | append: i
+        if block.settings[enable_card_setting] and block.settings[heading_setting] != blank
+          assign has_tabs = true
+        endif
+      endfor
+    -%}
+
+    {%- if has_tabs -%}
+      <details
+        class="menu-drawer-localization menu-drawer-inner-drawer mega-menu-tabs-mobile"
+        id="menu-drawer-mega-menu-tabs-{{ block.id }}"
+      >
+        <summary class="menu-drawer__menu-item list-menu__item link link--text focus-inset">
+          <a
+            href="{{ link.url }}"
+            class="menu-drawer__menu-link header-link-style link link--text list-menu__item focus-inset{% if link.title == section.settings.main_menu_sale_trigger %} menu-drawer__menu-link--sale{% endif %}"
+            {% if link.current %}
+              aria-current="page"
+            {% endif %}
+            {% if settings.links_blank and link.type == 'http_link' %}
+              target="_blank"
+            {% endif %}
+          >
+            {%- if link.title == section.settings.main_menu_sale_trigger and section.settings.main_menu_sale_icon -%}
+              {% render 'icon-menu-sale' %}
+            {%- endif -%}
+            <span class="menu-drawer__menu-link-label{% if link.title == section.settings.main_menu_sale_trigger and section.settings.main_menu_sale_color %} menu-drawer__menu-link-label--sale-color{% endif %}">
+              {{- link.title | escape -}}
+            </span>
+          </a>
+          {% render 'icon-caret' %}
+        </summary>
+        <div
+          class="header-region-content menu-drawer-inner-drawer-content color-background-1"
+          role="dialog"
+          aria-modal="true"
+        >
+          <button class="menu-drawer-localization-back-btn menu-drawer-inner-drawer-back">
+            {% render 'icon-caret' %}
+            <span class="menu-drawer-localization-back-btn__text">
+              {{- 'sections.header.back' | t -}}
+            </span>
+          </button>
+
+          <nav class="menu-drawer__navigation">
+            <ul class="menu-drawer__menu list-menu" role="list">
+              {%- for i in (1..8) -%}
+                {%- liquid
+                  assign is_visible_tab = false
+                  assign enable_tab_setting = 'enable_tab_' | append: i
+                  assign heading_setting = 'tab_title_' | append: i
+                  assign link_setting = 'tab_link_' | append: i
+                  assign menu_setting = 'tab_menu_' | append: i
+                  assign highlighted_setting = 'tab_highlighted_' | append: i
+                  assign icon_setting = 'tab_icon_' | append: i
+                  assign custom_icon_setting = 'tab_custom_icon_' | append: i
+                  assign custom_icon_dm_setting = 'tab_custom_icon_dm_' | append: i
+                  if block.settings[enable_tab_setting] and block.settings[heading_setting] != blank
+                    assign is_visible_tab = true
+                  endif
+                -%}
+                {%- if is_visible_tab -%}
+                  {% liquid
+                    assign has_custom_dm_icon = false
+
+                    if block.settings[custom_icon_dm_setting] != blank
+                      assign has_custom_dm_icon = true
+                    endif
+                  %}
+                  <li class="{% if has_custom_dm_icon %}mega-menu-nav-list__item--with_dm_icon{% endif %}">
+                    {%- if block.settings[menu_setting] != blank -%}
+                      <details>
+                        <summary class="menu-drawer__menu-item list-menu__item link link--text focus-inset">
+                          {%- if block.settings[link_setting] != blank -%}
+                            <a
+                              href="{{ block.settings[link_setting] }}"
+                              class="menu-drawer__menu-link link link--text list-menu__item{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                              {% if settings.links_blank and block.settings[link_setting] == 'external_link' %}
+                                target="_blank"
+                              {% endif %}
+                            >
+                              {%- if block.settings[custom_icon_setting] != blank -%}
+                                {%- assign height = 24
+                                  | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                                  | round: 2
+                                -%}
+                                {{
+                                  block.settings[custom_icon_setting]
+                                  | image_url: width: 96
+                                  | image_tag:
+                                    width: 24,
+                                    height: height,
+                                    widths: '24, 48, 72, 96',
+                                    class: 'mega-menu-nav-list__tab-icon'
+                                }}
+                              {%- elsif block.settings[icon_setting] != 'none' -%}
+                                {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                              {%- endif -%}
+                              {%- if has_custom_dm_icon -%}
+                                {%- assign height = 24
+                                  | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                                  | round: 2
+                                -%}
+                                {{
+                                  block.settings[custom_icon_dm_setting]
+                                  | image_url: width: 96
+                                  | image_tag:
+                                    width: 24,
+                                    height: height,
+                                    widths: '24, 48, 72, 96',
+                                    class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                }}
+                              {%- endif -%}
+
+                              {%- if block.settings[heading_setting] != blank -%}
+                                <span class="header-link-style">
+                                  {{- block.settings[heading_setting] | strip -}}
+                                </span>
+                              {%- endif -%}
+                            </a>
+                          {%- else -%}
+                            <div class="menu-drawer__menu-link link link--text list-menu__item{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %}">
+                              {%- if block.settings[custom_icon_setting] != blank -%}
+                                {%- assign height = 24
+                                  | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                                  | round: 2
+                                -%}
+                                {{
+                                  block.settings[custom_icon_setting]
+                                  | image_url: width: 96
+                                  | image_tag:
+                                    width: 24,
+                                    height: height,
+                                    widths: '24, 48, 72, 96',
+                                    class: 'mega-menu-nav-list__tab-icon'
+                                }}
+                              {%- elsif block.settings[icon_setting] != 'none' -%}
+                                {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                              {%- endif -%}
+                              {%- if has_custom_dm_icon -%}
+                                {%- assign height = 24
+                                  | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                                  | round: 2
+                                -%}
+                                {{
+                                  block.settings[custom_icon_dm_setting]
+                                  | image_url: width: 96
+                                  | image_tag:
+                                    width: 24,
+                                    height: height,
+                                    widths: '24, 48, 72, 96',
+                                    class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                }}
+                              {%- endif -%}
+
+                              {%- if block.settings[heading_setting] != blank -%}
+                                <span class="header-link-style">
+                                  {{- block.settings[heading_setting] | strip -}}
+                                </span>
+                              {%- endif -%}
+                            </div>
+                          {%- endif -%}
+                          {% render 'icon-caret' %}
+                        </summary>
+                        <div
+                          id="mega-menu-tabs-link-{{ block.settings[heading_setting] | strip | default: forloop.index }}"
+                          class="menu-drawer__submenu motion-reduce"
+                          tabindex="-1"
+                        >
+                          <div class="menu-drawer__inner-submenu">
+                            <ul
+                              class="menu-drawer__menu list-menu"
+                              role="list"
+                              tabindex="-1"
+                            >
+                              {%- for childlink in block.settings[menu_setting].links -%}
+                                <li>
+                                  <a
+                                    href="{{ childlink.url }}"
+                                    class="menu-drawer__menu-item menu-drawer__submenu-link link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %} menu-drawer__menu-item--child"
+                                    {% if childlink.current %}
+                                      aria-current="page"
+                                    {% endif %}
+                                    {% if settings.links_blank and childlink.type == 'http_link' %}
+                                      target="_blank"
+                                    {% endif %}
+                                  >
+                                    {{- childlink.title | escape -}}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          </div>
+                        </div>
+                      </details>
+                    {%- else -%}
+                      {%- if block.settings[link_setting] != blank -%}
+                        <a
+                          href="{{ block.settings[link_setting] }}"
+                          class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                          {% if settings.links_blank and block.settings[link_setting] == 'external_link' %}
+                            target="_blank"
+                          {% endif %}
+                        >
+                          <span class="menu-drawer__menu-link">
+                            {%- if block.settings[custom_icon_setting] != blank -%}
+                              {%- assign height = 24
+                                | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                                | round: 2
+                              -%}
+                              {{
+                                block.settings[custom_icon_setting]
+                                | image_url: width: 96
+                                | image_tag:
+                                  width: 24,
+                                  height: height,
+                                  widths: '24, 48, 72, 96',
+                                  class: 'mega-menu-nav-list__tab-icon'
+                              }}
+                            {%- elsif block.settings[icon_setting] != 'none' -%}
+                              {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                            {%- endif -%}
+                            {%- if has_custom_dm_icon -%}
+                              {%- assign height = 24
+                                | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                                | round: 2
+                              -%}
+                              {{
+                                block.settings[custom_icon_dm_setting]
+                                | image_url: width: 96
+                                | image_tag:
+                                  width: 24,
+                                  height: height,
+                                  widths: '24, 48, 72, 96',
+                                  class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                              }}
+                            {%- endif -%}
+
+                            {%- if block.settings[heading_setting] != blank -%}
+                              <span class="header-link-style">
+                                {{- block.settings[heading_setting] | strip -}}
+                              </span>
+                            {%- endif -%}
+                          </span>
+                        </a>
+                      {%- else -%}
+                        <span class="menu-drawer__menu-item list-menu__item link link--text{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %}">
+                          <span class="menu-drawer__menu-link">
+                            {%- if block.settings[custom_icon_setting] != blank -%}
+                              {%- assign height = 24
+                                | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                                | round: 2
+                              -%}
+                              {{
+                                block.settings[custom_icon_setting]
+                                | image_url: width: 96
+                                | image_tag:
+                                  width: 24,
+                                  height: height,
+                                  widths: '24, 48, 72, 96',
+                                  class: 'mega-menu-nav-list__tab-icon'
+                              }}
+                            {%- elsif block.settings[icon_setting] != 'none' -%}
+                              {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                            {%- endif -%}
+                            {%- if has_custom_dm_icon -%}
+                              {%- assign height = 24
+                                | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                                | round: 2
+                              -%}
+                              {{
+                                block.settings[custom_icon_dm_setting]
+                                | image_url: width: 96
+                                | image_tag:
+                                  width: 24,
+                                  height: height,
+                                  widths: '24, 48, 72, 96',
+                                  class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                              }}
+                            {%- endif -%}
+
+                            {%- if block.settings[heading_setting] != blank -%}
+                              <span class="header-link-style">
+                                {{- block.settings[heading_setting] | strip -}}
+                              </span>
+                            {%- endif -%}
+                          </span>
+                        </span>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </nav>
+        </div>
+      </details>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}

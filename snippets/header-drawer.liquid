@@ -1,0 +1,571 @@
+{% liquid
+  assign show_region = false
+  assign has_language = false
+  assign has_country = false
+
+  if section.settings.enable_country_selector and localization.available_countries.size > 1
+    assign show_region = true
+    assign has_country = true
+  endif
+
+  if section.settings.enable_language_selector and localization.available_languages.size > 1
+    assign show_region = true
+    assign has_language = true
+  endif
+%}
+
+<header-drawer data-breakpoint="tablet">
+  <details class="menu-drawer-container">
+    <summary
+      class="header__icon header__icon--menu focus-inset"
+      aria-label="{{ 'sections.header.menu' | t }}"
+    >
+      <span class="header__icon-wrapper">
+        <div class="hamburger-icon"></div>
+      </span>
+    </summary>
+    <div id="menu-drawer" class="menu-drawer motion-reduce color-background-1" tabind ex="-1">
+      <div class="menu-drawer__inner-container">
+        {%- if section.settings.menu != blank or section.settings.secondary_menu != blank -%}
+          <div class="menu-drawer__main">
+            <div class="menu-drawer__navigation-container">
+              {% comment %} ---------- MAIN MENU ---------- {% endcomment %}
+              {%- if section.settings.menu != blank -%}
+                <nav class="menu-drawer__navigation">
+                  <ul class="menu-drawer__menu list-menu" role="list">
+                    {%- for link in section.settings.menu.links -%}
+                      {% liquid
+                        assign mega_menu = false
+                        assign mega_menu_cards = false
+                        assign mega_menu_tabs = false
+
+                        for block in section.blocks
+                          assign mega_menu_cards_trigger = block.settings.mega_menu_cards_trigger | handle | strip
+                          assign mega_menu_tabs_trigger = block.settings.mega_menu_tabs_trigger | handle | strip
+
+                          if link.handle == mega_menu_cards_trigger
+                            assign mega_menu = true
+                            assign mega_menu_cards = true
+                            assign mega_menu_tabs = false
+                            assign shopify_attributes = block.shopify_attributes
+                          elsif link.handle == mega_menu_tabs_trigger
+                            assign mega_menu = true
+                            assign mega_menu_cards = false
+                            assign mega_menu_tabs = true
+                            assign shopify_attributes = block.shopify_attributes
+                          endif
+                        endfor
+                      %}
+
+                      <li
+                        {% if mega_menu %}
+                          {{ shopify_attributes }}
+                        {% endif %}
+                      >
+                        {%- if section.blocks.size > 0 and mega_menu -%}
+                          {%- if mega_menu_cards -%}
+                            {%- render 'header-mega-menu-cards-mobile', link: link, blocks: section.blocks -%}
+                          {%- endif -%}
+                          {%- if mega_menu_tabs -%}
+                            {%- render 'header-mega-menu-tabs-mobile', link: link, blocks: section.blocks -%}
+                          {%- endif -%}
+                        {%- elsif link.links != blank -%}
+                          <details>
+                            <summary class="menu-drawer__menu-item list-menu__item link link--text focus-inset">
+                              <a
+                                href="{{ link.url }}"
+                                class="menu-drawer__menu-link header-link-style link link--text list-menu__item focus-inset{% if link.title == section.settings.main_menu_sale_trigger %} menu-drawer__menu-link--sale{% endif %}"
+                                {% if link.current %}
+                                  aria-current="page"
+                                {% endif %}
+                                {% if settings.links_blank and link.type == 'http_link' %}
+                                  target="_blank"
+                                {% endif %}
+                              >
+                                {%- if link.title == section.settings.main_menu_sale_trigger
+                                  and section.settings.main_menu_sale_icon
+                                -%}
+                                  {% render 'icon-menu-sale' %}
+                                {%- endif -%}
+                                <span class="menu-drawer__menu-link-label{% if link.title == section.settings.main_menu_sale_trigger and section.settings.main_menu_sale_color %} menu-drawer__menu-link-label--sale-color{% endif %}">
+                                  {{- link.title | escape -}}
+                                </span>
+                              </a>
+                              {% render 'icon-caret' %}
+                            </summary>
+                            <div
+                              id="link-{{ link.title | escape }}"
+                              class="menu-drawer__submenu motion-reduce"
+                              tabindex="-1"
+                            >
+                              <div class="menu-drawer__inner-submenu">
+                                <ul
+                                  class="menu-drawer__menu list-menu"
+                                  role="list"
+                                  tabindex="-1"
+                                >
+                                  {%- for childlink in link.links -%}
+                                    <li>
+                                      {%- if childlink.links == blank -%}
+                                        <a
+                                          href="{{ childlink.url }}"
+                                          class="menu-drawer__menu-item menu-drawer__menu-item--child menu-drawer__submenu-link link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
+                                          {% if childlink.current %}
+                                            aria-current="page"
+                                          {% endif %}
+                                          {% if settings.links_blank and childlink.type == 'http_link' %}
+                                            target="_blank"
+                                          {% endif %}
+                                        >
+                                          {{- childlink.title | escape -}}
+                                        </a>
+                                      {%- else -%}
+                                        <details>
+                                          <summary class="menu-drawer__menu-item menu-drawer__menu-item--child link link--text list-menu__item focus-inset">
+                                            <a
+                                              href="{{ childlink.url }}"
+                                              class="menu-drawer__submenu-link focus-inset"
+                                              {% if childlink.current %}
+                                                aria-current="page"
+                                              {% endif %}
+                                              {% if settings.links_blank and childlink.type == 'http_link' %}
+                                                target="_blank"
+                                              {% endif %}
+                                            >
+                                              {{- childlink.title | escape -}}
+                                            </a>
+                                            {% render 'icon-caret' %}
+                                          </summary>
+                                          <div
+                                            id="childlink-{{ childlink.title | escape }}"
+                                            class="menu-drawer__submenu motion-reduce"
+                                          >
+                                            <ul
+                                              class="menu-drawer__menu list-menu"
+                                              role="list"
+                                              tabindex="-1"
+                                            >
+                                              {%- for grandchildlink in childlink.links -%}
+                                                <li>
+                                                  <a
+                                                    href="{{ grandchildlink.url }}"
+                                                    class="menu-drawer__menu-item menu-drawer__menu-item--child menu-drawer__submenu-link link link--text list-menu__item focus-inset{% if grandchildlink.current %} menu-drawer__menu-item--active{% endif %} grandchildlink"
+                                                    {% if grandchildlink.current %}
+                                                      aria-current="page"
+                                                    {% endif %}
+                                                    {% if settings.links_blank and grandchildlink.type == 'http_link' %}
+                                                      target="_blank"
+                                                    {% endif %}
+                                                  >
+                                                    {{- grandchildlink.title | escape -}}
+                                                  </a>
+                                                </li>
+                                              {%- endfor -%}
+                                            </ul>
+                                          </div>
+                                        </details>
+                                      {%- endif -%}
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                              </div>
+                            </div>
+                          </details>
+                        {%- else -%}
+                          <a
+                            href="{{ link.url }}"
+                            class="menu-drawer__menu-item menu-drawer__menu-item_simple header-link-style list-menu__item link link--text focus-inset{% if link.current %} menu-drawer__menu-item--active{% endif %} {% if link.title == section.settings.main_menu_sale_trigger %} menu-drawer__menu-link--sale{% endif %}"
+                            {% if link.current %}
+                              aria-current="page"
+                            {% endif %}
+                            {% if settings.links_blank and link.type == 'http_link' %}
+                              target="_blank"
+                            {% endif %}
+                          >
+                            {%- if link.title == section.settings.main_menu_sale_trigger
+                              and section.settings.main_menu_sale_icon
+                            -%}
+                              {% render 'icon-menu-sale' %}
+                            {%- endif -%}
+                            <span class="menu-drawer__menu-link-label{% if link.title == section.settings.main_menu_sale_trigger and section.settings.main_menu_sale_color %} menu-drawer__menu-link-label--sale-color{% endif %}">
+                              {{- link.title | escape -}}
+                            </span>
+                          </a>
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </nav>
+              {%- endif -%}
+
+              {% comment %} ---------- SECONDARY MENU ---------- {% endcomment %}
+              {%- if section.settings.secondary_menu != blank -%}
+                <nav class="menu-drawer-secondary-menu">
+                  <ul class="menu-drawer-secondary-menu__list list-unstyled">
+                    {%- for link in section.settings.secondary_menu.links -%}
+                      <li
+                        class="menu-drawer-secondary-menu__list-item"
+                      >
+                        <a
+                          href="{{ link.url }}"
+                          {% if settings.links_blank and link.type == 'http_link' %}
+                            target="_blank"
+                          {% endif %}
+                          class="menu-drawer-secondary-menu__list-item-link focus-inset{% if link.current and link.url != '/' %} menu-drawer-secondary-menu__list-item-link--active{% endif %}"
+                          {% if link.current and link.url != '/' %}
+                            aria-current="page"
+                          {% endif %}
+                          aria-label="{{ link.title | escape }}"
+                        >
+                          <span
+                            class="menu-drawer-secondary-menu__list-item-label body-xl"
+                            title="{{ link.title | escape }}"
+                          >
+                            {{ link.title | escape }}
+                          </span>
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </nav>
+              {% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+        {%- if settings.dark_mode_toggle
+          or show_region
+          or section.settings.contact_info
+          or shop.customer_accounts_enabled
+        -%}
+          <div class="menu-drawer__bottom">
+            {% comment %} ---------- ACCOUNT LINKS AND CONTACT INFO ---------- {% endcomment %}
+            {%- if shop.customer_accounts_enabled or section.settings.contact_info != blank -%}
+              <div class="menu-drawer__bottom-buttons-info">
+                {% comment %} ---------- ACCOUNT LINKS ---------- {% endcomment %}
+                {%- if shop.customer_accounts_enabled -%}
+                  <div class="menu-drawer__utility-links">
+                    {%- if customer -%}
+                      <div class="menu-drawer__utility-account">
+                        <ul class="menu-drawer__utility-account-body list-unstyled">
+                          <li class="menu-drawer__utility-account-body-item">
+                            <a
+                              class="menu-drawer__utility-account-link menu-drawer__utility-account-link--account"
+                              href="{{ routes.account_url }}"
+                              aria-label="{{ 'customer.account_fallback' | t }}"
+                            >
+                              <span class="body-large">{{ 'customer.account_fallback' | t }}</span>
+                            </a>
+                          </li>
+                          <li class="menu-drawer__utility-account-body-item">
+                            <a
+                              class="menu-drawer__utility-account-link menu-drawer__utility-account-link--address"
+                              href="{{ routes.account_addresses_url }}"
+                              aria-label="{{ 'customer.addresses.book' | t }}"
+                            >
+                              <span class="body-large">{{- 'customer.addresses.book' | t -}}</span>
+                            </a>
+                          </li>
+                          <li class="menu-drawer__utility-account-body-item">
+                            <a
+                              class="menu-drawer__utility-account-link menu-drawer__utility-account-link--logout"
+                              href="{{ routes.account_logout_url }}"
+                              aria-label="{{ 'customer.log_out' | t }}"
+                            >
+                              <span class="body-large" data-label="{{ 'customer.log_out' | t }}">
+                                {{- 'customer.log_out' | t -}}
+                              </span>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    {%- else -%}
+                      <a
+                        href="{{ routes.account_login_url }}"
+                        class="button button--primary menu-drawer__account focus-inset"
+                      >
+                        <span class="button__label" data-label="{{ 'customer.log_in' | t }}">
+                          {{ 'customer.log_in' | t }}
+                        </span>
+                      </a>
+                      <a
+                        class="button button--tertiary menu-drawer__account-register focus-inset"
+                        href="{{ routes.account_register_url }}"
+                      >
+                        <span
+                          class="button__label"
+                          data-label="{{- 'customer.login_page.create_account' | t -}}"
+                        >
+                          {{- 'customer.login_page.create_account' | t -}}
+                        </span>
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+                {% comment %} ---------- CONTACT INFO ---------- {% endcomment %}
+                {%- if section.settings.contact_info != blank -%}
+                  <div class="menu-drawer__contact-info hover-underline-link-inside">
+                    {{- section.settings.contact_info -}}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {% comment %} ---------- LOCALIZATION ---------- {% endcomment %}
+            {%- if show_region or settings.dark_mode_toggle -%}
+              <div class="menu-drawer__localization-dm">
+                {%- if show_region -%}
+                  {% liquid
+                    assign button_label = 'localization.region' | t
+                    if has_country == false and has_language == true
+                      assign button_label = 'localization.language' | t
+                    endif
+                  %}
+                  <details
+                    class="menu-drawer-localization"
+                    id="menu-drawer-localization"
+                  >
+                    <summary
+                      class="header-region-summary header-region-summary--icon modal__toggle focus-inset"
+                      aria-haspopup="dialog"
+                      role="button"
+                    >
+                      {% render 'icon-region' %}
+                      <span class="header-region-summary__span">
+                        {{ button_label }}
+                      </span>
+                      {% render 'icon-caret' %}
+                    </summary>
+                    <div
+                      class="header-region-content modal__toggle color-background-1"
+                      role="dialog"
+                      aria-modal="true"
+                    >
+                      <button class="menu-drawer-localization-back-btn" id="menu-drawer-localization-back-btn">
+                        {% render 'icon-caret' %}
+                        <span class="menu-drawer-localization-back-btn__text">
+                          {{- 'sections.header.back' | t -}}
+                        </span>
+                      </button>
+                      {% comment %} ----- LOCALIZATION LANGUAGE WITH NO JS ----- {% endcomment %}
+                      {%- if has_language -%}
+                        <noscript>
+                          {%- form 'localization', id: 'HeaderLanguageFormNoScript', class: 'localization-form' -%}
+                            <div class="localization-form__select">
+                              <select
+                                class="localization-selector link"
+                                name="locale_code"
+                                aria-labelledby="HeaderLanguageFormNoScript"
+                              >
+                                {%- for language in localization.available_languages -%}
+                                  <option
+                                    value="{{ language.iso_code }}"
+                                    lang="{{ language.iso_code }}"
+                                    {%- if language.iso_code == localization.language.iso_code %}
+                                      selected
+                                    {% endif %}
+                                  >
+                                    {{ language.endonym_name | capitalize }}
+                                  </option>
+                                {%- endfor -%}
+                              </select>
+                              {% render 'icon-caret' %}
+                            </div>
+                            <button
+                              type="submit"
+                              class="button button--primary focus-inset"
+                            >
+                              <div class="button__content">
+                                <span class="button__label" data-label="{{ 'localization.update_language' | t }}">
+                                  {{ 'localization.update_language' | t }}
+                                </span>
+                              </div>
+                            </button>
+                          {%- endform -%}
+                        </noscript>
+                      {%- endif -%}
+
+                      {% comment %} ----- LOCALIZATION COUNTRY WITH NO JS ----- {% endcomment %}
+                      {%- if has_country -%}
+                        <noscript>
+                          {%- form 'localization', id: 'HeaderCountryFormNoScript', class: 'localization-form' -%}
+                            <div class="localization-form__select">
+                              <select
+                                class="localization-selector link"
+                                name="country_code"
+                                aria-labelledby="HeaderCountryFormNoScript"
+                              >
+                                {%- for country in localization.available_countries -%}
+                                  <option
+                                    value="{{ country.iso_code }}"
+                                    {%- if country.iso_code == localization.country.iso_code %}
+                                      selected
+                                    {% endif %}
+                                  >
+                                    {{ country.name }} (
+                                    {{- country.currency.iso_code }}
+                                    {{ country.currency.symbol }})
+                                  </option>
+                                {%- endfor -%}
+                              </select>
+                              {% render 'icon-caret' %}
+                            </div>
+                            <button
+                              type="submit"
+                              class="button button--primary focus-inset"
+                            >
+                              <span class="button__label">
+                                {{ 'localization.update_country' | t }}
+                              </span>
+                            </button>
+                          {%- endform -%}
+                        </noscript>
+                      {%- endif -%}
+
+                      {% comment %} ----- LOCALIZATION TABS BUTTONS ----- {% endcomment %}
+                      <div class="header-region-buttons no-js-hidden">
+                        {% comment %} ----- LOCALIZATION LANGUAGE TAB BUTTON ----- {% endcomment %}
+                        {%- if has_language -%}
+                          <button
+                            class="header-region-button header-link-style active"
+                            data-tab="header-language-tab"
+                          >
+                            {{- 'localization.language' | t -}}
+                          </button>
+                        {%- endif -%}
+
+                        {% comment %} ----- LOCALIZATION COUNTRY TAB BUTTON ----- {% endcomment %}
+                        {%- if has_country -%}
+                          <button
+                            class="header-region-button header-link-style{% if has_language != true %} active{% endif %}"
+                            data-tab="header-country-tab"
+                          >
+                            {{- 'localization.region' | t -}}
+                          </button>
+                        {%- endif -%}
+                      </div>
+
+                      {% comment %} ----- LOCALIZATION TABS ----- {% endcomment %}
+                      <div class="header-region-tabs no-js-hidden">
+                        {% comment %} ----- LOCALIZATION LANGUAGE TAB ----- {% endcomment %}
+                        {%- if has_language -%}
+                          <div class="header-region-tab header-region-tab--language active" id="header-language-tab">
+                            <header-localization-form>
+                              {%- form 'localization', id: 'HeaderLanguageForm', class: 'localization-form' -%}
+                                <ul
+                                  id="HeaderLanguageList"
+                                  role="list"
+                                  class="header-region-tab-list header-region-tab-list--language list-unstyled"
+                                >
+                                  {%- for language in localization.available_languages -%}
+                                    <li
+                                      class="header-region-tab-list__item{% if language.iso_code == localization.language.iso_code %} header-region-tab-list__item--active{% endif %}"
+                                      tabindex="-1"
+                                    >
+                                      <a
+                                        class="header-region-tab-list__link focus-inset"
+                                        href="#"
+                                        hreflang="{{ language.iso_code }}"
+                                        lang="{{ language.iso_code }}"
+                                        {% if language.iso_code == localization.language.iso_code %}
+                                          aria-current="true"
+                                        {% endif %}
+                                        data-value="{{ language.iso_code }}"
+                                      >
+                                        <div class="header-region-tab-list__link-content">
+                                          <span>
+                                            <span class="header-region-tab-list__link-title header-link-style">
+                                              {{ language.endonym_name | capitalize }}
+                                            </span>
+                                          </span>
+                                          <span class="header-region-tab-list__link-language body-normal">
+                                            {{ language.name | capitalize }}
+                                          </span>
+                                        </div>
+                                        {%- if language.iso_code == localization.language.iso_code -%}
+                                          {% render 'icon-checkmark' %}
+                                        {%- endif -%}
+                                      </a>
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                                <input
+                                  type="hidden"
+                                  name="locale_code"
+                                  value="{{ localization.language.iso_code }}"
+                                >
+                              {%- endform -%}
+                            </header-localization-form>
+                          </div>
+                        {%- endif -%}
+
+                        {% comment %} ----- LOCALIZATION COUNTRY TAB ----- {% endcomment %}
+                        {%- if has_country -%}
+                          <div
+                            class="header-region-tab header-region-tab--country{% if has_language != true %} active{% endif %}"
+                            id="header-country-tab"
+                          >
+                            <header-localization-form>
+                              {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
+                                <ul
+                                  id="HeaderCountryList"
+                                  role="list"
+                                  class="header-region-tab-list header-region-tab-list--country list-unstyled"
+                                >
+                                  {%- for country in localization.available_countries -%}
+                                    <li
+                                      class="header-region-tab-list__item{% if country.iso_code == localization.country.iso_code %} header-region-tab-list__item--active{% endif %}"
+                                      tabindex="-1"
+                                    >
+                                      <a
+                                        class="header-region-tab-list__link focus-inset"
+                                        href="#"
+                                        {% if country.iso_code == localization.country.iso_code %}
+                                          aria-current="true"
+                                        {% endif %}
+                                        data-value="{{ country.iso_code }}"
+                                      >
+                                        <div class="disclosure__link--flag" data-value="{{ country.iso_code }}"></div>
+                                        <span
+                                          class="header-region-tab-list__country"
+                                        >
+                                          <span class="header-region-tab-list__link-title header-region-tab-list__link-title--country header-link-style">
+                                            {{ country.name }}
+                                          </span>
+                                          <span class="header-region-tab-list__country-code body-normal">
+                                            (
+                                            {{- country.currency.iso_code }}
+                                            {{ country.currency.symbol -}}
+                                            )
+                                          </span>
+                                        </span>
+                                        {%- if country.iso_code == localization.country.iso_code -%}
+                                          {% render 'icon-checkmark' %}
+                                        {%- endif -%}
+                                      </a>
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                                <input
+                                  type="hidden"
+                                  name="country_code"
+                                  value="{{ localization.country.iso_code }}"
+                                >
+                              {%- endform -%}
+                            </header-localization-form>
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </details>
+                {%- endif -%}
+
+                {% render 'header-color-scheme' %}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </details>
+</header-drawer>

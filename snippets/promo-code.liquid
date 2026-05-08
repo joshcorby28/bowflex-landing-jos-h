@@ -1,0 +1,88 @@
+{% comment %}
+  Renders a product card
+  Accepts:
+    - block_settings: {Object} Block or Section Liquid object
+    - class: {String} Additional classes to add to the card.
+    - stripped_bg: {Boolean} Reduced background.
+  Usage:
+  {% render 'promo-code', stripped_bg: false %}
+{% endcomment %}
+
+{% liquid
+  assign show_code_in_banner = false
+
+  if block_settings.settings.promo_code_show_code and block_settings.settings.promo_code != blank
+    assign show_code_in_banner = true
+  endif
+%}
+
+{%- if block_settings.settings.promo_code != blank or block_settings.settings.promo_code_text != blank -%}
+  <div
+    class="promo-code color-{{ block_settings.settings.promo_code_color_scheme }} {% if stripped_bg == false %} background background--container {% endif %}"
+    {% if block_settings.type == 'block' %}
+      {{ block.shopify_attributes }}
+    {% endif %}
+  >
+    <div class="promo-code__inner">
+      <div class="promo-code__content {% if stripped_bg  %} background background--container {% endif %}">
+        {%- if show_code_in_banner
+          or block_settings.settings.promo_code_icon != blank
+          or block_settings.settings.promo_code_text != blank
+        -%}
+          {%- if block_settings.settings.promo_code_icon -%}
+            {% liquid
+              assign icon_width = block_settings.settings.promo_code_icon_size
+              assign icon_ratio = block_settings.settings.promo_code_icon.aspect_ratio
+              assign icon_height = icon_width | divided_by: icon_ratio
+            %}
+            {% capture icon_styles %}--icon-width: {{ icon_width }}px; --icon-height: {{ icon_height }}px;{% endcapture %}
+            {{
+              block_settings.settings.promo_code_icon
+              | image_url: width: block_settings.settings.promo_code_icon.width
+              | image_tag:
+                loading: 'lazy',
+                class: 'promo-code__icon',
+                sizes: icon_width,
+                widths: '18, 32, 64, 128, 256',
+                style: icon_styles
+            }}
+          {%- endif -%}
+          {%- if block_settings.settings.promo_code_text != blank -%}
+            <div class="promo-code__text-wrapper">
+              <p class="promo-code__text {{ block_settings.settings.promo_code_text_size }}">
+                {{ block_settings.settings.promo_code_text }}
+              </p>
+            </div>
+          {%- endif -%}
+          {% if show_code_in_banner %}
+            <div
+              class="promo-code__code-wrapper{% if block_settings.settings.promo_code_rotate_code %} promo-code__code-wrapper--rotate{% endif %}"
+              style="--code-color: {{ block_settings.settings.promo_code_color }}; --code-background: {{ block_settings.settings.promo_code_bg }}"
+            >
+              <span class="promo-code__code">
+                {{- block_settings.settings.promo_code -}}
+              </span>
+            </div>
+          {% endif %}
+        {%- endif -%}
+      </div>
+
+      {%- if block_settings.settings.promo_code != blank -%}
+        <div class="promo-code__button-wrapper">
+          {% render 'button',
+            btn_style: block_settings.settings.promo_code_button_style,
+            copy: true,
+            promocode: block_settings.settings.promo_code,
+            class: 'promo-code__button promocode-button-copy'
+          %}
+          <span class="code-copy-success body-small">
+            {{ 'sections.button.copy_success' | t }}
+          </span>
+          <span class="code-copy-error">
+            {{ 'sections.button.copy_failure' | t }}
+          </span>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

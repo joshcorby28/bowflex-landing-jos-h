@@ -1,0 +1,326 @@
+{% comment %}
+  Renders header banner (used inside predictive search and mega menu)
+  Accepts:
+  - banner_color_scheme: {String} Color scheme
+  - banner_content_vertical_alignment: {String} Content vertical alignment
+  - banner_overlay_link: {Boolean} Overlay link
+  - banner_button_link: {String} Button link
+  - banner_button_label: {String} Button label
+  - banner_button_style: {String} Button style
+  - banner_show_buton: {Boolean} Show button
+  - banner_video: Video
+  - banner_image_overlay_opacity: Overlay opacity
+  - banner_image: Image
+  - banner_image_mobile: Mobile image
+  - banner_aspect_ratio: Aspect ratio
+  - banner_aspect_ratio_mobile: Aspect ratio mobile
+  - banner_subheading: Subheading
+  - banner_subheading_style: Subheading style
+  - banner_badge_subheading: Badge subheading
+  - banner_badge_subheading_color: Badge subheading color
+  - banner_badge_heading: Badge heading
+  - banner_badge_heading_size: Badge heading size
+  - banner_type_badge_heading_font: Badge heading font
+  - banner_badge_prefix: Badge prefix
+  - banner_badge_prefix_size: Badge prefix size
+  - banner_badge_suffix: Badge suffix
+  - banner_heading: Heading
+  - banner_heading_size: Heading size
+  - banner_heading_size_custom: Heading size custom
+  - banner_description: Description
+  - banner_placement: Placement (header-big-search, header-medium-search, header-small-search, header-big-mega-menu, header-medium-mega-menu, header-small-mega-menu)
+
+  Usage:
+  {% render 'header-banner' %}
+{% endcomment %}
+
+{% liquid
+  assign two_images = false
+
+  if banner_image != blank and banner_image_mobile != blank
+    assign two_images = true
+  endif
+
+  assign has_image = false
+
+  if banner_image != blank or banner_image_mobile != blank
+    assign has_image = true
+
+    if banner_image != blank
+      assign banner_image = banner_image
+    else
+      assign banner_image = banner_image_mobile
+    endif
+
+    if banner_image_mobile != blank
+      assign banner_image_mobile = banner_image_mobile
+    else
+      assign banner_image_mobile = banner_image
+    endif
+  endif
+
+  assign has_video = false
+  if banner_show_video and banner_video != blank
+    assign has_video = true
+  endif
+
+  if banner_overlay_type == blank
+    assign banner_overlay_type = 'all'
+  endif
+
+  # Desktop padding bottom
+  assign padding_bottom_desktop = '105.73%'
+  if banner_aspect_ratio != 'recommended'
+    assign aspect_ratio_desktop = banner_aspect_ratio | split: '/'
+    assign temp_desktop = aspect_ratio_desktop[0] | append: '.0'
+    assign padding_bottom_desktop = aspect_ratio_desktop[1] | divided_by: temp_desktop | times: 100 | round: 2 | append: '%'
+  endif
+
+  # Desktop calc ratio
+  if banner_aspect_ratio != 'recommended'
+    assign settings_desktop_aspect_ratio = temp_desktop | divided_by: aspect_ratio_desktop[1] | round: 2
+  else
+    assign settings_desktop_aspect_ratio = 1.057
+  endif
+
+  assign calc_ratio_desktop = 1
+  if banner_image.aspect_ratio > settings_desktop_aspect_ratio
+    assign calc_ratio_desktop = banner_image.aspect_ratio | divided_by: settings_desktop_aspect_ratio | round: 2
+  endif
+
+  # Mobile padding bottom
+  assign padding_bottom_mobile = '105.73%'
+  if banner_aspect_ratio_mobile != 'recommended'
+    assign aspect_ratio_mobile = banner_aspect_ratio_mobile | split: '/'
+    assign temp_mobile = aspect_ratio_mobile[0] | append: '.0'
+    assign padding_bottom_mobile = aspect_ratio_mobile[1] | divided_by: temp_mobile | times: 100 | round: 2 | append: '%'
+  endif
+
+  # Mobile calc ratio
+  if banner_aspect_ratio_mobile != 'recommended'
+    assign settings_mobile_aspect_ratio = temp_mobile | divided_by: aspect_ratio_mobile[1] | round: 2
+  else
+    assign settings_mobile_aspect_ratio = 1.057
+  endif
+
+  assign calc_ratio_mobile = 1
+  if banner_image_mobile.aspect_ratio > settings_mobile_aspect_ratio
+    assign calc_ratio_mobile = banner_image_mobile.aspect_ratio | divided_by: settings_mobile_aspect_ratio | round: 2
+  endif
+%}
+
+{%- if banner_placement == 'header-big-search' -%}
+  {%- capture sizes -%}
+    (min-width: 1920px) calc({{ calc_ratio_desktop }} * 600px), (min-width: 1500px) calc({{ calc_ratio_desktop }} * 470px), (min-width: 1200px) calc({{ calc_ratio_desktop }} * 550px), (min-width: 990px) calc({{ calc_ratio_mobile }} * 670px), (min-width: 729px) calc({{ calc_ratio_desktop }} * 47vw), calc({{ calc_ratio_mobile }} * 100vw)
+  {%- endcapture -%}
+{%- elsif banner_placement == 'header-medium-search' -%}
+  {%- capture sizes -%}
+    (min-width: 1920px) calc({{ calc_ratio_desktop }} * 570px), (min-width: 1200px) calc({{ calc_ratio_mobile }} * 40vw), (min-width: 990px) calc({{ calc_ratio_mobile }} * 670px), (min-width: 729px) calc({{ calc_ratio_desktop }} * 47vw), calc({{ calc_ratio_mobile }} * 100vw)
+  {%- endcapture -%}
+{%- elsif banner_placement == 'header-small-search' -%}
+  {%- capture sizes -%}
+    (min-width: 1920px) calc({{ calc_ratio_desktop }} * 600px), (min-width: 1500px) calc({{ calc_ratio_desktop }} * 470px), (min-width: 1200px) calc({{ calc_ratio_desktop }} * 550px), (min-width: 990px) calc({{ calc_ratio_mobile }} * 670px), (min-width: 729px) calc({{ calc_ratio_desktop }} * 47vw), calc({{ calc_ratio_mobile }} * 100vw)
+  {%- endcapture -%}
+{%- elsif banner_placement == 'header-mega-menu' -%}
+  {%- capture sizes -%}
+    (min-width: 1920px) calc({{ calc_ratio_desktop }} * 600px), (min-width: 1400px) calc({{ calc_ratio_desktop }} * 50vw), (min-width: 990px) calc({{ calc_ratio_mobile }} * 50vw), calc({{ calc_ratio_mobile }} * 100vw)
+  {%- endcapture -%}
+{%- else -%}
+  {%- capture sizes -%}
+     (min-width: 1920px) calc({{ calc_ratio_desktop }} * 600px), (min-width: 1200px) calc({{ calc_ratio_desktop }} * 40vw), (min-width: 990px) calc({{ calc_ratio_mobile }} * 670px), (min-width: 729px) calc({{ calc_ratio_desktop }} * 47vw), calc({{ calc_ratio_mobile }} * 100vw)
+  {%- endcapture -%}
+{%- endif -%}
+
+<div
+  class="header-banner color-{{ banner_color_scheme }} header-banner--{{ banner_content_position }} {% if two_images %} header-banner--two-images{% endif %}"
+  style="
+    --padding-bottom-desktop: {{ padding_bottom_desktop }};
+    --padding-bottom-mobile: {{ padding_bottom_mobile }};
+  "
+>
+  {% if banner_overlay_link and banner_button_link != blank %}
+    <a
+      href="{{ banner_button_link }}"
+      class=" header-banner__link_overlay"
+      aria-label="{{ 'accessibility.link' | t }}"
+    >
+    </a>
+  {% endif %}
+  {%- if has_image and has_video != true -%}
+    <div
+      class="header-banner__image-wrapper header-banner__image-wrapper--{{ banner_overlay_type }}"
+      style="--overlay-opacity: {{ banner_image_overlay_opacity }}; --focal_point_desktop: {{ banner_image.presentation.focal_point }}; --focal_point_mobile: {{ banner_image_mobile.presentation.focal_point }};"
+    >
+      {%- if banner_image -%}
+        {{
+          banner_image
+          | image_url: width: banner_image.width
+          | image_tag:
+            widths: '360, 535, 600, 720, 940, 1066, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800',
+            sizes: sizes,
+            class: 'header-banner__image',
+            loading: 'lazy'
+        }}
+      {%- endif -%}
+      {%- if two_images and banner_image_mobile -%}
+        {{
+          banner_image_mobile
+          | image_url: width: banner_image_mobile.width
+          | image_tag:
+            widths: '360, 535, 600, 720, 940, 1066, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800',
+            sizes: sizes,
+            class: 'header-banner__image-mobile',
+            loading: 'lazy'
+        }}
+      {%- endif -%}
+    </div>
+  {%- elsif has_video -%}
+    <div
+      class="header-banner__image-wrapper header-banner__image-wrapper--{{ banner_overlay_type }}"
+      style="--overlay-opacity: {{ banner_image_overlay_opacity }};"
+    >
+      {{
+        banner_video
+        | video_tag:
+          image_size: '1920x',
+          autoplay: true,
+          loop: true,
+          controls: false,
+          muted: true,
+          class: 'header-banner__video'
+      }}
+    </div>
+  {%- else -%}
+    <div
+      class="header-banner__image-wrapper header-banner__image-wrapper--{{ banner_overlay_type }}"
+      style="--overlay-opacity: {{ banner_image_overlay_opacity }};"
+    >
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg header-banner__image' }}
+    </div>
+  {%- endif -%}
+  <div class="header-banner__content">
+    <div class="header-banner__left">
+      <div class="header-banner__left-container">
+        <div class="header-banner__info">
+          {% if banner_content_position == "stretch" %}
+            <div class="header-banner__info-text">
+          {% endif %}
+            {%- if banner_subheading != blank -%}
+              <div
+                class="
+                  header-banner__subheading {{ banner_subheading_style }} {% if banner_subheading_style == 'simple' %} h4 {% endif %}
+                  header-banner__subheading--{{ banner_overlay_type }}
+                  {% if banner_subheading_style == 'badge' %} {{ banner_badge_subheading_color }} {% endif %}
+                "
+              >
+                {{- banner_subheading -}}
+              </div>
+            {%- endif -%}
+            {%- if banner_heading != blank -%}
+              <h2
+                class="header-banner__heading {{ banner_heading_size }} richtext-link-inside"
+                {% if banner_heading_size == 'custom' %}
+                  style="--font-size: {{ banner_heading_size_custom }}px;"
+                {% endif %}
+              >
+                {{- banner_heading -}}
+              </h2>
+            {%- endif -%}
+            {%- if banner_description != blank -%}
+              <div class="header-banner__text body-large richtext-link-inside">
+                {{- banner_description -}}
+              </div>
+            {%- endif -%}
+          {% if banner_content_position == "stretch" %}
+            </div>
+          {% endif %}
+
+          {%- if banner_badge_subheading != blank or banner_badge_heading != blank -%}
+            {% if banner_content_position == "stretch" %}
+              <div class="header-banner__badge">
+                {%- if banner_badge_subheading != blank -%}
+                  <span class="header-banner__badge-subheading subtitle">
+                    {{ banner_badge_subheading }}
+                  </span>
+                {%- endif -%}
+                {%- if banner_badge_heading != blank -%}
+                  <h3
+                    class="header-banner__badge-heading {% if badge_heading_font == 'accent' %} accent-font {% endif %}"
+                    style="              --font-size: {{ banner_badge_heading_size }}px;"
+                  >
+                    {%- if banner_badge_prefix -%}
+                      <span
+                        class="header-banner__badge-prefix"
+                        style="--font-size: {{ banner_badge_prefix_size }}px;"
+                      >
+                        {{ banner_badge_prefix }}
+                      </span>
+                    {%- endif -%}
+
+                    {{ banner_badge_heading }}
+
+                    {%- if banner_badge_suffix -%}
+                      <span
+                        class="header-banner__badge-prefix"
+                        style="--font-size: {{ banner_badge_prefix_size }}px;"
+                      >
+                        {{ banner_badge_suffix }}
+                      </span>
+                    {%- endif -%}
+                  </h3>
+                {%- endif -%}
+              </div>
+            {% endif %}
+          {%- endif -%}
+        </div>
+        {%- if banner_show_buton -%}
+          <div class="header-banner__bottom">
+            {% render 'button',
+              btn_label: banner_button_label,
+              btn_style: banner_button_style,
+              btn_link: banner_button_link,
+              class: 'header-banner__button'
+            %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {%- if banner_badge_subheading != blank or banner_badge_heading != blank -%}
+      {% if banner_content_position != "stretch" %}
+        <div class="header-banner__badge">
+          {%- if banner_badge_subheading != blank -%}
+            <span class="header-banner__badge-subheading subtitle">
+              {{ banner_badge_subheading }}
+            </span>
+          {%- endif -%}
+          {%- if banner_badge_heading != blank -%}
+            <h3
+              class="header-banner__badge-heading {% if badge_heading_font == 'accent' %} accent-font {% endif %}"
+              style="              --font-size: {{ banner_badge_heading_size }}px;"
+            >
+              {%- if banner_badge_prefix -%}
+                <span
+                  class="header-banner__badge-prefix"
+                  style="--font-size: {{ banner_badge_prefix_size }}px;"
+                >
+                  {{ banner_badge_prefix }}
+                </span>
+              {%- endif -%}
+
+              {{ banner_badge_heading }}
+
+              {%- if banner_badge_suffix -%}
+                <span
+                  class="header-banner__badge-prefix"
+                  style="--font-size: {{ banner_badge_prefix_size }}px;"
+                >
+                  {{ banner_badge_suffix }}
+                </span>
+              {%- endif -%}
+            </h3>
+          {%- endif -%}
+        </div>
+      {% endif %}
+    {%- endif -%}
+  </div>
+</div>

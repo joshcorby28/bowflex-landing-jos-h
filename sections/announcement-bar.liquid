@@ -1,0 +1,642 @@
+<script src="{{ 'announcement-bar.js' | asset_url }}" defer></script>
+{% if section.settings.show_countdown or section.settings.show_countdown_mobile %}
+  <script src="{{ 'countdown.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
+{% liquid
+  assign has_main_text = false
+  if section.settings.text != blank or section.settings.text_mobile != blank
+    assign has_main_text = true
+  endif
+
+  assign has_countdown = false
+  if section.settings.show_countdown or section.settings.show_countdown_mobile
+    assign has_countdown = true
+  endif
+
+  assign has_button = false
+  if section.settings.button_label != blank
+    if section.settings.show_button or section.settings.show_button_on_mobile
+      assign has_button = true
+    endif
+  endif
+%}
+
+{%- if section.settings.badge_text != blank or has_countdown or has_main_text or has_button -%}
+  {%- style -%}
+    :root {
+      --announcement-height: {{ section.settings.height_mobile }}px;
+    }
+
+    @media screen and (min-width: 576px) {
+      :root {
+        --announcement-height: {{ section.settings.height }}px;
+      }
+    }
+  {%- endstyle -%}
+
+  {% if section.settings.show_countdown or section.settings.show_countdown_mobile %}
+    {% liquid
+      # get settings end date
+      if section.settings.date_picker_month < 10
+        assign end_month = section.settings.date_picker_month | prepend: 0
+      else
+        assign end_month = section.settings.date_picker_month
+      endif
+      if section.settings.date_picker_day < 10
+        assign end_day = section.settings.date_picker_day | prepend: 0
+      else
+        assign end_day = section.settings.date_picker_day
+      endif
+      assign end_date = section.settings.date_picker_year | append: '-' | append: end_month | append: '-' | append: end_day
+
+      # get settings end time
+      if section.settings.date_picker_hours < 10
+        assign end_hours = section.settings.date_picker_hours | prepend: 0
+      else
+        assign end_hours = section.settings.date_picker_hours
+      endif
+      if section.settings.date_picker_minutes < 10
+        assign end_minutes = section.settings.date_picker_minutes | prepend: 0
+      else
+        assign end_minutes = section.settings.date_picker_minutes
+      endif
+      assign end_time = end_hours | append: ':' | append: end_minutes
+
+      # get liquid datetime
+      assign timezone = 'now' | date: '%Z' | plus: 0 | append: ''
+
+      if timezone.size > 1
+        assign timezone = 'now' | date: '%Z' | divided_by: 100 | times: 3600.0 | plus: 1800
+      else
+        assign timezone = 'now' | date: '%Z' | minus: 1 | times: 3600.0
+      endif
+
+      assign date_merge = end_date | append: '-' | append: end_time | append: ':00'
+      assign date_now = 'now' | date: '%s' | minus: 0
+      assign date_settings = date_merge | date: '%s' | minus: 0
+
+      if date_now < date_settings
+        assign distance = date_settings | minus: date_now
+        assign days = distance | divided_by: 3600 | divided_by: 24 | floor | append: ''
+        assign hours = distance | modulo: 86400 | divided_by: 3600 | floor | append: ''
+        assign minutes = distance | modulo: 3600 | divided_by: 60 | floor | append: ''
+        assign seconds = distance | modulo: 60 | floor | append: ''
+      else
+        assign days = '00'
+        assign hours = '00'
+        assign minutes = '00'
+        assign seconds = '00'
+      endif
+
+      # get mock datetime if mock timer is enabled
+      if section.settings.enable_mock_timer
+        if section.settings.mock_date_picker_day < 10
+          assign mock_days = section.settings.mock_date_picker_day | append: '' | prepend: '0'
+        else
+          assign mock_days = section.settings.mock_date_picker_day | append: ''
+        endif
+
+        if section.settings.mock_date_picker_hours == 0
+          assign mock_hours = '23'
+          if section.settings.mock_date_picker_day < 11
+            assign mock_days = section.settings.mock_date_picker_day | minus: 1 | append: '' | prepend: '0'
+          else
+            assign mock_days = section.settings.mock_date_picker_day | minus: 1 | append: ''
+          endif
+        elsif section.settings.mock_date_picker_hours < 11
+          assign mock_hours = section.settings.mock_date_picker_hours | minus: 1 | append: '' | prepend: '0'
+        else
+          assign mock_hours = section.settings.mock_date_picker_hours | minus: 1 | append: ''
+        endif
+
+        assign current_seconds = date_now | date: '%S' | plus: 0
+        assign mock_seconds_temp = 60 | minus: current_seconds
+
+        if mock_seconds_temp < 10
+          assign mock_seconds = '0' | append: mock_seconds_temp
+        else
+          assign mock_seconds = mock_seconds_temp | append: ''
+        endif
+
+        assign days = mock_days
+        assign hours = mock_hours
+        assign minutes = '59'
+        assign seconds = mock_seconds
+      endif
+    %}
+  {% endif %}
+
+  <div
+    class="announcement-bar color-{{ section.settings.color_scheme }} background"
+    role="region"
+    aria-label="{{ 'sections.header.announcement' | t }}"
+  >
+    <div class="announcement-bar__message container{% if section.settings.show_countdown_mobile and section.settings.show_badge_on_mobile == false and section.settings.show_button_on_mobile == false %} ann-countdown-mobile-layout{% endif %}">
+      {%- if section.settings.badge_text != blank -%}
+        <div class="announcement-bar__badge badge {% if section.settings.show_badge_on_mobile == false %} announcement-bar__badge--mobile-hidden {% endif %}">
+          {{- section.settings.badge_text | replace: ' ', '&nbsp;' -}}
+        </div>
+      {%- endif -%}
+
+      {%- if has_countdown -%}
+        <countdown-timer
+          class="announcement-bar-countdown js-countdown js-countdown-{{ section.id }} {% if section.settings.show_countdown == false %} announcement-bar-countdown--desktop-hidden {% endif %} {% if section.settings.show_countdown_mobile == false  %} announcement-bar-countdown--mobile-hidden {% endif %}"
+          data-date="{{ end_date }}"
+          data-time="{{ end_time }}"
+          data-completed="{{ section.settings.completed_countdown }}"
+          data-has-animation="{{ section.settings.enable_date_animation | default: false }}"
+          data-enable-mock-timer="{{ section.settings.enable_mock_timer | default: false }}"
+          data-enable-mock-picker-day="{{ section.settings.mock_date_picker_day | default: 2 }}"
+          data-enable-mock-picker-hours="{{ section.settings.mock_date_picker_hours | default: 3 }}"
+          {% if section.settings.completed_countdown == 'hide_section'
+            and hours == '00'
+            and days == '00'
+            and minutes == '00'
+            and seconds == '00'
+            and section.settings.enable_mock_timer == false
+          %}
+            style="display: none;"
+          {% endif %}
+        >
+          <div
+            class="announcement-bar-countdown__main countdown__main"
+            style="{% if hours == '00' and days == '00' and minutes == '00' and seconds == '00' and section.settings.enable_mock_timer == false %}display: none;{% endif %}"
+          >
+            {%- capture dots_icon -%}
+              <svg class="announcement-bar-countdown__dots" width="3" height="10" viewBox="0 0 3 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.696 9.096C1.41867 9.096 1.184 9 0.992 8.808C0.8 8.616 0.704 8.38133 0.704 8.104C0.704 7.82667 0.8 7.592 0.992 7.4C1.184 7.208 1.41867 7.112 1.696 7.112C1.96267 7.112 2.18667 7.208 2.368 7.4C2.56 7.592 2.656 7.82667 2.656 8.104C2.656 8.38133 2.56 8.616 2.368 8.808C2.18667 9 1.96267 9.096 1.696 9.096ZM1.696 2.248C1.41867 2.248 1.184 2.152 0.992 1.96C0.8 1.768 0.704 1.53333 0.704 1.256C0.704 0.978666 0.8 0.743999 0.992 0.552C1.184 0.36 1.41867 0.264 1.696 0.264C1.96267 0.264 2.18667 0.36 2.368 0.552C2.56 0.743999 2.656 0.978666 2.656 1.256C2.656 1.53333 2.56 1.768 2.368 1.96C2.18667 2.152 1.96267 2.248 1.696 2.248Z" fill="currentColor"/>
+              </svg>
+            {%- endcapture -%}
+
+            {% comment %} render days {% endcomment %}
+            <div class="announcement-bar-countdown__main-block">
+              <div id="countdown-days" class="announcement-bar-countdown__block">
+                {%- capture days_html -%}
+                  <span
+                    class="announcement-bar-countdown_block_days countdown_block_days {{ section.settings.date_font_size }} {% if section.settings.date_font == 'accent' %} accent-font {% endif %}"
+                  >
+                    {%- if days.size > 1 -%}
+                      {{- days -}}
+                    {%- else -%}
+                      {{- 0 | append: days -}}
+                    {%- endif -%}
+                  </span>
+                {%- endcapture -%}
+                <div class="announcement-bar-countdown__block_num {% if section.settings.enable_date_animation %} announcement-bar-countdown__block_num--spacer countdown__block_num--spacer {% endif %}">
+                  {{ days_html }}
+                </div>
+
+                {%- if section.settings.enable_date_animation -%}
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper">
+                    {{ days_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper-back">
+                    {{ days_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower">
+                    {{ days_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower-back">
+                    {{ days_html }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              <span class="announcement-bar-countdown__block_mark body-small">
+                {{- 'general.countdown.days_short' | t -}}
+              </span>
+            </div>
+
+            {{ dots_icon }}
+
+            {% comment %} render hours {% endcomment %}
+            <div class="announcement-bar-countdown__main-block">
+              <div id="countdown-hours" class="announcement-bar-countdown__block">
+                {%- capture hours_html -%}
+                  <span
+                    class="announcement-bar-countdown_block_hours countdown_block_hours {{ section.settings.date_font_size }} {% if section.settings.date_font == 'accent' %} accent-font {% endif %}"
+                  >
+                    {%- if hours.size > 1 -%}
+                      {{- hours -}}
+                    {%- else -%}
+                      {{- 0 | append: hours -}}
+                    {%- endif -%}
+                  </span>
+                {%- endcapture -%}
+                <div class="announcement-bar-countdown__block_num {% if section.settings.enable_date_animation %} announcement-bar-countdown__block_num--spacer countdown__block_num--spacer{% endif %}">
+                  {{ hours_html }}
+                </div>
+
+                {%- if section.settings.enable_date_animation -%}
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper">
+                    {{ hours_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper-back">
+                    {{ hours_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower">
+                    {{ hours_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower-back">
+                    {{ hours_html }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              <span class="announcement-bar-countdown__block_mark body-small">
+                {{- 'general.countdown.hours_short' | t -}}
+              </span>
+            </div>
+
+            {{ dots_icon }}
+
+            {% comment %} render minutes {% endcomment %}
+            <div class="announcement-bar-countdown__main-block">
+              <div id="countdown-minutes" class="announcement-bar-countdown__block">
+                {%- capture minutes_html -%}
+                  <span
+                    class="announcement-bar-countdown_block_minutes countdown_block_minutes {{ section.settings.date_font_size }} {% if section.settings.date_font == 'accent' %} accent-font {% endif %}"
+                  >
+                    {%- if minutes.size > 1 -%}
+                      {{- minutes -}}
+                    {%- else -%}
+                      {{- 0 | append: minutes -}}
+                    {%- endif -%}
+                  </span>
+                {%- endcapture -%}
+                <div class="announcement-bar-countdown__block_num {% if section.settings.enable_date_animation %} announcement-bar-countdown__block_num--spacer countdown__block_num--spacer{% endif %}">
+                  {{ minutes_html }}
+                </div>
+
+                {%- if section.settings.enable_date_animation -%}
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper">
+                    {{ minutes_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper-back">
+                    {{ minutes_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower">
+                    {{ minutes_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower-back">
+                    {{ minutes_html }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              <span class="announcement-bar-countdown__block_mark body-small">
+                {{- 'general.countdown.minutes_short' | t -}}
+              </span>
+            </div>
+
+            {{ dots_icon }}
+
+            {% comment %} render seconds {% endcomment %}
+            <div class="announcement-bar-countdown__main-block">
+              <div id="countdown-seconds" class="announcement-bar-countdown__block">
+                {%- capture seconds_html -%}
+                  <span
+                    class="announcement-bar-countdown_block_seconds countdown_block_seconds {{ section.settings.date_font_size }} {% if section.settings.date_font == 'accent' %} accent-font {% endif %}"
+                  >
+                    {%- if seconds.size > 1 -%}
+                      {{- seconds -}}
+                    {%- else -%}
+                      {{- 0 | append: seconds -}}
+                    {%- endif -%}
+                  </span>
+                {%- endcapture -%}
+                <div class="announcement-bar-countdown__block_num {% if section.settings.enable_date_animation %} announcement-bar-countdown__block_num--spacer{% endif %}">
+                  {{ seconds_html }}
+                </div>
+
+                {%- if section.settings.enable_date_animation -%}
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper">
+                    {{ seconds_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--upper-back">
+                    {{ seconds_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower">
+                    {{ seconds_html }}
+                  </div>
+                  <div class="announcement-bar-countdown__block_num countdown__block_num--lower-back">
+                    {{ seconds_html }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              <span class="announcement-bar-countdown__block_mark body-small">
+                {{- 'general.countdown.seconds_short' | t -}}
+              </span>
+            </div>
+          </div>
+
+          {% comment %} render text after timer {% endcomment %}
+          {%- if section.settings.countdown_end_text != blank
+            and section.settings.completed_countdown == 'show_text'
+          -%}
+            <div
+              class="announcement-bar-countdown__end-info countdown__end-info"
+              {% if hours == '00'
+                and days == '00'
+                and minutes == '00'
+                and seconds == '00'
+                and section.settings.enable_mock_timer == false
+              %}
+                style="display: flex;"
+              {% endif %}
+            >
+              <span class="announcement-bar-countdown__end-info-text richtext-link-inside body-normal">
+                {{- section.settings.countdown_end_text -}}
+              </span>
+            </div>
+          {%- endif -%}
+        </countdown-timer>
+      {%- endif -%}
+
+      {%- if has_main_text -%}
+        <div class="announcement-bar__text richtext-link-inside">
+          <span class="{% if section.settings.text_mobile != blank %}announcement-bar__text_desktop{% endif %}">
+            {{- section.settings.text -}}
+          </span>
+          {% if section.settings.text_mobile != blank %}
+            <span class="announcement-bar__text_mobile">
+              {{- section.settings.text_mobile -}}
+            </span>
+          {% endif %}
+        </div>
+      {%- endif -%}
+
+      {%- if has_button -%}
+        <a
+          {% if section.settings.button_link != blank %}
+            href="{{ section.settings.button_link }}"
+            {% if settings.links_blank and section.settings.button_link.type == 'external_link' %}
+              target="_blank"
+            {% endif %}
+          {% else %}
+            disabled
+          {% endif %}
+          aria-label="{{ section.settings.button_label }}"
+          class="
+            announcement-bar__button link--underline_arrow
+            {% if section.settings.show_button == false %} announcement-bar__button--desktop-hidden {% endif %}
+            {% if section.settings.show_button_on_mobile == false  %} announcement-bar__button--mobile-hidden {% endif %}
+          "
+        >
+          <span>
+            {{- section.settings.button_label -}}
+          </span>
+          {% render 'icon-btn-arrow' %}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement-bar.name",
+  "class": "section-announcement",
+  "limit": 1,
+  "tag": "section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__1.content"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "background-4",
+      "label": "t:sections.all.color_scheme.label"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "default": 44,
+      "label": "t:sections.announcement-bar.settings.height.label"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "default": 44,
+      "label": "t:sections.announcement-bar.settings.height_mobile.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__2.content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "default": "t:sections.announcement-bar.settings.text.default",
+      "label": "t:sections.announcement-bar.settings.text.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_mobile",
+      "label": "t:sections.announcement-bar.settings.text_mobile.label",
+      "info": "t:sections.announcement-bar.settings.text_mobile.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__3.content"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "default": "t:sections.announcement-bar.settings.badge_text.default",
+      "label": "t:sections.announcement-bar.settings.badge_text.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge_on_mobile",
+      "label": "t:sections.announcement-bar.settings.show_badge_on_mobile.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__5.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.show_countdown.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown_mobile",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.show_countdown_mobile.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mock_timer",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.enable_mock_timer.label",
+      "info": "t:sections.announcement-bar.settings.enable_mock_timer.info"
+    },
+    {
+      "type": "range",
+      "id": "date_picker_year",
+      "min": 2025,
+      "max": 2035,
+      "step": 1,
+      "default": 2025,
+      "label": "t:sections.announcement-bar.settings.date_picker_year.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "range",
+      "id": "date_picker_month",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 9,
+      "label": "t:sections.announcement-bar.settings.date_picker_month.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "range",
+      "id": "date_picker_day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 1,
+      "label": "t:sections.announcement-bar.settings.date_picker_day.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "range",
+      "id": "date_picker_hours",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 0,
+      "label": "t:sections.announcement-bar.settings.date_picker_hours.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "range",
+      "id": "date_picker_minutes",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 0,
+      "label": "t:sections.announcement-bar.settings.date_picker_minutes.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "range",
+      "id": "mock_date_picker_day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 2,
+      "label": "t:sections.countdown.settings.mock_date_picker_day.label",
+      "visible_if": "{{ section.settings.enable_mock_timer }}"
+    },
+    {
+      "type": "range",
+      "id": "mock_date_picker_hours",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.countdown.settings.mock_date_picker_hours.label",
+      "visible_if": "{{ section.settings.enable_mock_timer }}"
+    },
+    {
+      "type": "select",
+      "id": "date_font",
+      "default": "accent",
+      "label": "t:sections.announcement-bar.settings.date_font.label",
+      "options": [
+        {
+          "value": "base",
+          "label": "t:sections.all.heading_font.options__1.label"
+        },
+        {
+          "value": "accent",
+          "label": "t:sections.all.heading_font.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_date_animation",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.enable_date_animation.label"
+    },
+    {
+      "type": "select",
+      "id": "completed_countdown",
+      "options": [
+        {
+          "value": "hide_section",
+          "label": "t:sections.announcement-bar.settings.completed_countdown.options_1.label"
+        },
+        {
+          "value": "show_text",
+          "label": "t:sections.announcement-bar.settings.completed_countdown.options_2.label"
+        }
+      ],
+      "default": "show_text",
+      "label": "t:sections.announcement-bar.settings.completed_countdown.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false }}"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "countdown_end_text",
+      "default": "t:sections.announcement-bar.settings.countdown_end_text.default",
+      "label": "t:sections.announcement-bar.settings.countdown_end_text.label",
+      "visible_if": "{{ section.settings.enable_mock_timer == false and section.settings.completed_countdown == 'show_text' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__4.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "default": true,
+      "label": "t:sections.announcement-bar.settings.show_button.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_on_mobile",
+      "label": "t:sections.announcement-bar.settings.show_button_on_mobile.label",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "t:sections.all.button.button_label.default_shop_now",
+      "label": "t:sections.all.button.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.all.button.button_link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement-bar.name",
+      "category": "t:sections.categories.header"
+    }
+  ]
+}
+{% endschema %}

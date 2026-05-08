@@ -1,0 +1,137 @@
+<details-disclosure class="header-account" data-details-type="account">
+  <details>
+    <summary
+      class="header-account-summary header-account-summary--btn-type-{{ section.settings.authorization_button_type }} focus-inset modal__toggle"
+      aria-haspopup="dialog"
+      role="button"
+    >
+      {%- if section.settings.authorization_button_type == 'icon_and_text' -%}
+        {%- if customer -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.account_fallback' | t }}"
+          >
+            {{- 'customer.account_fallback' | t -}}
+          </span>
+        {%- else -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.log_in' | t }}"
+          >
+            {{- 'customer.sign_in' | t -}}
+          </span>
+        {%- endif -%}
+        {% render 'icon-user' %}
+      {%- elsif section.settings.authorization_button_type == 'icon' -%}
+        {% render 'icon-user' %}
+      {%- elsif section.settings.authorization_button_type == 'text' -%}
+        {%- if customer -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.account_fallback' | t }}"
+          >
+            {{- 'customer.account_fallback' | t -}}
+          </span>
+        {%- else -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.log_in' | t }}"
+          >
+            {{- 'customer.sign_in' | t -}}
+          </span>
+        {%- endif -%}
+      {%- else -%}
+        {%- if customer -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.account_fallback' | t }}"
+          >
+            {{- 'customer.account_fallback' | t -}}
+          </span>
+        {%- else -%}
+          <span
+            class="header-account-summary__span body-normal link--hover-underline"
+            data-label="{{ 'customer.log_in' | t }}"
+          >
+            {{- 'customer.sign_in' | t -}}
+          </span>
+        {%- endif -%}
+        {% render 'icon-user' %}
+      {%- endif -%}
+    </summary>
+    <div class="header-account-modal modal__toggle color-background-1" role="dialog" aria-modal="true">
+      {%- if customer -%}
+        <div class="header-account-modal-account">
+          <div class="header-account-modal-account__top">
+            {% render 'icon-user' %}
+            <div class="header-account-modal-account__name body-normal">
+              {% liquid
+                assign name = customer.first_name | default: customer.name | default: customer.email
+              %}
+              {{- 'customer.hello' | t: name: name -}}
+            </div>
+          </div>
+          <ul class="header-account-modal-account__body list-unstyled">
+            <li class="header-account-modal-account__body-item">
+              <a
+                class="header-account-modal-account__body-link"
+                href="{{ routes.account_url }}"
+                aria-label="{{ 'customer.account_fallback' | t }}"
+              >
+                <span class="body-normal link--hover-underline">
+                  {{- 'customer.account_fallback' | t -}}
+                </span>
+              </a>
+            </li>
+            <li class="header-account-modal-account__body-item">
+              <a
+                class="header-account-modal-account__body-link"
+                href="{{ routes.account_addresses_url }}"
+                aria-label="{{ 'customer.addresses.book' | t }}"
+              >
+                <span class="body-normal link--hover-underline">
+                  {{- 'customer.addresses.book' | t -}}
+                </span>
+              </a>
+            </li>
+            <li class="header-account-modal-account__body-item">
+              <a
+                class="header-account-modal-account__body-link header-account-modal-account__body-link--logout"
+                href="{{ routes.account_logout_url }}"
+                aria-label="{{ 'customer.log_out' | t }}"
+              >
+                <span class="body-normal link--hover-underline-alert" data-label="{{ 'customer.log_out' | t }}">
+                  {{- 'customer.log_out' | t -}}
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      {%- else -%}
+        <a
+          href="{{ routes.account_login_url }}"
+          class="button button--primary header-account-login-btn focus-inset"
+        >
+          {%- if customer -%}
+            <span class="button__label" data-label="{{ 'customer.account_fallback' | t }}">
+              {{- 'customer.account_fallback' | t -}}
+            </span>
+          {%- else -%}
+            <span class="button__label" data-label="{{ 'customer.log_in' | t }}">
+              {{- 'customer.log_in' | t -}}
+            </span>
+          {%- endif -%}
+        </a>
+
+        <a
+          class="header__account-register button button--tertiary header-account-register-btn focus-inset"
+          href="{{ routes.account_register_url }}"
+        >
+          <span class="button__label" data-label="{{- 'customer.login_page.create_account' | t -}}">
+            {{- 'customer.login_page.create_account' | t -}}
+          </span>
+        </a>
+      {%- endif -%}
+    </div>
+  </details>
+</details-disclosure>

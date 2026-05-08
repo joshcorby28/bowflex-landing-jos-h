@@ -1,0 +1,325 @@
+{% liquid
+  assign show_region = false
+
+  if section.settings.enable_country_selector and localization.available_countries.size > 1
+    assign show_region = true
+  endif
+
+  if section.settings.enable_language_selector and localization.available_languages.size > 1
+    assign show_region = true
+  endif
+
+  assign has_shop_all_and_search = false
+
+  if section.settings.shop_all_show_button and section.settings.enable_search
+    assign has_shop_all_and_search = true
+  endif
+%}
+
+{% comment %} ------------------- HEADER LAYOUT 'BIG' ------------------- {% endcomment %}
+
+{% if section.settings.desktop_header_layout == 'big' %}
+  {% comment %} - - - SMALL (UPPER) ROW - - - {% endcomment %}
+  {%- if section.settings.secondary_menu != blank or section.settings.contact_info != blank -%}
+    <div class="header-row header-row--small color-{{ section.settings.header_color_scheme_secondary }}">
+      <div class="container">
+        <div class="header-row-inner header-row-inner--small">
+          {%- if section.settings.secondary_menu != blank -%}
+            {% render 'header-secondary-menu' %}
+          {%- endif -%}
+
+          {%- if section.settings.contact_info != blank -%}
+            <div class="header-contact-info body-small hover-underline-link-inside">
+              {{- section.settings.contact_info -}}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {% comment %} - - - MAIN ROW - - - {% endcomment %}
+  <div class="header-row header-row--main color-{{ section.settings.header_color_scheme }}">
+    <div class="header-row__overlay"></div>
+    <div class="container">
+      <div class="header-row-inner header-row-inner--main">
+        {% render 'header-drawer', section: section %}
+
+        {% render 'header-logo', tag: 'h1' %}
+
+        {%- if has_shop_all_and_search -%}
+          <div class="header-shop-all-search-wrapper" id="header-mega-menu-root">
+            {% render 'button',
+              btn_label: section.settings.shop_all_button_label,
+              btn_style: section.settings.shop_all_button_style,
+              btn_link: section.settings.shop_all_button_link,
+              shop_all: section.settings.shop_all_use_for_mega_menu,
+              shop_all_show_icon: section.settings.shop_all_button_show_icon,
+              shop_all_enable_mobile: section.settings.shop_all_show_button_mobile,
+              class: 'header-shop-all-button'
+            %}
+
+            {% render 'header-search', section: section %}
+          </div>
+        {%- else -%}
+          {%- if section.settings.shop_all_show_button -%}
+            <div class="header-shop-all-search-wrapper" id="header-mega-menu-root">
+              {% render 'button',
+                btn_label: section.settings.shop_all_button_label,
+                btn_style: section.settings.shop_all_button_style,
+                btn_link: section.settings.shop_all_button_link,
+                shop_all: section.settings.shop_all_use_for_mega_menu,
+                shop_all_show_icon: section.settings.shop_all_button_show_icon,
+                shop_all_enable_mobile: section.settings.shop_all_show_button_mobile,
+                class: 'header-shop-all-button'
+              %}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.enable_search -%}
+            <div class="header-shop-all-search-wrapper" id="header-mega-menu-root">
+              {% render 'header-search', section: section %}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="header-buttons-wrapper">
+          {%- if settings.dark_mode_toggle or show_region -%}
+            <div class="header-buttons header-buttons--region-dm">
+              {%- if show_region -%}
+                {% render 'header-region' %}
+              {%- endif -%}
+
+              {% render 'header-color-scheme', dm_btn_type: section.settings.dark_mode_button_type %}
+            </div>
+          {%- endif -%}
+
+          <div class="header-buttons header-buttons--acc-cart">
+            {%- if shop.customer_accounts_enabled -%}
+              {% render 'header-account' %}
+            {%- endif -%}
+
+            {% render 'header-cart' %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} - - - MENU (BOTTOM) ROW WITH MAIN MENU - - - {% endcomment %}
+  {%- if section.settings.menu != blank -%}
+    <div class="header-row header-row--menu color-background-1">
+      <div class="header-row__overlay"></div>
+      <div class="container">
+        <div class="header-row-inner header-row-inner--menu">
+          {% render 'header-inline-menu', section: section %}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{% endif %}
+
+{% comment %} ------------------- HEADER LAYOUT 'MEDIUM' ------------------- {% endcomment %}
+
+{%- if section.settings.desktop_header_layout == 'medium' -%}
+  {% comment %} - - - MAIN ROW - - - {% endcomment %}
+  <div class="header-row header-row--medium-main color-{{ section.settings.header_color_scheme }}">
+    <div class="header-row__overlay"></div>
+    <div class="container">
+      <div class="header-row-inner header-row-inner--medium-main">
+        {% render 'header-drawer', section: section %}
+
+        {% render 'header-logo', tag: 'h1' %}
+
+        {% if section.settings.menu != blank %}
+          {% render 'header-inline-menu', section: section %}
+        {% endif %}
+
+        <div class="header-buttons-wrapper">
+          {%- if settings.dark_mode_toggle or show_region -%}
+            <div class="header-buttons header-buttons--region-dm">
+              {%- if show_region -%}
+                {% render 'header-region' %}
+              {%- endif -%}
+
+              {% render 'header-color-scheme', dm_btn_type: section.settings.dark_mode_button_type %}
+            </div>
+          {%- endif -%}
+
+          <div class="header-buttons header-buttons--acc-cart">
+            {%- if shop.customer_accounts_enabled -%}
+              {% render 'header-account' %}
+            {%- endif -%}
+
+            {% render 'header-cart' %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} - - - SECONDARY ROW - - - {% endcomment %}
+  {%- if section.settings.shop_all_show_button
+    or section.settings.enable_search
+    or section.settings.secondary_menu != blank
+    or section.settings.contact_info != blank
+  -%}
+    <div class="header-row header-row--medium-secondary color-{{ section.settings.header_color_scheme_secondary }}{% if section.settings.shop_all_show_button_mobile != true and section.settings.enable_search != true %} header-row--medium-secondary-hidden-mobile{% endif %}">
+      <div class="header-row__overlay"></div>
+      <div class="container">
+        <div class="header-row-inner header-row-inner--medium-secondary">
+          {%- if has_shop_all_and_search -%}
+            <div class="header-shop-all-search-wrapper" id="header-mega-menu-root">
+              {% render 'button',
+                btn_label: section.settings.shop_all_button_label,
+                btn_style: section.settings.shop_all_button_style,
+                btn_link: section.settings.shop_all_button_link,
+                shop_all: section.settings.shop_all_use_for_mega_menu,
+                shop_all_show_icon: section.settings.shop_all_button_show_icon,
+                shop_all_enable_mobile: section.settings.shop_all_show_button_mobile,
+                class: 'header-shop-all-button'
+              %}
+
+              {% render 'header-search', section: section %}
+            </div>
+          {%- else -%}
+            {%- if section.settings.shop_all_show_button -%}
+              <div
+                class="header-shop-all-search-wrapper{% if section.settings.enable_search != true %} header-shop-all-search-wrapper--without-search{% endif %}"
+                id="header-mega-menu-root"
+              >
+                {% render 'button',
+                  btn_label: section.settings.shop_all_button_label,
+                  btn_style: section.settings.shop_all_button_style,
+                  btn_link: section.settings.shop_all_button_link,
+                  shop_all: section.settings.shop_all_use_for_mega_menu,
+                  shop_all_show_icon: section.settings.shop_all_button_show_icon,
+                  shop_all_enable_mobile: section.settings.shop_all_show_button_mobile,
+                  class: 'header-shop-all-button'
+                %}
+              </div>
+            {%- endif -%}
+
+            {%- if section.settings.enable_search -%}
+              <div class="header-shop-all-search-wrapper" id="header-mega-menu-root">
+                {% render 'header-search', section: section %}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if section.settings.secondary_menu != blank or section.settings.contact_info != blank -%}
+            <div class="header-nav-contacts-wrapper">
+              {%- if section.settings.secondary_menu != blank -%}
+                {% render 'header-secondary-menu' %}
+              {%- endif -%}
+
+              {%- if section.settings.contact_info != blank -%}
+                <div class="header-contact-info body-small hover-underline-link-inside">
+                  {{- section.settings.contact_info -}}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% comment %} ------------------- HEADER LAYOUT 'SMALL' ------------------- {% endcomment %}
+
+{%- if section.settings.desktop_header_layout == 'small' -%}
+  {% comment %} - - - SECONDARY (UPPER) ROW - - - {% endcomment %}
+  {%- if settings.dark_mode_toggle
+    or show_region
+    or section.settings.secondary_menu != blank
+    or section.settings.contact_info != blank
+  -%}
+    <div class="header-row header-row--small-secondary color-{{ section.settings.header_color_scheme_secondary }}">
+      <div class="header-row__overlay"></div>
+      <div class="container">
+        <div class="header-row-inner header-row-inner--small-secondary">
+          {%- if settings.dark_mode_toggle or show_region -%}
+            <div class="header-buttons header-buttons--region-dm">
+              {%- if show_region -%}
+                {% render 'header-region', button_font_size: 'small' %}
+              {%- endif -%}
+
+              {% render 'header-color-scheme',
+                font_size: 'small',
+                dm_btn_type: section.settings.dark_mode_button_type
+              %}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.secondary_menu != blank or section.settings.contact_info != blank -%}
+            <div class="header-nav-contacts-wrapper">
+              {%- if section.settings.secondary_menu != blank -%}
+                {% render 'header-secondary-menu' %}
+              {%- endif -%}
+
+              {%- if section.settings.contact_info != blank -%}
+                <div class="header-contact-info body-small hover-underline-link-inside">
+                  {{- section.settings.contact_info -}}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {% comment %} - - - MAIN ROW - - - {% endcomment %}
+  <div class="header-row header-row--small-main color-{{ section.settings.header_color_scheme }}">
+    <div class="header-row__overlay"></div>
+    <div class="container">
+      <div class="header-row-inner header-row-inner--small-main">
+        {% render 'header-drawer', section: section %}
+
+        {% render 'header-logo', tag: 'h1' %}
+
+        {%- if section.settings.shop_all_show_button
+          or section.settings.menu != blank
+          or section.settings.enable_search
+        -%}
+          <div class="header-shop-all-menu-search-wrapper" id="header-mega-menu-root">
+            {%- if section.settings.shop_all_show_button -%}
+              {% render 'button',
+                btn_label: section.settings.shop_all_button_label,
+                btn_style: section.settings.shop_all_button_style,
+                btn_link: section.settings.shop_all_button_link,
+                shop_all: section.settings.shop_all_use_for_mega_menu,
+                shop_all_show_icon: section.settings.shop_all_button_show_icon,
+                shop_all_enable_mobile: section.settings.shop_all_show_button_mobile,
+                class: 'header-shop-all-button'
+              %}
+            {%- endif -%}
+
+            {% if section.settings.menu != blank %}
+              {% liquid
+                assign additional_class = blank
+                if section.settings.enable_search != true
+                  assign additional_class = 'header-inline-menu--without-search'
+                endif
+              %}
+              {% render 'header-inline-menu', section: section, class: additional_class %}
+            {% endif %}
+
+            {%- if section.settings.enable_search -%}
+              {% render 'header-search', section: section %}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <div class="header-buttons header-buttons--acc-cart">
+          {%- if shop.customer_accounts_enabled -%}
+            {% render 'header-account' %}
+          {%- endif -%}
+
+          {% render 'header-cart' %}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}

@@ -1,0 +1,163 @@
+<div class="bfx-usp bfx-usp--{{ section.id }}">
+  <div class="container">
+    <div class="bfx-usp__inner">
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'usp_item' -%}
+            <div class="bfx-usp__item" {{ block.shopify_attributes }}>
+              {%- if block.settings.icon != blank -%}
+                <span class="bfx-usp__icon" aria-hidden="true">
+                  {{- block.settings.icon | image_url: width: 48 | image_tag: loading: 'lazy', style: 'height:28px;width:auto;display:block;' -}}
+                </span>
+              {%- elsif block.settings.icon_svg != blank -%}
+                <span class="bfx-usp__icon" aria-hidden="true">{{ block.settings.icon_svg }}</span>
+              {%- endif -%}
+              <div class="bfx-usp__text">
+                {%- if block.settings.title != blank -%}
+                  <strong style="display:block;font-size:14px;font-weight:700;">{{ block.settings.title }}</strong>
+                {%- endif -%}
+                {%- if block.settings.subtitle != blank -%}
+                  <span style="font-size:13px;color:#666;">
+                    {%- if block.settings.link != blank -%}
+                      <a href="{{ block.settings.link }}" style="color:inherit;text-decoration:underline;">{{ block.settings.subtitle }}</a>
+                    {%- else -%}
+                      {{ block.settings.subtitle }}
+                    {%- endif -%}
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+
+          {%- when 'klarna' -%}
+            <div class="bfx-usp__item bfx-usp__item--klarna" {{ block.shopify_attributes }}>
+              {%- if block.settings.klarna_logo != blank -%}
+                {{- block.settings.klarna_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'Klarna', style: 'height:24px;width:auto;display:block;' -}}
+              {%- else -%}
+                <span style="font-size:18px;font-weight:900;letter-spacing:-0.02em;font-style:italic;">klarna</span>
+              {%- endif -%}
+              <div class="bfx-usp__text" style="margin-left:10px;">
+                <span style="font-size:13px;color:#444;">
+                  {{ block.settings.text }}
+                  {%- if block.settings.learn_more_link != blank -%}
+                    <a href="{{ block.settings.learn_more_link }}" style="color:inherit;text-decoration:underline;margin-left:4px;">Learn more</a>
+                  {%- endif -%}
+                </span>
+                {%- if block.settings.small_print != blank -%}
+                  <span style="display:block;font-size:11px;color:#999;margin-top:2px;">{{ block.settings.small_print }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+
+        {%- endcase -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .bfx-usp--{{ section.id }} {
+    background: {{ section.settings.background_color }};
+    padding: 16px 0;
+  }
+  .bfx-usp__inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    border:1px solid #1b1b1b;
+    border-radius:10px;
+    padding:30px 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .bfx-usp__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bfx-usp__item--klarna {
+    display: flex;
+    align-items: center;
+  }
+  .bfx-usp__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .bfx-usp__icon svg { width: 28px; height: 28px; }
+  @media (max-width: 749px) {
+    .bfx-usp__inner {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BFX LP — USP Bar",
+  "tag": "section",
+  "class": "bfx-lp-usp-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Colour",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp_item",
+      "name": "USP Item",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon Image" },
+        {
+          "type": "html",
+          "id": "icon_svg",
+          "label": "Icon SVG (optional)",
+          "info": "Paste an inline SVG if not using an image icon."
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free Shipping" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle / Link Label", "default": "View Shipping Details" },
+        { "type": "url", "id": "link", "label": "Subtitle Link" }
+      ]
+    },
+    {
+      "type": "klarna",
+      "name": "Klarna",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "klarna_logo", "label": "Klarna Logo" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Pay over 12 months with Klarna" },
+        { "type": "url", "id": "learn_more_link", "label": "Learn More Link" },
+        { "type": "text", "id": "small_print", "label": "Small Print", "default": "18+. T&C apply. Credit subject to status." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "BFX LP — USP Bar",
+      "blocks": [
+        {
+          "type": "usp_item",
+          "settings": {
+            "title": "Free Shipping",
+            "subtitle": "View Shipping Details"
+          }
+        },
+        {
+          "type": "klarna",
+          "settings": {
+            "text": "Pay over 12 months with Klarna",
+            "small_print": "18+. T&C apply. Credit subject to status."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

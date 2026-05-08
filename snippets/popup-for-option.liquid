@@ -1,0 +1,83 @@
+{% doc %}
+  @param {object} block - Variant picker block object
+
+  @example
+  {% render 'popup-for-option', block: block %}
+{% enddoc %}
+
+{%- if block.settings.enable_size_guide and block.settings.button_label != blank -%}
+  {% liquid
+    assign btn_label = block.settings.button_label
+
+    if block.settings.button_style != blank
+      assign btn_style = block.settings.button_style
+    else
+      assign btn_style = 'primary'
+    endif
+
+    assign underline_arrow_class = false
+
+    if btn_style == 'link--primary' or btn_style == 'link--secondary' or btn_style == 'link--tertiary'
+      assign underline_arrow_class = true
+    endif
+  %}
+  <div class="product-popup size-guide">
+    <modal-opener
+      class="no-js-hidden"
+      data-modal="#SizeGuideModal-{{ block.id }}"
+      {{ block.shopify_attributes }}
+    >
+      <button
+        id="ProductPopup-{{ block.id }}"
+        class="product-popup__button button button--{{ btn_style }}{% if underline_arrow_class %} link--underline_arrow{% endif %} focus-inset"
+        type="button"
+        aria-haspopup="dialog"
+      >
+        <span class="button__label">
+          {{- btn_label -}}
+        </span>
+      </button>
+    </modal-opener>
+    <div class="product-popup-modal__content-info no-js">
+      {% if block.settings.heading != blank %}
+        <h3 class="product-popup-modal__title">
+          {{ block.settings.heading }}
+        </h3>
+      {% endif %}
+      {% if block.settings.text != blank %}
+        <div class="product-popup-modal__text">
+          {{ block.settings.text }}
+        </div>
+      {% endif %}
+    </div>
+    <modal-dialog
+      id="SizeGuideModal-{{ block.id }}"
+      class="product-popup-modal size-guide-modal"
+      {{ block.shopify_attributes }}
+    >
+      <div
+        role="dialog"
+        aria-label="{{ block.settings.label }}"
+        aria-modal="true"
+        class="product-popup-modal__content"
+        tabindex="-1"
+      >
+        <button
+          id="ModalClose-{{ block.id }}"
+          type="button"
+          class="product-popup-modal__close modal-close-button focus-inset"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {% render 'icon-close' %}
+        </button>
+        <div class="product-popup-modal__content-info">
+          {%- if block.settings.button_page.content != blank -%}
+            <div class="product-popup-modal__page-wrapper rte">{{ block.settings.button_page.content }}</div>
+          {% else %}
+            {{ 'accessibility.no_content' | t }}
+          {%- endif -%}
+        </div>
+      </div>
+    </modal-dialog>
+  </div>
+{%- endif -%}

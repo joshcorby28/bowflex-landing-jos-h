@@ -1,0 +1,240 @@
+{% comment %}
+  Renders a product thumbnail with a modal-opener
+
+  Accepts:
+  - media: {Object} Product Media object
+  - position: {String} Position of the media. Used for accessible label.
+  - modal_id: {String} The product modal that will be shown by clicking the thumbnail
+  - settings_aspect_ratio: {Number} Aspect ratio of the product thumbnail,
+  - default_aspect_ratio: {Number} Aspect ratio of the product thumbnail,
+  - desktop_layout: {String} Layout type of the product thumbnail,
+  - mobile_layout: {String} Layout type of the product thumbnail,
+  - columns: {Number} or {Blank} Number of columns
+  - main_product_object: {Object} Product object
+
+  Usage:
+  {% render 'product-thumbnail',
+    media: media,
+    position: forloop.index,
+    modal_id: section.id
+    settings_aspect_ratio: calc_ratio,
+    default_aspect_ratio: section.settings.aspect_ratio,
+    desktop_layout: section.settings.layout_type,
+    mobile_layout: section.settings.mobile_layout_type,
+    columns: columns_per_line
+  %}
+{% endcomment %}
+
+{%- liquid
+  assign padding_bottom = 100 | divided_by: settings_aspect_ratio | round: 2
+  assign calc_ratio = 1
+  if media_fit == 'cover' and media.aspect_ratio > settings_aspect_ratio
+    assign calc_ratio = media.preview_image.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+  endif
+  assign widths = '375, 425, 576, 632, 700, 800, 900, 1000, 1100, 1200, 1400, 1600, 1800, 2000'
+
+  assign image_alt_attr = main_product_object.title | append: ' ' | append: media.position
+
+  if media.preview_image.alt != blank
+    assign image_alt_attr = media.preview_image.alt
+  endif
+-%}
+
+{% if is_main %}  
+  {% capture desktop_sizes %} 
+    {% if desktop_layout == 'gallery' %} 
+        (min-width: 990px) calc(47vw / {{ columns }} * {{ calc_ratio }}),
+      {% else %} 
+        {% if settings_aspect_ratio =='landscape' %} 
+          (min-width: 1920px) calc(750px * {{ calc_ratio }}), (min-width: 1360px) calc(43vw * {{ calc_ratio }}), (min-width: 1200px) calc(41vw * {{ calc_ratio }}) (min-width: 990px) calc(40.6vw * {{ calc_ratio }}),
+        {% else %}
+          (min-width: 1270px) calc(522px * {{ calc_ratio }}), (min-width: 1200px) calc(40.6vw * {{ calc_ratio }}), (min-width: 990px) calc(41vw * {{ calc_ratio }}),
+        {% endif %}
+    {% endif %}
+  {% endcapture %}
+
+  {% capture mobile_sizes %} 
+    {% if mobile_layout == 'gallery' %} 
+        (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}), (min-width: 576px) calc((100vw - 40px) * {{ calc_ratio }}), calc((100vw - 16px) * {{ calc_ratio }}) 
+      {% else %}
+      {% if settings_aspect_ratio =='landscape' %} 
+        (min-width: 867px) calc(750px * {{ calc_ratio }}), (min-width: 750px) calc(85vw * {{ calc_ratio }}), (min-width: 576px) calc((100vw - 40px) * {{ calc_ratio }}), calc((100vw - 16px) * {{ calc_ratio }}),
+      {% else %}
+        (min-width: 750px) calc(522px * {{ calc_ratio }}), (min-width: 576px) calc((100vw - 40px) * {{ calc_ratio }}), calc((100vw - 16px) * {{ calc_ratio }}) 
+      {% endif %}
+    {% endif %}
+  {% endcapture %}
+{% else %}
+  {% capture desktop_sizes %} 
+    {% if desktop_layout == 'gallery' %} 
+      {% if settings_aspect_ratio =='landscape' %} 
+        (min-width: 990px) 54rem * {{ calc_ratio }},
+      {% else %}
+      (min-width: 990px) 47.1rem * {{ calc_ratio }},
+      {% endif %}
+    {% else %} 
+      {% if settings_aspect_ratio =='landscape' %} 
+        (min-width: 990px) 64rem * {{ calc_ratio }}, 
+      {% else %}
+      (min-width: 990px) 47.1rem * {{ calc_ratio }},
+      {% endif %}
+  {% endif %}
+{% endcapture %}
+
+  {% capture mobile_sizes %} 
+    {% if mobile_layout == 'gallery' %} 
+      {% if columns_per_line == 1 %} 
+        100vw * {{ calc_ratio }} 
+      {% else %}    
+      (min-width: 576px) 50vw {{ calc_ratio }}, 100vw * {{ calc_ratio }} 
+      {% endif %}
+    {% else %} 
+      {% if settings_aspect_ratio =='landscape' %} 
+        (min-width: 576px) min(64rem * {{ calc_ratio }}, 100vw * {{ calc_ratio }}), 100vw * {{ calc_ratio }}
+      {% else %}
+      (min-width: 576px) min(47.1rem * {{ calc_ratio }}, 100vw * {{ calc_ratio }}), 100vw * {{ calc_ratio }}
+      {% endif %}
+    {% endif %}
+  {% endcapture %}
+{% endif %}
+
+{% liquid 
+  assign desktop_sizes = desktop_sizes | strip 
+  assign mobile_sizes = mobile_sizes | strip
+  assign sizes = desktop_sizes | append: mobile_sizes
+%}
+<noscript>
+  {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+    <a
+      href="{% if media.media_type == 'video' %}{{ media.sources[1].url }}{% else %}{{ media | external_video_url }}{% endif %}"
+      aria-label="{{ 'products.product.video_exit_message' | t: title: product.title | escape }}"
+    >
+      <span class="product__media-icon motion-reduce">{% render 'icon-play' %}</span>
+      <div class="product__media media" style="padding-bottom: {{ padding_bottom }}%">
+        {{
+          media.preview_image
+          | image_url: width: media.preview_image.width
+          | image_tag: loading: 'lazy', widths: widths, sizes: sizes, alt: image_alt_attr
+        }}
+      </div>
+    </a>
+  {%- else -%}
+    <div class="product__media media" style="padding-bottom: {{ padding_bottom }}%">
+      {{
+        media.preview_image
+        | image_url: width: media.preview_image.width
+        | image_tag: loading: 'lazy', widths: widths, sizes: sizes, alt: image_alt_attr
+      }}
+    </div>
+  {%- endif -%}
+</noscript>
+
+<modal-opener
+  class="product__modal-opener product__modal-opener--{{ media.media_type }} no-js-hidden"
+  data-modal="#ProductModal-{{ modal_id }}"
+>
+
+
+  <div class="product__media" style="padding-bottom: {{ padding_bottom }}%">
+    {%- capture style -%}
+      object-position: {{ media.presentation.focal_point }};
+    {%- endcapture -%}
+    {% liquid
+      assign fetch_priority = 'auto'
+      assign loading = 'lazy'
+      if section.index == 1 and position == 1
+        assign fetch_priority = 'high'
+        assign loading = 'eager'
+      endif
+    %}
+    {{
+      media.preview_image
+      | image_url: width: media.preview_image.width
+      | image_tag: loading: loading, widths: widths, sizes: sizes, style: style, fetchpriority: fetch_priority, alt: image_alt_attr
+    }}
+  </div>
+  <button class="product__media-toggle focus-inset" type="button" aria-haspopup="dialog" data-media-id="{{ media.id }}">
+    <span class="visually-hidden">
+      {%- if position == 'featured' %}
+        {{ 'products.product.media.open_featured_media' | t }}
+      {%- else -%}
+        {{ 'products.product.media.open_media' | t: index: position }}
+      {%- endif -%}
+    </span>
+  </button>
+    <span class="product__media-icon motion-reduce" aria-hidden="true">
+    {%- liquid
+      case media.media_type
+        when 'video', 'external_video'
+          render 'icon-play'
+        when 'model'
+          render 'icon-3d-model'
+        else
+          render 'icon-expand-zoom'
+      endcase
+    -%}
+  </span>
+</modal-opener>
+
+{%- comment %} prettier-ignore {%- endcomment %}
+{%- if media.media_type != 'image' -%}
+  {%- if media.media_type == 'model' -%}
+    <product-model class="deferred-media media no-js-hidden" data-media-id="{{ media.id }}">
+  {%- else -%}
+    <deferred-media class="deferred-media media no-js-hidden" data-media-id="{{ media.id }}">
+  {%- endif -%}
+  <button id="Deferred-Poster-Modal-{{ media.id }}" class="deferred-media__poster focus-inset" type="button">
+    <span class="deferred-media__poster-button motion-reduce">
+      {%- if media.media_type == 'model' -%}
+        <span class="visually-hidden">{{ 'products.product.media.play_model' | t }}</span>
+        {%- render 'icon-3d-model' -%}
+      {%- else -%}
+        <span class="visually-hidden">{{ 'products.product.media.play_video' | t }}</span>
+        {%- render 'icon-play' -%}
+      {%- endif -%}
+    </span>
+    {%- capture style -%}
+      object-position: {{ media.presentation.focal_point }};
+    {%- endcapture -%}
+    {{
+      media.preview_image
+      | image_url: width: media.preview_image.width
+      | image_tag: loading: 'lazy', widths: widths, sizes: sizes, style: style, alt: image_alt_attr
+    }}
+  </button>
+  <template>
+    {%- liquid
+      case media.media_type
+        when 'external_video'
+          assign video_class = 'js-' | append: media.host
+          if media.host == 'youtube'
+            echo media | external_video_url: autoplay: true, loop: loop, playlist: media.external_id | external_video_tag: class: video_class, loading: 'lazy'
+          else
+            echo media | external_video_url: autoplay: true, loop: loop | external_video_tag: class: video_class, loading: 'lazy'
+          endif
+        when 'video'
+          echo media | media_tag: image_size: '2048x', autoplay: true, loop: loop, controls: true, preload: 'none'
+        when 'model'
+          echo media | media_tag: image_size: '2048x', toggleable: true
+      endcase
+    -%}
+  </template>
+
+  {%- if media.media_type == 'model' -%}
+    </product-model>
+    <button
+      class="button product__xr-button button--tertiary focus-inset"
+      type="button"
+      aria-label="{{ 'products.product.xr_button_label' | t }}"
+      data-shopify-xr
+      data-shopify-model3d-id="{{ media.id }}"
+      data-shopify-title="title"
+      data-shopify-xr-hidden
+    >
+      {% render 'icon-3d-model' %}
+      {{ 'products.product.xr_button' | t }}
+    </button>
+  {%- else -%}
+    </deferred-media>
+  {%- endif -%}
+{%- endif -%}

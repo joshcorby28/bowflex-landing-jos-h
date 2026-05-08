@@ -1,0 +1,90 @@
+<div class="container">
+  <nav
+    id="breadcrumbs"
+    class="breadcrumb body-small{% if centered %} breadcrumb--center{% endif %}"
+    role="navigation"
+    aria-label="breadcrumbs"
+  >
+    <a href="{{ routes.root_url }}" title="{{ 'general.breadcrumbs.home' | t }}" class="focus-inset">
+      {{- 'general.breadcrumbs.home' | t -}}
+    </a>
+    {% if template contains 'page' %}
+      <div class="breadcrumb__delimiter">/</div>
+      <span>{{ page.title }} </span>
+    {% elsif template == 'cart' %}
+      <div class="breadcrumb__delimiter">/</div>
+      <span>{{- 'general.breadcrumbs.cart' | t -}}</span>
+    {% elsif template == 'article' %}
+      <div class="breadcrumb__delimiter">/</div>
+      <a href="{{ blog.url }}" class="focus-inset">{{ blog.title }}</a>
+      <div class="breadcrumb__delimiter">/</div>
+      <span>{{ page_title }} </span>
+    {% elsif template contains 'product' %}
+      <div class="breadcrumb__delimiter">/</div>
+      {% if product.collections[0] %}
+        <a href="{{ product.collections[0].url }}" class="focus-inset">{{ product.collections[0].title }}</a>
+        <div class="breadcrumb__delimiter">/</div>
+      {% endif %}
+      <span>{{ product.title }} </span>
+    {% elsif template == 'blog' %}
+      <div class="breadcrumb__delimiter">/</div>
+      {% if current_tags %}
+        {{ blog.title | link_to: blog.url }}
+        <div class="breadcrumb__delimiter">/</div>
+        <span>{{ current_tags | join: ' + ' }} </span>
+      {% else %}
+        <span>{{ blog.title }}</span>
+      {% endif %}
+    {% elsif template == 'collection' %}
+      <div class="breadcrumb__delimiter">/</div>
+      {% if current_tags %}
+        {{ collection.title | link_to: collection.url }}
+        <div class="breadcrumb__delimiter">/</div>
+        <span>{{ current_tags | join: ' + ' }} </span>
+      {% else %}
+        <span>{{ collection.title }}</span>
+      {% endif %}
+    {% elsif template == 'customers/order' %}
+      <div class="breadcrumb__delimiter">/</div>
+      <a href="{{ routes.account_url }}" class="focus-inset">{{ 'customer.account.account' | t }} </a>
+      <div class="breadcrumb__delimiter">/</div>
+      <span>
+        {{- 'customer.orders.order_number' | t }}
+        {{ order.name }}
+      </span>
+    {% elsif template == 'customers/addresses' %}
+      <div class="breadcrumb__delimiter">/</div>
+      <a href="{{ routes.account_url }}" class="focus-inset">{{ 'customer.account.account' | t }} </a>
+      <div class="breadcrumb__delimiter">/</div>
+      <span>{{ 'customer.addresses.title' | t }} </span>
+    {% elsif template == 'search' %}
+      <div class="breadcrumb__delimiter">/</div>
+      {% if search.performed %}
+        <span>{{ 'templates.search.title' | t }} </span>
+      {% else %}
+        <span>{{ page_title }} </span>
+      {% endif %}
+    {% else %}
+      <div class="breadcrumb__delimiter">/</div>
+      <span>{{ page_title }} </span>
+    {% endif %}
+  </nav>
+
+  <script>
+    const calcBreadcrumbs = () => {
+      const breadcrumbs = document.querySelector('.breadcrumb');
+      if (breadcrumbs) {
+        const breadcrumbsObserver = new ResizeObserver((entries) => {
+          const breadcrumbsHeight = breadcrumbs.getBoundingClientRect().height;
+          document.documentElement.style.setProperty('--breadcrumbs-height', `${breadcrumbsHeight + 24}px`);
+        });
+        breadcrumbsObserver.observe(breadcrumbs);
+      }
+    };
+    calcBreadcrumbs();
+
+    document.addEventListener('shopify:section:load', function () {
+      calcBreadcrumbs();
+    });
+  </script>
+</div>

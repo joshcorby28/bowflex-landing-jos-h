@@ -1,0 +1,107 @@
+.small-article-card {
+  width: 100%;
+  display: block;
+}
+
+.small-article-card-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  row-gap: 0.8rem;
+  column-gap: 1.6rem;
+  transition: opacity var(--duration-default) ease;
+}
+@media screen and (pointer: fine) {
+  .small-article-card-link:hover .small-article-card-title span {
+    background-size: 100% 0.1rem;
+    background-position: left 94%;
+  }
+  .small-article-card-link:hover .small-article-card-image {
+    transform: scale(1.05);
+  }
+}
+.small-article-card-link:focus-visible {
+  outline-offset: -0.1rem;
+}
+
+.small-article-card-image-wrapper {
+  min-width: 12rem;
+  width: 12rem;
+  display: block;
+  border-radius: calc(var(--border-radius-block) / 2);
+  overflow: hidden;
+}
+.small-article-card-image-wrapper--square {
+  aspect-ratio: 1/1;
+}
+.small-article-card-image-wrapper--landscape {
+  aspect-ratio: 120/68;
+}
+.small-article-card-image-wrapper--portrait {
+  aspect-ratio: 4/5;
+}
+
+.small-article-card-image {
+  width: 100%;
+  height: 100%;
+  object-position: center;
+  border-radius: calc(var(--border-radius-block) / 2);
+  transform: scale(1);
+  transition: transform var(--duration-image-scale) ease-out;
+}
+
+.small-article-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 0.6rem;
+}
+
+.small-article-card-meta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.small-article-card-date {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgba(var(--color-foreground-secondary));
+}
+.small-article-card-date:not(:first-of-type)::before {
+  content: "";
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-color: rgba(var(--color-foreground));
+}
+
+.small-article-card-author {
+  display: inline-block;
+  color: rgba(var(--color-foreground-secondary));
+}
+
+.small-article-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.small-article-card-tag {
+  display: inline-block;
+  border-radius: 20rem;
+  background: rgb(var(--color-button-tertiary));
+  font-family: var(--font-button-family);
+  font-weight: var(--font-button-weight);
+  font-style: var(--font-button-style);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  color: rgb(var(--color-button-tertiary-text));
+  transition: background-color var(--duration-default) ease, color var(--duration-default) ease;
+  padding: 0.4rem 1rem;
+}

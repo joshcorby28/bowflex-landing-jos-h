@@ -1,0 +1,16 @@
+{% comment %}
+  Renders a page card.
+
+  Accepts:
+  - page: {Object} Page object
+
+  Usage:
+  {% render 'page-card', page: page %}
+{% endcomment %}
+
+<a href="{{ page.url }}" class="card-page focus-inset">
+  {% render 'icon-page' %}
+  <h3 class="card-page__title h4">
+    {{- page.title | escape -}}
+  </h3>
+</a>

@@ -1,0 +1,144 @@
+{% liquid
+  if block.settings.enable_marker_1 != blank and block.settings.enable_marker_2 != blank
+    assign columns = 2
+  elsif block.settings.enable_marker_1 != blank and block.settings.enable_marker_2 == blank or block.settings.enable_marker_1 == blank and block.settings.enable_marker_2 != blank
+    assign columns = 1
+  else
+    assign columns = 0
+  endif
+%}
+
+{%- capture sizes -%}
+  {% if columns == 2 %}
+    (min-width: 1920px) 454px, (min-width: 1200px) 23vw,(min-width: 990px) 47vw, (min-width: 576px) calc((100vw - 40px) / 2), calc(100vw - 40px)
+  {% endif %}
+  (min-width: 1920px) 916px, (min-width: 990px) 47vw, (min-width: 576px) calc(100vw - 40px)
+{%- endcapture -%}
+
+<div class="product-markers" {{ block.shopify_attributes }}>
+  <h4 class="product-markers__heading h3">{{ block.settings.product_markers_text }}</h4>
+  <div class="product-markers__markers product-markers-block">
+    {% liquid
+      if block.settings.main_image_ratio != 'adapt'
+        assign aspect_ratio = block.settings.main_image_ratio | split: '/'
+        assign temp = aspect_ratio[0] | append: '.0'
+        assign padding_bottom = aspect_ratio[1] | divided_by: temp | times: 100 | round: 2
+      elsif block.settings.main_image_ratio == 'adapt'
+        assign padding_bottom = 100
+      else
+        assign padding_bottom = 100
+      endif
+    %}
+
+    {% liquid
+      if block.settings.main_image_ratio == 'adapt'
+        if block.settings.image_1 != blank
+          assign padding_bottom_1 = 1 | divided_by: block.settings.image_1.aspect_ratio | times: 100 | round: 2
+        endif
+        if block.settings.image_2 != blank
+          assign padding_bottom_2 = 1 | divided_by: block.settings.image_2.aspect_ratio | times: 100 | round: 2
+        endif
+      endif
+    %}
+
+    {% if block.settings.enable_marker_1 %}
+      <div
+        class="product-markers__product"
+        style="padding-bottom: {% if block.settings.main_image_ratio == 'adapt' and block.settings.image_1 != blank  %}{{ padding_bottom_1 }}%{% else %}{{ padding_bottom }}%{% endif %};"
+      >
+        {%- if block.settings.image_1 != blank -%}
+          {{
+            block.settings.image_1
+            | image_url: width: block.settings.image_1.width
+            | image_tag:
+              loading: 'lazy',
+              widths: '360, 535, 720, 940, 1100, 1200, 1440, 1600, 1800, 2000, 2100, 2200, 2880, 3200, 3600, 3800',
+              sizes: sizes,
+              class: 'product-markers__image'
+          }}
+        {% else %}
+          {{ 'collection-apparel-3' | placeholder_svg_tag: 'placeholder-svg product-markers__image' }}
+        {%- endif -%}
+        <div
+          tabindex="0"
+          data-index="1"
+          class="product-markers__item focus-inset{% if block.settings.enable_marker_animation %} product-markers__item--pulse{% endif %}"
+          style="top: {{ block.settings.position_y_1 }}%; left:{{ block.settings.position_x_1 }}%; transform: translate({% if block.settings.position_x_1 >= 90 %} -100%{% else %}0{% endif %}, {% if block.settings.position_y_1 >= 90 %} -100%{% else %}0{% endif %});"
+          {{ block.shopify_attributes }}
+        >
+          <div class="product-markers__item-inner product-markers__item-inner--{{ block.settings.tooltip_open_position_1 }}">
+            {%- if block.settings.product_id_1 != blank -%}
+              {%
+                render 'product-card-horizontal',
+                show_image: block.settings.show_image,
+                product_card_product: block.settings.product_id_1,
+                show_vendor: block.settings.show_vendor,
+                color_scheme: block.settings.card_color_scheme_1,
+                hide_swatches: true,
+                show_arrow: true,
+              %}
+            {% else %}
+              {% render 'product-card-horizontal-placeholder',
+                show_image: block.settings.show_image,
+                show_vendor: block.settings.show_vendor,
+                product_number: 2,
+                color_scheme: block.settings.card_color_scheme_1,
+                show_arrow: true
+              %}
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.enable_marker_2 %}
+      <div
+        class="product-markers__product"
+        style="padding-bottom: {% if block.settings.main_image_ratio == 'adapt'  and  block.settings.image_2 != blank %}{{ padding_bottom_2 }}%{% else %}{{ padding_bottom }}%{% endif %};"
+      >
+        {%- if block.settings.image_2 != blank -%}
+          {{
+            block.settings.image_2
+            | image_url: width: block.settings.image_2.width
+            | image_tag:
+              loading: 'lazy',
+              widths: '360, 535, 720, 940, 1100, 1200, 1440, 1600, 1800, 2000, 2100, 2200, 2880, 3200, 3600, 3800',
+              sizes: sizes,
+              class: 'product-markers__image'
+          }}
+        {% else %}
+          {{ 'collection-apparel-3' | placeholder_svg_tag: 'placeholder-svg product-markers__image' }}
+        {%- endif -%}
+        <div
+          data-index="2"
+          tabindex="0"
+          class="product-markers__item focus-inset{% if block.settings.enable_marker_animation %} product-markers__item--pulse{% endif %}"
+          style="top: {{ block.settings.position_y_2 }}%; left:{{ block.settings.position_x_2 }}%; transform: translate({% if block.settings.position_x_2 >= 90 %} -100%{% else %}0{% endif %}, {% if block.settings.position_y_2 >= 90 %} -100%{% else %}0{% endif %});"
+          {{ block.shopify_attributes }}
+        >
+          <div class="product-markers__item-inner product-markers__item-inner--{{ block.settings.tooltip_open_position_2 }}">
+            {%- if block.settings.product_id_2 != blank -%}
+              {%
+                render 'product-card-horizontal',
+                show_image: block.settings.show_image,
+                product_card_product: block.settings.product_id_2,
+                show_vendor: block.settings.show_vendor,
+                color_scheme: block.settings.card_color_scheme_2,
+                hide_swatches: true,
+                show_arrow: true,
+              %}
+            {% else %}
+              {% render 'product-card-horizontal-placeholder',
+                show_image: block.settings.show_image,
+                show_vendor: block.settings.show_vendor,
+                product_number: 2,
+                color_scheme: block.settings.card_color_scheme_2,
+                show_arrow: true
+              %}
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

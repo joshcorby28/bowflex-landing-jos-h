@@ -1,0 +1,108 @@
+.search-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.search__form {
+  width: 100%;
+}
+.search__form-text {
+  margin-top: 2rem;
+}
+.search .field {
+  position: relative;
+}
+.search__input {
+  height: 100%;
+}
+.search__input.field__input {
+  padding: 1rem 1.6rem 1rem 0.8rem;
+}
+.search__button {
+  height: 100%;
+  padding: 1rem 0 1rem 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: rgb(var(--color-foreground-input));
+  transition: opacity var(--duration-default);
+}
+.search__button:focus-visible {
+  outline: 1px solid rgba(var(--color-foreground-input), 0.5);
+  outline-offset: -0.2rem;
+}
+.search__button .icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+.search__button--reset {
+  display: none;
+  right: 4rem;
+}
+@media screen and (hover: hover) and (pointer: fine) {
+  .search__button:hover {
+    opacity: var(--hover-opacity);
+  }
+}
+
+.card-page {
+  max-width: 454px;
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  height: 100%;
+  padding: 2.4rem 4rem 2.4rem 3.2rem;
+  border-radius: var(--border-radius-block);
+  border: 0.1rem solid rgb(var(--color-border), 0.4);
+  box-shadow: 0px 20px 40px 0px rgba(0, 0, 0, 0.03);
+  transition: border-color var(--duration-default);
+}
+.card-page .icon {
+  width: 3.2rem;
+  height: 3.2rem;
+  flex-shrink: 0;
+  color: rgb(var(--color-accent));
+  transition: opacity var(--duration-default) ease;
+}
+@media screen and (pointer: fine) {
+  .card-page:hover {
+    border-color: rgb(var(--color-border));
+  }
+  .card-page:hover .icon {
+    opacity: var(--hover-opacity);
+  }
+}
+.card-page:focus-visible {
+  outline-offset: -0.1rem;
+}
+
+.small-card-page {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  column-gap: 1.2rem;
+  max-width: 50rem;
+}
+@media screen and (pointer: fine) {
+  .small-card-page:hover .small-card-page__title-span {
+    background-size: 100% 0.1rem;
+    background-position: left 94%;
+  }
+  .small-card-page:hover svg.icon {
+    opacity: var(--hover-opacity);
+  }
+}
+.small-card-page svg.icon {
+  flex-shrink: 0;
+  width: 3.2rem;
+  height: 3.2rem;
+  color: rgb(var(--color-button));
+  transition: opacity var(--duration-default) ease;
+}
+.small-card-page:focus-visible {
+  outline-offset: -0.1rem;
+}
+
+[data-scheme=dark] .small-card-page svg.icon {
+  color: rgb(var(--color-foreground));
+}

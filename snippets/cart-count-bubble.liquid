@@ -1,0 +1,12 @@
+<span class="header-cart__label body-normal link--hover-underline">{{ 'general.cart.cart' | t }}</span>
+{% render 'icon-cart' %}
+<div class="header-cart__bubble {% if cart.item_count < 10 %}header-cart__bubble--small{% elsif cart.item_count < 100 %}header-cart__bubble--medium{% else %}header-cart__bubble--large{% endif %}">
+  {%- if cart.item_count < 100 -%}
+    <span class="header-cart__bubble-count" aria-hidden="true">{{ cart.item_count }}</span>
+  {%- else -%}
+    <span class="header-cart__bubble-count" aria-hidden="true">99+</span>
+  {%- endif -%}
+  <span class="visually-hidden">
+    {{- 'sections.header.cart_count' | t: count: cart.item_count -}}
+  </span>
+</div>

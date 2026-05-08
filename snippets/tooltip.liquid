@@ -1,0 +1,11 @@
+{% comment %}
+  Renders a tooltip element
+
+    Accepts:
+      - inner_text: {String} The text of the tooltip (required)
+      - class {String} Adds a class to the tooltip element (optional)
+    Usage:
+    {% render 'tooltip', text: inner_text, class: class %}
+{% endcomment %}
+
+<span class="notification-tooltip {{ class }}">{{ inner_text | t }}</span>

@@ -1,0 +1,1293 @@
+{%- if section.settings.enable_tab_banner -%}
+  {{ 'component-header-banner.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- if section.settings.promo_code_enable and section.settings.promo_code != blank -%}
+  <script src="{{ 'promocode-copy.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+<template id="mega-menu-template">
+  <mega-menu
+    class="mega-menu color-background-1 background"
+    id="mega-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mega-menu-btn"
+  >
+    <div class="mega-menu-content">
+      {% comment %} render mega menu and promo tab banner {% endcomment %}
+      {%- if section.blocks.size >= 1 or section.settings.enable_tab_banner -%}
+        <div class="mega-menu-main-container">
+          {% comment %} render mobile mega menu {% endcomment %}
+          {%- if section.blocks.size >= 1 -%}
+            <div class="mega-menu-mobile">
+              <nav class="menu-drawer__navigation">
+                <ul class="menu-drawer__menu list-menu" role="list">
+                  {%- for block in section.blocks -%}
+                    {%- if block.type == 'tab' -%}
+                      {% liquid
+                        assign has_custom_dm_icon = false
+
+                        if block.settings.tab_custom_icon_dm != blank
+                          assign has_custom_dm_icon = true
+                        endif
+                      %}
+                      <li
+                        class="{% if has_custom_dm_icon %}mega-menu-nav-list__item--with_dm_icon{% endif %}"
+                        {{ block.shopify_attributes }}
+                      >
+                        {%- if block.settings.tab_menu != blank -%}
+                          <details>
+                            <summary class="menu-drawer__menu-item list-menu__item link link--text focus-inset">
+                              {%- if block.settings.tab_link != blank -%}
+                                <a
+                                  href="{{ block.settings.tab_link }}"
+                                  class="menu-drawer__menu-link link link--text list-menu__item{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                                  {% if settings.links_blank and block.settings.tab_link == 'external_link' %}
+                                    target="_blank"
+                                  {% endif %}
+                                >
+                                  {%- if block.settings.tab_custom_icon != blank -%}
+                                    {%- assign height = 24
+                                      | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                      | round: 2
+                                    -%}
+                                    {{
+                                      block.settings.tab_custom_icon
+                                      | image_url: width: 96
+                                      | image_tag:
+                                        width: 24,
+                                        height: height,
+                                        widths: '24, 48, 72, 96',
+                                        class: 'mega-menu-nav-list__tab-icon'
+                                    }}
+                                  {%- elsif block.settings.icon != 'none' -%}
+                                    {% render 'icon-pack', icon: block.settings.icon %}
+                                  {%- endif -%}
+                                  {%- if has_custom_dm_icon -%}
+                                    {%- assign height = 24
+                                      | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                      | round: 2
+                                    -%}
+                                    {{
+                                      block.settings.tab_custom_icon_dm
+                                      | image_url: width: 96
+                                      | image_tag:
+                                        width: 24,
+                                        height: height,
+                                        widths: '24, 48, 72, 96',
+                                        class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                    }}
+                                  {%- endif -%}
+
+                                  {%- if block.settings.tab_title != blank -%}
+                                    <span class="header-link-style">
+                                      {{- block.settings.tab_title | strip -}}
+                                    </span>
+                                  {%- endif -%}
+                                </a>
+                              {%- else -%}
+                                <div class="menu-drawer__menu-link link link--text list-menu__item{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %}">
+                                  {%- if block.settings.tab_custom_icon != blank -%}
+                                    {%- assign height = 24
+                                      | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                      | round: 2
+                                    -%}
+                                    {{
+                                      block.settings.tab_custom_icon
+                                      | image_url: width: 96
+                                      | image_tag:
+                                        width: 24,
+                                        height: height,
+                                        widths: '24, 48, 72, 96',
+                                        class: 'mega-menu-nav-list__tab-icon'
+                                    }}
+                                  {%- elsif block.settings.icon != 'none' -%}
+                                    {% render 'icon-pack', icon: block.settings.icon %}
+                                  {%- endif -%}
+                                  {%- if has_custom_dm_icon -%}
+                                    {%- assign height = 24
+                                      | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                      | round: 2
+                                    -%}
+                                    {{
+                                      block.settings.tab_custom_icon_dm
+                                      | image_url: width: 96
+                                      | image_tag:
+                                        width: 24,
+                                        height: height,
+                                        widths: '24, 48, 72, 96',
+                                        class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                    }}
+                                  {%- endif -%}
+
+                                  {%- if block.settings.tab_title != blank -%}
+                                    <span class="header-link-style">
+                                      {{- block.settings.tab_title | strip -}}
+                                    </span>
+                                  {%- endif -%}
+                                </div>
+                              {%- endif -%}
+                              {% render 'icon-caret' %}
+                            </summary>
+                            <div
+                              id="mega-menu-link-{{ block.settings.tab_title | strip | default: forloop.index }}"
+                              class="menu-drawer__submenu motion-reduce"
+                              tabindex="-1"
+                            >
+                              <div class="menu-drawer__inner-submenu">
+                                <ul
+                                  class="menu-drawer__menu list-menu"
+                                  role="list"
+                                  tabindex="-1"
+                                >
+                                  {%- for childlink in block.settings.tab_menu.links -%}
+                                    <li>
+                                      <a
+                                        href="{{ childlink.url }}"
+                                        class="menu-drawer__menu-item menu-drawer__submenu-link link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %} menu-drawer__menu-item--child"
+                                        {% if childlink.current %}
+                                          aria-current="page"
+                                        {% endif %}
+                                        {% if settings.links_blank and childlink.type == 'http_link' %}
+                                          target="_blank"
+                                        {% endif %}
+                                      >
+                                        {{- childlink.title | escape -}}
+                                      </a>
+                                    </li>
+                                  {%- endfor -%}
+                                </ul>
+                              </div>
+                            </div>
+                          </details>
+                        {%- else -%}
+                          {%- if block.settings.tab_link != blank -%}
+                            <a
+                              href="{{ block.settings.tab_link }}"
+                              class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                              {% if settings.links_blank and block.settings.tab_link == 'external_link' %}
+                                target="_blank"
+                              {% endif %}
+                            >
+                              <span class="menu-drawer__menu-link">
+                                {%- if block.settings.tab_custom_icon != blank -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon'
+                                  }}
+                                {%- elsif block.settings.icon != 'none' -%}
+                                  {% render 'icon-pack', icon: block.settings.icon %}
+                                {%- endif -%}
+                                {%- if has_custom_dm_icon -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon_dm
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                  }}
+                                {%- endif -%}
+
+                                {%- if block.settings.tab_title != blank -%}
+                                  <span class="header-link-style">
+                                    {{- block.settings.tab_title | strip -}}
+                                  </span>
+                                {%- endif -%}
+                              </span>
+                            </a>
+                          {%- else -%}
+                            <span class="menu-drawer__menu-item list-menu__item link link--text{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %}">
+                              <span class="menu-drawer__menu-link">
+                                {%- if block.settings.tab_custom_icon != blank -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon'
+                                  }}
+                                {%- elsif block.settings.icon != 'none' -%}
+                                  {% render 'icon-pack', icon: block.settings.icon %}
+                                {%- endif -%}
+                                {%- if has_custom_dm_icon -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon_dm
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                  }}
+                                {%- endif -%}
+
+                                {%- if block.settings.tab_title != blank -%}
+                                  <span class="header-link-style">
+                                    {{- block.settings.tab_title | strip -}}
+                                  </span>
+                                {%- endif -%}
+                              </span>
+                            </span>
+                          {%- endif -%}
+                        {%- endif -%}
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              </nav>
+            </div>
+          {%- endif -%}
+
+          {% comment %} render desktop mega menu and promo tab banner {% endcomment %}
+          {%- if section.blocks.size >= 1 or section.settings.enable_tab_banner -%}
+            <div class="mega-menu-main{% if section.blocks.size >= 1 %} mega-menu-main--with-nav{% endif %}">
+              {%- if section.blocks.size >= 1 -%}
+                <nav class="mega-menu-nav">
+                  <ul class="mega-menu-nav-list list-unstyled">
+                    {%- for block in section.blocks -%}
+                      {%- if block.type == 'tab' -%}
+                        {%- if block.settings.tab_title != blank
+                          or block.settings.icon != 'none'
+                          or block.settings.tab_custom_icon != blank
+                          or block.settings.tab_custom_icon_dm != blank
+                        -%}
+                          {% liquid
+                            assign has_custom_dm_icon = false
+
+                            if block.settings.tab_custom_icon_dm != blank
+                              assign has_custom_dm_icon = true
+                            endif
+                          %}
+                          <li
+                            class="mega-menu-nav-list__item{% if has_custom_dm_icon %} mega-menu-nav-list__item--with_dm_icon{% endif %}"
+                            {{ block.shopify_attributes }}
+                          >
+                            {%- if block.settings.tab_link != blank -%}
+                              <a
+                                class="mega-menu-nav-list__tab{% if forloop.first %} active{% endif %}{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                                href="{{ block.settings.tab_link }}"
+                                aria-label="{{ block.settings.tab_title | strip }}"
+                                data-tab-id="mega-menu-tab-{{ block.id }}"
+                              >
+                                {%- if block.settings.tab_custom_icon != blank -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon'
+                                  }}
+                                {%- elsif block.settings.icon != 'none' -%}
+                                  {% render 'icon-pack', icon: block.settings.icon %}
+                                {%- endif -%}
+                                {%- if has_custom_dm_icon -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon_dm
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                  }}
+                                {%- endif -%}
+
+                                {%- if block.settings.tab_title != blank -%}
+                                  <span class="mega-menu-nav-list__tab-title header-link-style">
+                                    {{- block.settings.tab_title | strip -}}
+                                  </span>
+                                {%- endif -%}
+                              </a>
+                            {%- else -%}
+                              <button
+                                class="mega-menu-nav-list__tab{% if forloop.first %} active{% endif %}{% if block.settings.tab_highlighted %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                                aria-label="{{ block.settings.tab_title | strip }}"
+                                data-tab-id="mega-menu-tab-{{ block.id }}"
+                              >
+                                {%- if block.settings.tab_custom_icon != blank -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon'
+                                  }}
+                                {%- elsif block.settings.icon != 'none' -%}
+                                  {% render 'icon-pack', icon: block.settings.icon %}
+                                {%- endif -%}
+                                {%- if has_custom_dm_icon -%}
+                                  {%- assign height = 24
+                                    | divided_by: block.settings.tab_custom_icon_dm.aspect_ratio
+                                    | round: 2
+                                  -%}
+                                  {{
+                                    block.settings.tab_custom_icon_dm
+                                    | image_url: width: 96
+                                    | image_tag:
+                                      width: 24,
+                                      height: height,
+                                      widths: '24, 48, 72, 96',
+                                      class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                                  }}
+                                {%- endif -%}
+                                {%- if block.settings.tab_title != blank -%}
+                                  <span class="mega-menu-nav-list__tab-title header-link-style">
+                                    {{- block.settings.tab_title | strip -}}
+                                  </span>
+                                {%- endif -%}
+                              </button>
+                            {%- endif -%}
+                          </li>
+                        {%- endif -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                </nav>
+              {%- endif -%}
+
+              <div class="mega-menu-tabs">
+                <div class="mega-menu-tab">
+                  {%- for block in section.blocks -%}
+                    {%- if block.type == 'tab' and block.settings.tab_menu != blank -%}
+                      <div
+                        class="mega-menu-tab__nav-container{% if forloop.first %} active{% endif %}"
+                        id="mega-menu-tab-{{ block.id }}"
+                        {{ block.shopify_attributes }}
+                      >
+                        {%- if block.settings.tab_title != blank -%}
+                          <span class="mega-menu-tab__title {{ block.settings.tab_title_size }}">
+                            {{- block.settings.tab_title | strip -}}
+                          </span>
+                        {%- endif -%}
+                        <nav class="mega-menu-tab-nav">
+                          <ul class="mega-menu-tab-nav__list list-unstyled">
+                            {%- for link in block.settings.tab_menu.links -%}
+                              <li class="mega-menu-tab-nav__list-item">
+                                <a
+                                  href="{{ link.url }}"
+                                  class="mega-menu-tab-nav__list-link focus-inset"
+                                  aria-label="{{ link.title | strip }}"
+                                >
+                                  <span>
+                                    <span class="mega-menu-tab-nav__list-link-title body-normal link--hover-underline">
+                                      {{- link.title | strip -}}
+                                    </span>
+                                  </span>
+                                  <div class="mega-menu-tab-nav__list-link-arrow">
+                                    {% render 'icon-btn-arrow' %}
+                                  </div>
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        </nav>
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+
+                  {%- if section.settings.enable_tab_banner -%}
+                    <div class="mega-menu-banner">
+                      {% render 'header-banner',
+                        banner_color_scheme: section.settings.tab_banner_color_scheme,
+                        banner_overlay_link: section.settings.tab_banner_overlay_link,
+                        banner_button_link: section.settings.tab_banner_button_link,
+                        banner_button_label: section.settings.tab_banner_button_label,
+                        banner_button_style: section.settings.tab_banner_button_style,
+                        banner_show_buton: section.settings.tab_banner_show_button,
+                        banner_show_video: section.settings.tab_banner_show_video,
+                        banner_video: section.settings.tab_banner_video,
+                        banner_image_overlay_opacity: section.settings.tab_banner_image_overlay_opacity,
+                        banner_image: section.settings.tab_banner_image,
+                        banner_image_mobile: section.settings.tab_banner_image_narrow,
+                        banner_aspect_ratio: section.settings.tab_banner_aspect_ratio,
+                        banner_aspect_ratio_mobile: section.settings.tab_banner_aspect_ratio_narrow,
+                        banner_subheading: section.settings.tab_banner_subheading,
+                        banner_subheading_style: section.settings.tab_banner_subheading_style,
+                        banner_content_position: section.settings.tab_banner_content_position,
+                        banner_badge_subheading: section.settings.tab_banner_badge_subheading,
+                        banner_badge_subheading_color: section.settings.tab_banner_badge_subheading_color,
+                        banner_badge_heading: section.settings.tab_banner_badge_heading,
+                        banner_badge_heading_size: section.settings.tab_banner_badge_heading_size,
+                        badge_heading_font: section.settings.badge_heading_font,
+                        banner_badge_prefix: section.settings.tab_banner_badge_prefix,
+                        banner_badge_prefix_size: section.settings.tab_banner_badge_prefix_size,
+                        banner_badge_suffix: section.settings.tab_banner_badge_suffix,
+                        banner_heading: section.settings.tab_banner_heading,
+                        banner_heading_size: section.settings.tab_banner_heading_size,
+                        banner_heading_size_custom: section.settings.tab_banner_heading_size_custom,
+                        banner_description: section.settings.tab_banner_description,
+                        banner_placement: 'header-mega-menu'
+                      %}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {% comment %} render promo code banner {% endcomment %}
+      {%- if section.settings.promo_code_enable -%}
+        {% render 'promo-code', block_settings: section, class: 'mega-menu-promo', stripped_bg: false %}
+      {%- endif -%}
+    </div>
+  </mega-menu>
+</template>
+
+{% schema %}
+{
+  "name": "t:sections.mega_menu.name",
+  "class": "shopify-section-mega-menu",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.mega_menu.settings.info_text.content"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__promo_code.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "promo_code_enable",
+      "label": "t:sections.all.promo_code.promo_code_enable.label",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "promo_code_color_scheme",
+      "label": "t:sections.all.color_scheme.label",
+      "default": "background-3"
+    },
+    {
+      "type": "text",
+      "id": "promo_code_text",
+      "label": "t:sections.all.promo_code.promo_code_text.label",
+      "default": "t:sections.all.promo_code.promo_code_text.default"
+    },
+    {
+      "type": "select",
+      "id": "promo_code_text_size",
+      "options": [
+        {
+          "value": "h5",
+          "label": "t:sections.all.heading_size.options__5.label"
+        },
+        {
+          "value": "h4",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__2.label"
+        }
+      ],
+      "default": "h4",
+      "label": "t:sections.all.promo_code.promo_code_text.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "promo_code_icon",
+      "label": "t:sections.all.promo_code.promo_code_icon.label"
+    },
+    {
+      "type": "range",
+      "id": "promo_code_icon_size",
+      "label": "t:sections.all.promo_code.promo_code_icon_size.label",
+      "default": 26,
+      "min": 10,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "promo_code",
+      "label": "t:sections.all.promo_code.promo_code.label",
+      "default": "NEW10"
+    },
+    {
+      "type": "checkbox",
+      "id": "promo_code_show_code",
+      "label": "t:sections.all.promo_code.promo_code_show_code.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "promo_code_rotate_code",
+      "label": "t:sections.all.promo_code.promo_code_rotate_code.label",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "promo_code_color",
+      "default": "#FFFFFF",
+      "label": "t:sections.all.promo_code.promo_code_color.label"
+    },
+    {
+      "type": "color",
+      "id": "promo_code_bg",
+      "default": "#CD3D1C",
+      "label": "t:sections.all.promo_code.promo_code_bg.label"
+    },
+    {
+      "type": "select",
+      "id": "promo_code_button_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:sections.all.button.button_style.options__1.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:sections.all.button.button_style.options__2.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:sections.all.button.button_style.options__3.label"
+        },
+        {
+          "value": "transparent",
+          "label": "t:sections.all.button.button_style.options__8.label"
+        }
+      ],
+      "default": "transparent",
+      "label": "t:sections.all.button.button_style.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_tab_banner",
+      "default": true,
+      "label": "t:sections.mega_menu.settings.enable_tab_banner.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "tab_banner_color_scheme",
+      "default": "background-3",
+      "label": "t:sections.all.color_scheme.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner_image.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "tab_banner_image",
+      "label": "t:sections.mega_menu.settings.tab_banner_image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "tab_banner_image_narrow",
+      "label": "t:sections.mega_menu.settings.tab_banner_image_narrow.label",
+      "info": "t:sections.mega_menu.settings.tab_banner_image_narrow.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_banner_show_video",
+      "label": "t:sections.all.video.show_video.label",
+      "info": "t:sections.all.video.show_video.info",
+      "default": false
+    },
+    {
+      "type": "video",
+      "id": "tab_banner_video",
+      "label": "t:sections.all.video.video.label"
+    },
+    {
+      "type": "range",
+      "id": "tab_banner_image_overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "t:sections.mega_menu.settings.tab_banner_image_overlay_opacity.label",
+      "default": 0.2
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_aspect_ratio",
+      "label": "t:sections.mega_menu.settings.tab_banner_aspect_ratio.label",
+      "info": "t:sections.mega_menu.settings.tab_banner_aspect_ratio.info",
+      "options": [
+        {
+          "value": "recommended",
+          "label": "t:sections.all.aspect_ratio.options__10.label"
+        },
+        {
+          "value": "1/1",
+          "label": "t:sections.all.aspect_ratio.options__1.label"
+        },
+        {
+          "value": "3/2",
+          "label": "t:sections.all.aspect_ratio.options__2.label"
+        },
+        {
+          "value": "4/3",
+          "label": "t:sections.all.aspect_ratio.options__3.label"
+        },
+        {
+          "value": "16/9",
+          "label": "t:sections.all.aspect_ratio.options__4.label"
+        },
+        {
+          "value": "21/9",
+          "label": "t:sections.all.aspect_ratio.options__5.label"
+        },
+        {
+          "value": "4/5",
+          "label": "t:sections.all.aspect_ratio.options__7.label"
+        },
+        {
+          "value": "3/4",
+          "label": "t:sections.all.aspect_ratio.options__8.label"
+        }
+      ],
+      "default": "recommended"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_aspect_ratio_narrow",
+      "label": "t:sections.mega_menu.settings.tab_banner_aspect_ratio_narrow.label",
+      "info": "t:sections.mega_menu.settings.tab_banner_aspect_ratio_narrow.info",
+      "options": [
+        {
+          "value": "recommended",
+          "label": "t:sections.all.aspect_ratio.options__10.label"
+        },
+        {
+          "value": "1/1",
+          "label": "t:sections.all.aspect_ratio.options__1.label"
+        },
+        {
+          "value": "3/2",
+          "label": "t:sections.all.aspect_ratio.options__2.label"
+        },
+        {
+          "value": "4/3",
+          "label": "t:sections.all.aspect_ratio.options__3.label"
+        },
+        {
+          "value": "16/9",
+          "label": "t:sections.all.aspect_ratio.options__4.label"
+        },
+        {
+          "value": "21/9",
+          "label": "t:sections.all.aspect_ratio.options__5.label"
+        },
+        {
+          "value": "4/5",
+          "label": "t:sections.all.aspect_ratio.options__7.label"
+        },
+        {
+          "value": "3/4",
+          "label": "t:sections.all.aspect_ratio.options__8.label"
+        }
+      ],
+      "default": "4/3"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner_content.content"
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_subheading",
+      "label": "t:sections.mega_menu.settings.tab_banner_subheading.label",
+      "default": "t:sections.mega_menu.settings.tab_banner_subheading.default"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_subheading_style",
+      "label": "t:sections.mega_menu.settings.tab_banner_subheading_style.label",
+      "options": [
+        {
+          "value": "badge",
+          "label": "t:sections.mega_menu.settings.tab_banner_subheading_style.options__1.label"
+        },
+        {
+          "value": "simple",
+          "label": "t:sections.mega_menu.settings.tab_banner_subheading_style.options__2.label"
+        }
+      ],
+      "default": "badge"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_badge_subheading_color",
+      "label": "t:sections.mega_menu.settings.tab_banner_badge_subheading_color.label",
+      "options": [
+        {
+          "value": "accent",
+          "label": "t:sections.mega_menu.settings.tab_banner_badge_subheading_color.options__1.label"
+        },
+        {
+          "value": "text",
+          "label": "t:sections.mega_menu.settings.tab_banner_badge_subheading_color.options__2.label"
+        }
+      ],
+      "default": "text"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tab_banner_heading",
+      "label": "t:sections.mega_menu.settings.tab_banner_heading.label",
+      "default": "t:sections.mega_menu.settings.tab_banner_heading.default"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_heading_size",
+      "label": "t:sections.mega_menu.settings.tab_banner_heading_size.label",
+      "options": [
+        {
+          "value": "h5",
+          "label": "t:sections.all.heading_size.options__5.label"
+        },
+        {
+          "value": "h4",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "custom",
+          "label": "t:sections.mega_menu.settings.tab_banner_heading_size.custom"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "range",
+      "id": "tab_banner_heading_size_custom",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.mega_menu.settings.tab_banner_heading_size_custom.label",
+      "default": 80
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tab_banner_description",
+      "label": "t:sections.all.text.label"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_content_position",
+      "label": "t:sections.banner-grid.blocks.card.settings.content_position.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.banner-grid.blocks.card.settings.content_position.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.banner-grid.blocks.card.settings.content_position.options__2.label"
+        },
+        {
+          "value": "bottom",
+          "label": "t:sections.banner-grid.blocks.card.settings.content_position.options__3.label"
+        },
+        {
+          "value": "stretch",
+          "label": "t:sections.banner-grid.blocks.card.settings.content_position.options__4.label"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner_badge.content"
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_badge_subheading",
+      "label": "t:sections.all.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_badge_heading",
+      "label": "t:sections.all.heading.label"
+    },
+    {
+      "type": "select",
+      "id": "badge_heading_font",
+      "default": "accent",
+      "label": "t:sections.mega_menu.settings.tab_banner_type_badge_heading_font.label",
+      "options": [
+        {
+          "value": "base",
+          "label": "t:sections.all.heading_font.options__1.label"
+        },
+        {
+          "value": "accent",
+          "label": "t:sections.all.heading_font.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tab_banner_badge_heading_size",
+      "min": 30,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.mega_menu.settings.tab_banner_badge_heading_size.label",
+      "default": 42
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_badge_prefix",
+      "label": "t:sections.mega_menu.settings.tab_banner_badge_prefix.label",
+      "info": "t:sections.mega_menu.settings.tab_banner_badge_prefix.info"
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_badge_suffix",
+      "label": "t:sections.mega_menu.settings.tab_banner_badge_suffix.label",
+      "info": "t:sections.mega_menu.settings.tab_banner_badge_suffix.info"
+    },
+    {
+      "type": "range",
+      "id": "tab_banner_badge_prefix_size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.mega_menu.settings.tab_banner_badge_prefix_size.label",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner_button.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_banner_show_button",
+      "default": true,
+      "label": "t:sections.all.button.button_show.label"
+    },
+    {
+      "type": "text",
+      "id": "tab_banner_button_label",
+      "label": "t:sections.all.button.button_label.label",
+      "default": "t:sections.mega_menu.settings.tab_banner_button_label.default"
+    },
+    {
+      "type": "url",
+      "id": "tab_banner_button_link",
+      "label": "t:sections.all.button.button_link.label"
+    },
+    {
+      "type": "select",
+      "id": "tab_banner_button_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:sections.all.button.button_style.options__1.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:sections.all.button.button_style.options__2.label"
+        },
+        {
+          "value": "tertiary",
+          "label": "t:sections.all.button.button_style.options__3.label"
+        },
+        {
+          "value": "link--primary",
+          "label": "t:sections.all.button.button_style.options__4.label"
+        },
+        {
+          "value": "link--secondary",
+          "label": "t:sections.all.button.button_style.options__5.label"
+        },
+        {
+          "value": "link--tertiary",
+          "label": "t:sections.all.button.button_style.options__6.label"
+        }
+      ],
+      "default": "primary",
+      "label": "t:sections.all.button.button_style.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_banner_overlay_link",
+      "label": "t:sections.mega_menu.settings.tab_banner_overlay_link.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.mega_menu.settings.header__tab_banner_content_position.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "t:sections.mega_menu.blocks.tab.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_title",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_title.label",
+          "default": "t:sections.mega_menu.blocks.tab.settings.tab_title.default"
+        },
+        {
+          "type": "url",
+          "id": "tab_link",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_link.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "tab_highlighted",
+          "default": false,
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_highlighted.label"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_icon.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:sections.all.icon_pack.options__1.label"
+            },
+            {
+              "value": "arrow-back",
+              "label": "t:sections.all.icon_pack.options__2.label"
+            },
+            {
+              "value": "arrow-down",
+              "label": "t:sections.all.icon_pack.options__3.label"
+            },
+            {
+              "value": "arrow-right",
+              "label": "t:sections.all.icon_pack.options__4.label"
+            },
+            {
+              "value": "arrow-up",
+              "label": "t:sections.all.icon_pack.options__5.label"
+            },
+            {
+              "value": "bag",
+              "label": "t:sections.all.icon_pack.options__6.label"
+            },
+            {
+              "value": "bag_2",
+              "label": "t:sections.all.icon_pack.options__6_1.label"
+            },
+            {
+              "value": "bell",
+              "label": "t:sections.all.icon_pack.options__7.label"
+            },
+            {
+              "value": "blog",
+              "label": "t:sections.all.icon_pack.options__7_1.label"
+            },
+            {
+              "value": "box",
+              "label": "t:sections.all.icon_pack.options__8.label"
+            },
+            {
+              "value": "check",
+              "label": "t:sections.all.icon_pack.options__9.label"
+            },
+            {
+              "value": "close",
+              "label": "t:sections.all.icon_pack.options__10.label"
+            },
+            {
+              "value": "copy",
+              "label": "t:sections.all.icon_pack.options__11.label"
+            },
+            {
+              "value": "crown",
+              "label": "t:sections.all.icon_pack.options__12.label"
+            },
+            {
+              "value": "dark-mode",
+              "label": "t:sections.all.icon_pack.options__13.label"
+            },
+            {
+              "value": "eye",
+              "label": "t:sections.all.icon_pack.options__14.label"
+            },
+            {
+              "value": "facebook",
+              "label": "t:sections.all.icon_pack.options__15.label"
+            },
+            {
+              "value": "instagram",
+              "label": "t:sections.all.icon_pack.options__16.label"
+            },
+            {
+              "value": "layers",
+              "label": "t:sections.all.icon_pack.options__17_1.label"
+            },
+            {
+              "value": "like",
+              "label": "t:sections.all.icon_pack.options__17.label"
+            },
+            {
+              "value": "link",
+              "label": "t:sections.all.icon_pack.options__18.label"
+            },
+            {
+              "value": "minus",
+              "label": "t:sections.all.icon_pack.options__19.label"
+            },
+            {
+              "value": "page",
+              "label": "t:sections.all.icon_pack.options__20.label"
+            },
+            {
+              "value": "page_2",
+              "label": "t:sections.all.icon_pack.options__20_1.label"
+            },
+            {
+              "value": "pant",
+              "label": "t:sections.all.icon_pack.options__21.label"
+            },
+            {
+              "value": "payment",
+              "label": "t:sections.all.icon_pack.options__22.label"
+            },
+            {
+              "value": "percent",
+              "label": "t:sections.all.icon_pack.options__23.label"
+            },
+            {
+              "value": "percent_2",
+              "label": "t:sections.all.icon_pack.options__23_2.label"
+            },
+            {
+              "value": "pinterest",
+              "label": "t:sections.all.icon_pack.options__24.label"
+            },
+            {
+              "value": "place-mark",
+              "label": "t:sections.all.icon_pack.options__25.label"
+            },
+            {
+              "value": "plus",
+              "label": "t:sections.all.icon_pack.options__26.label"
+            },
+            {
+              "value": "search",
+              "label": "t:sections.all.icon_pack.options__29.label"
+            },
+            {
+              "value": "settings",
+              "label": "t:sections.all.icon_pack.options__30.label"
+            },
+            {
+              "value": "share",
+              "label": "t:sections.all.icon_pack.options__31.label"
+            },
+            {
+              "value": "shoe",
+              "label": "t:sections.all.icon_pack.options__32.label"
+            },
+            {
+              "value": "snapchat",
+              "label": "t:sections.all.icon_pack.options__33.label"
+            },
+            {
+              "value": "star",
+              "label": "t:sections.all.icon_pack.options__34.label"
+            },
+            {
+              "value": "support",
+              "label": "t:sections.all.icon_pack.options__35.label"
+            },
+            {
+              "value": "tiktok",
+              "label": "t:sections.all.icon_pack.options__36.label"
+            },
+            {
+              "value": "top",
+              "label": "t:sections.all.icon_pack.options__37.label"
+            },
+            {
+              "value": "telegram",
+              "label": "t:sections.all.icon_pack.options__38.label"
+            },
+            {
+              "value": "trash",
+              "label": "t:sections.all.icon_pack.options__39.label"
+            },
+            {
+              "value": "twitter",
+              "label": "t:sections.all.icon_pack.options__40.label"
+            },
+            {
+              "value": "tumblr",
+              "label": "t:sections.all.icon_pack.options__41.label"
+            },
+            {
+              "value": "user-1",
+              "label": "t:sections.all.icon_pack.options__42.label"
+            },
+            {
+              "value": "user-2",
+              "label": "t:sections.all.icon_pack.options__43.label"
+            },
+            {
+              "value": "user-3",
+              "label": "t:sections.all.icon_pack.options__44.label"
+            },
+            {
+              "value": "vimeo",
+              "label": "t:sections.all.icon_pack.options__45.label"
+            },
+            {
+              "value": "world",
+              "label": "t:sections.all.icon_pack.options__46.label"
+            },
+            {
+              "value": "youtube",
+              "label": "t:sections.all.icon_pack.options__47.label"
+            },
+            {
+              "value": "furniture",
+              "label": "t:sections.all.icon_pack.options__48.label"
+            },
+            {
+              "value": "lighting",
+              "label": "t:sections.all.icon_pack.options__49.label"
+            },
+            {
+              "value": "plant",
+              "label": "t:sections.all.icon_pack.options__50.label"
+            },
+            {
+              "value": "equipment",
+              "label": "t:sections.all.icon_pack.options__51.label"
+            },
+            {
+              "value": "ring",
+              "label": "t:sections.all.icon_pack.options__52.label"
+            },
+            {
+              "value": "earrings",
+              "label": "t:sections.all.icon_pack.options__53.label"
+            },
+            {
+              "value": "necklace",
+              "label": "t:sections.all.icon_pack.options__54.label"
+            },
+            {
+              "value": "bracelet",
+              "label": "t:sections.all.icon_pack.options__55.label"
+            }
+          ],
+          "default": "box"
+        },
+        {
+          "type": "image_picker",
+          "id": "tab_custom_icon",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_custom_icon.label",
+          "info": "t:sections.mega_menu.blocks.tab.settings.tab_custom_icon.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "tab_custom_icon_dm",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_custom_icon_dm.label"
+        },
+        {
+          "type": "select",
+          "id": "tab_title_size",
+          "options": [
+            {
+              "value": "h5",
+              "label": "t:sections.all.heading_size.options__5.label"
+            },
+            {
+              "value": "h4",
+              "label": "t:sections.all.heading_size.options__4.label"
+            },
+            {
+              "value": "h3",
+              "label": "t:sections.all.heading_size.options__1.label"
+            },
+            {
+              "value": "h2",
+              "label": "t:sections.all.heading_size.options__2.label"
+            }
+          ],
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_title_size.label",
+          "default": "h2"
+        },
+        {
+          "type": "link_list",
+          "id": "tab_menu",
+          "label": "t:sections.mega_menu.blocks.tab.settings.tab_menu.label",
+          "info": "t:sections.mega_menu.blocks.tab.settings.tab_menu.info"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

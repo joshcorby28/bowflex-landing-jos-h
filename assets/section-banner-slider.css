@@ -1,0 +1,179 @@
+.banner-slider__slide {
+  display: flex;
+  height: auto;
+  border-radius: var(--border-radius-block);
+  overflow: hidden;
+}
+.banner-slider__slide::before {
+  content: "";
+  display: block;
+  padding-bottom: var(--padding-bottom-mobile);
+}
+@media screen and (min-width: 750px) {
+  .banner-slider__slide::before {
+    padding-bottom: var(--padding-bottom);
+  }
+}
+.banner-slider__image-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: var(--border-radius-block);
+  overflow: hidden;
+}
+.banner-slider__image-wrapper img {
+  transition: transform var(--duration-default);
+}
+.banner-slider__image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(var(--color-overlay));
+  border-radius: var(--border-radius-block);
+  z-index: 1;
+  opacity: var(--overlay-opacity-mobile);
+}
+@media screen and (min-width: 750px) {
+  .banner-slider__image-wrapper::after {
+    opacity: var(--overlay-opacity);
+  }
+}
+.banner-slider__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+.banner-slider picture .banner-slider__image {
+  object-position: var(--focal_point_mobile);
+}
+@media screen and (min-width: 750px) {
+  .banner-slider picture .banner-slider__image {
+    object-position: var(--focal_point_desktop);
+  }
+}
+.banner-slider__link {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+@media screen and (hover: hover) and (pointer: fine) {
+  .banner-slider__link:hover + .banner-slider__image-wrapper img {
+    transform: scale(1.05);
+  }
+}
+.banner-slider__content {
+  position: relative;
+  padding: 2rem 2.4rem;
+  pointer-events: none;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+@media screen and (min-width: 750px) {
+  .banner-slider__content {
+    padding: 1.4rem 2.4rem;
+  }
+}
+.banner-slider__content_pagination {
+  padding-bottom: 4rem;
+}
+@media screen and (min-width: 750px) {
+  .banner-slider__content_pagination {
+    padding-bottom: 3.2rem;
+  }
+}
+@media screen and (min-width: 750px) {
+  .banner-slider__content_navigation {
+    padding-inline: 10rem;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .banner-slider__content_navigation {
+    padding-inline: 12rem;
+  }
+}
+.banner-slider__content--center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.banner-slider__content--right {
+  text-align: right;
+  margin-left: auto;
+}
+.banner-slider__subheading {
+  margin-bottom: 0.8rem;
+}
+.banner-slider__subheading:last-child {
+  margin-bottom: 0;
+}
+.banner-slider__heading.accent-font {
+  line-height: 1;
+}
+.banner-slider__heading.custom {
+  font-size: calc(0.65 * var(--font-size));
+}
+@media screen and (min-width: 576px) {
+  .banner-slider__heading.custom {
+    font-size: calc(0.82 * var(--font-size));
+  }
+}
+@media screen and (min-width: 1360px) {
+  .banner-slider__heading.custom {
+    font-size: var(--font-size);
+  }
+}
+.banner-slider__heading + .banner-slider__text {
+  margin-top: 0.4rem;
+}
+.banner-slider__navigation {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 2rem;
+  pointer-events: none;
+}
+@media screen and (min-width: 1200px) {
+  .banner-slider__navigation {
+    padding: 0 4rem;
+  }
+}
+@media screen and (max-width: 749px) {
+  .banner-slider__navigation {
+    display: none;
+  }
+}
+.banner-slider__navigation .banner-slider__navigation-button {
+  background-color: rgb(var(--color-foreground), 0.2);
+  color: rgb(var(--color-foreground));
+  pointer-events: auto;
+}
+@media screen and (min-width: 990px) {
+  .banner-slider__navigation .banner-slider__navigation-button {
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+}
+.banner-slider__navigation .banner-slider__navigation-button:hover {
+  background-color: rgb(var(--color-foreground), 0.4);
+}
+@media screen and (min-width: 990px) {
+  .banner-slider__navigation .banner-slider__navigation-button .icon {
+    width: 3.3rem;
+    height: 3.3rem;
+  }
+}
+.banner-slider__pagination {
+  position: absolute;
+  bottom: 1.2rem !important;
+}

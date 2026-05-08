@@ -1,0 +1,124 @@
+{% comment %}
+  	Renders a product card placeholder
+    Accepts:
+    - show_vendor: {Boolean} Show the product vendor. Default: false,
+    - product_number: {Integer} The number of the product.,
+    - color_scheme: {String} The color scheme of the card.
+  	Usage:
+  {% render 'product-card-placeholder' %}
+{% endcomment %}
+
+{% liquid
+  case settings.card_image_ratio
+    when 'landscape'
+      assign padding_bottom = '75%'
+    when 'portrait'
+      assign padding_bottom = '133.3%'
+    when 'square'
+      assign padding_bottom = '100%'
+    else
+      assign padding_bottom = '100%'
+  endcase
+
+  # product_number can be from 1 to 4
+  if product_number == blank
+    assign product_number = 2
+  endif
+
+  assign has_sale_price = false
+  assign has_sale_badge = false
+  # assign has_options = false
+  # assign has_swatches = false
+  assign has_soldout_badge = false
+  assign has_custom_badge = false
+  assign has_new_badge = false
+  if product_number == 1 or product_number == '1'
+    assign has_sale_badge = true
+    assign has_custom_badge = true
+    assign has_sale_price = true
+  elsif product_number == 2 or product_number == '2'
+    # assign has_options = true
+  elsif product_number == 3 or product_number == '3'
+    assign has_soldout_badge = true
+  elsif product_number == 4 or product_number == '4'
+    assign has_new_badge = true
+  endif
+
+  # assign sizes_placeholder = 'XS|S|M|L|XL|XXL' | split: '|'
+%}
+
+<div
+  class="
+    card-wrapper card-wrapper--mobile-{{ mobile_column }}
+    {% if color_scheme != blank %} color-{{ color_scheme }}
+    {% else %} color-{{ settings.card_color_scheme }} {% endif %}
+  "
+>
+  <div class="card card--product card--product-placeholder" tabindex="-1">
+    <div class="card__inner">
+      <div
+        class="media media--transparent media--hover-effect"
+        style="padding-bottom: {{ padding_bottom }};"
+      >
+        {{ 'product-apparel-' | append: product_number | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+
+      {%- if settings.badge_sale_show
+        or settings.badge_soldout_show
+        or settings.badge_custom_show
+        or settings.badge_new_show
+      -%}
+        <div class="card__information-top">
+          <div class="card__badge body-small">
+            {%- if has_soldout_badge and settings.badge_soldout_show -%}
+              <span class="badge badge--sold-out color-{{ settings.badge_soldout_color_scheme }}" aria-hidden="true">
+                {{- 'products.product.sold_out' | t -}}
+              </span>
+            {%- elsif has_sale_badge and settings.badge_sale_show -%}
+              <span class="badge badge--sale color-{{ settings.badge_sale_color_scheme }}" aria-hidden="true">
+                {% if settings.badge_sale_type == 'sale' %}
+                  {{- 'products.product.on_sale' | t -}}
+                {% else %}
+                  -<span>15%</span>
+                {% endif %}
+              </span>
+            {%- endif -%}
+
+            {% if has_new_badge and settings.badge_new_show %}
+              <span class="badge badge--new color-{{ settings.badge_new_color_scheme }}">
+                {{- 'products.product.new' | t -}}
+              </span>
+            {% endif %}
+
+            {% if has_custom_badge and settings.badge_custom_show %}
+              <span class="badge badge--custom color-{{ settings.badge_custom_color_scheme }}" aria-hidden="true">
+                {%- if settings.custom_badge_icon != 'none' %}
+                  {% render 'icon-pack', icon: settings.custom_badge_icon %}
+                {% endif %}
+                {{- 'products.product.custom_badge_placeholder' | t -}}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="card-information {{ product_number }}">
+    <div class="card-information__wrapper">
+      {% render 'price', is_placeholder_sale_price: has_sale_price, is_placeholder: true %}
+
+      <div class="card-information__group">
+        {%- if show_vendor -%}
+          <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+          <div class="card__vendor body-xs">
+            {{ 'products.product.vendor' | t }}
+          </div>
+        {%- endif -%}
+        <h3 class="card__title">
+          {{ 'products.product.product_heading' | t }}
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>

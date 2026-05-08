@@ -1,0 +1,104 @@
+{% comment %}
+  Renders a product card
+  Accepts:
+  - product_card_product: {Object} Product Liquid object (optional)
+  - show_vendor: {Boolean} Show the product vendor. Default: true
+  - section_id: {String} The ID of the section that contains this card.
+  - class: {String} Additional classes to add to the card.
+  - scheme: {String} The color scheme to use for the card. Default: 'default'
+  - absent_option: {Object}
+  Usage:
+  {% render 'product-card-horizontal-extended', show_vendor: section.settings.show_vendor %}
+{% endcomment %}
+{% liquid
+  assign media_ratio = settings.card_image_ratio
+  assign media_fit = settings.card_image_fit
+%}
+
+{% liquid
+  case media_ratio
+    when 'landscape'
+      assign padding_bottom = '75%'
+    when 'portrait'
+      assign padding_bottom = '133%'
+    when 'square'
+      assign padding_bottom = '100%'
+    else
+      assign padding_bottom = '100%'
+  endcase
+%}
+<div class="card-extended">
+  <div class="card-extended__wrapper">
+    <div
+      class="card-extended__image color-{{ section.settings.media_color_scheme }}"
+      data-media-sub-id="{{ section.id }}-{{ product_card_product.id }}"
+    >
+      <div class="product__media" style="padding-bottom: {{ padding_bottom }}">
+        {% liquid
+          if product_card_product.media.size > 0
+            if product_card_product.selected_or_first_available_variant.featured_media != null
+              assign product_media = product_card_product.selected_or_first_available_variant.featured_media
+            else
+              assign product_media = product_card_product.media[0]
+            endif
+          else
+            assign product_media = null
+          endif
+        %}
+
+        {%- if product_media != null -%}
+          {%- capture style -%}object-position: {{ product_media.presentation.focal_point }}; object-fit: {{ media_fit }};{%- endcapture -%}
+          {%- liquid
+            assign calc_ratio = 1
+            if media_fit == 'cover' and product_media.aspect_ratio > 1
+              assign calc_ratio = product_media.aspect_ratio | divided_by: 1 | round: 2
+            endif
+          -%}
+          {%- capture sizes -%}calc(72px * {{ calc_ratio }}){%- endcapture -%}
+          {{
+            product_media
+            | image_url: width: product_media.width
+            | image_tag: loading: 'lazy', sizes: sizes, widths: '72, 144, 216', style: style
+          }}
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="card-extended__content">
+      {%- if show_vendor -%}
+        <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+        <div class="card-extended__vendor card__vendor body-small {% if settings.enable_vendor_link %} card__vendor_link {% endif %}">
+          {% if settings.enable_vendor_link %}
+            {{ product_card_product.vendor | link_to_vendor: class: 'focus-inset' }}
+          {% else %}
+            {{ product_card_product.vendor }}
+          {% endif %}
+        </div>
+      {%- endif -%}
+      <h3 class="card-extended__title h5">
+        {{- product_card_product.title | escape -}}
+      </h3>
+      {%- unless product_card_product.has_only_default_variant -%}
+        <div class="card-extended__variant-line">
+          {%- for product_option in product_card_product.options_with_values -%}
+            <p class="card-extended__variant" data-option="{{ product_option.name | escape }}">
+              {% if product_option.name != absent_option_name %}
+                <span class="card-extended__variant-option">{{ product_option.name | escape }}: &nbsp;</span>
+                {%- for value in product_option.values -%}
+                  {%- if product_option.selected_value == value -%}
+                    <span class="card-extended__variant-value">{{ value | escape }}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- else -%}
+                <span class="card-extended__variant-option">{{ absent_option_name | escape }}: &nbsp;</span>
+                <span class="card-extended__variant-value">{{ absent_value | escape }}</span>
+              {% endif %}
+              {%- unless forloop.last -%}{%- endunless -%}
+            </p>
+          {%- endfor -%}
+        </div>
+      {%- endunless -%}
+    </div>
+  </div>
+</div>

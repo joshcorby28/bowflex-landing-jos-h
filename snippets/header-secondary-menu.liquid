@@ -1,0 +1,48 @@
+{% comment %}
+  Renders secondary menu
+  Accepts:
+  * font_size: Font size: small/normal/large (default: small)
+  - small corresponds to 'body-small' class font size
+  - normal corresponds to 'body-normal' class font size
+  - large corresponds to 'body-large' class font size
+  Usage:
+  {% render 'header-secondary-menu', font_size: 'normal'%}
+{% endcomment %}
+
+{% liquid
+  assign font_size_class = 'body-small'
+
+  if font_size == 'normal'
+    assign font_size_class = 'body-normal'
+  endif
+
+  if font_size == 'large'
+    assign font_size_class = 'body-large'
+  endif
+%}
+
+<nav class="header-secondary-menu">
+  <ul class="header-secondary-menu-list list-unstyled">
+    {%- for link in section.settings.secondary_menu.links -%}
+      <li
+        class="header-secondary-menu-list-item"
+      >
+        <a
+          href="{{ link.url }}"
+          {% if settings.links_blank and link.type == 'http_link' %}
+            target="_blank"
+          {% endif %}
+          class="header-secondary-menu-list-item__link focus-inset{% if link.current and link.url != '/' %} header-secondary-menu-list-item__link--active{% endif %}"
+          {% if link.current and link.url != '/' %}
+            aria-current="page"
+          {% endif %}
+          aria-label="{{ link.title | escape }}"
+        >
+          <span class="{{font_size_class}} link--hover-underline-opacity" title="{{ link.title | escape }}">
+            {{ link.title | escape }}
+          </span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>

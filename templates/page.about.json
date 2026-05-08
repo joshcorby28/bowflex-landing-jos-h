@@ -1,0 +1,276 @@
+{
+  "sections": {
+    "image-with-text": {
+      "type": "image-with-text",
+      "settings": {
+        "full_width": true,
+        "color_scheme": "",
+        "heading": "Here can be your title",
+        "heading_size": "h1",
+        "heading_level": "h1",
+        "description": "<p>Here can be a description explaining the purpose of the image, whether it’s showcasing a product, telling a brand story, or highlighting a campaign.</p>",
+        "text_align": "center",
+        "vertical_content_alignment": "center",
+        "img_position": "bottom",
+        "aspect_ratio": "16/9",
+        "show_button": false,
+        "button_link": "",
+        "button_style": "primary",
+        "show_button_2": false,
+        "button_link_2": "",
+        "button_style_2": "tertiary",
+        "padding_top": "l",
+        "padding_bottom": "no-indent",
+        "margin_top": "no-indent",
+        "margin_bottom": "no-indent"
+      }
+    },
+    "rich-text": {
+      "type": "rich-text",
+      "blocks": {
+        "block_1": {
+          "type": "heading",
+          "settings": {
+            "heading": "Here can be a Compelling Message Summarizing the Section’s Focus",
+            "heading_size": "h2",
+            "heading_level": "h2",
+            "alignment": "center"
+          }
+        },
+        "block_2": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Here can be a detailed paragraph that expands on the heading, providing insights, background information, or key details.</p>",
+            "alignment": "center"
+          }
+        },
+        "block_3": {
+          "type": "author",
+          "settings": {
+            "author_name": "Author name",
+            "author_position": "Author position",
+            "position": "center"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "full_width": false,
+        "position": "center",
+        "padding_top": "l",
+        "padding_bottom": "no-indent",
+        "margin_top": "no-indent",
+        "margin_bottom": "no-indent"
+      }
+    },
+    "multicolumn": {
+      "type": "multicolumn",
+      "blocks": {
+        "block_1": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "none",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": false,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_2": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "none",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": false,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_3": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "none",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": false,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_4": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "none",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": false,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "heading": "",
+        "heading_size": "h2",
+        "description": "",
+        "multicolumn_to_show": 4,
+        "swipe_on_mobile": false,
+        "card_heading_size": "h4",
+        "column_color_scheme": "",
+        "column_padding": "medium",
+        "padding_top": "m",
+        "padding_bottom": "no-indent",
+        "margin_top": "no-indent",
+        "margin_bottom": "no-indent"
+      }
+    },
+    "multicolumn-2": {
+      "type": "multicolumn",
+      "blocks": {
+        "block_1": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "box",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": true,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_2": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "arrow-back",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": true,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_3": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "payment",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": true,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        },
+        "block_4": {
+          "type": "column",
+          "settings": {
+            "image_ratio": "portrait",
+            "object_fit": "cover",
+            "icon": "support",
+            "highlight_value": "",
+            "heading": "Feature Title Here",
+            "text": "Here, you can provide a short description of this column’s focus—whether it’s a product, feature, or promotion.",
+            "show_button": true,
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "link",
+            "overlay_link": true
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "heading": "Here Can Be Your Main Title",
+        "heading_size": "h2",
+        "description": "",
+        "multicolumn_to_show": 4,
+        "swipe_on_mobile": false,
+        "card_heading_size": "h4",
+        "column_color_scheme": "",
+        "column_padding": "large",
+        "padding_top": "l",
+        "padding_bottom": "no-indent",
+        "margin_top": "no-indent",
+        "margin_bottom": "no-indent"
+      }
+    },
+    "brands": {
+      "type": "brands",
+      "settings": {
+        "color_scheme": "",
+        "border_enable_top": false,
+        "border_enable_bottom": false,
+        "show_vendors": true,
+        "heading": "Brand's title",
+        "heading_size": "h3",
+        "heading_level": "h2",
+        "description": "<p>Here can be a short overview of the brands you offer, helping customers explore high-quality products from names they trust.</p>",
+        "padding_top": "l",
+        "padding_bottom": "xl",
+        "margin_top": "no-indent",
+        "margin_bottom": "no-indent"
+      }
+    }
+  },
+  "order": [
+    "image-with-text",
+    "rich-text",
+    "multicolumn",
+    "multicolumn-2",
+    "brands"
+  ]
+}

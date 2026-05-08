@@ -1,0 +1,91 @@
+{% comment %}
+  Renders button
+  Accepts:
+  - layout: 'section' or 'block' layout
+  - btn_link: Button link
+  - btn_label: Button label
+  - btn_style: Button style (primary, secondary, tertiary, link--primary, link--secondary, link--tertiary)
+  - class: Class name(s) string
+  - copy: If true, renders Copy button
+  - promocode: Copy button promocode
+  - shop_all: If true, renders Shop all button
+  - shop_all_show_icon: If true, renders Shop all icon
+  Usage:
+  * If first or only button in block or section:
+  {% render 'button', layout: 'section' %}
+  * If second/third/etc button in block or section:
+  {% render 'button', btn_link: block.settings.button_link_2, btn_label: block.settings.button_label_2, btn_style: block.settings.button_style_2, enable_arrow: block.settings.button_arrow_2 %}
+  * If you want to use custom props and class:
+  {% render 'button', btn_link: 'https://www.liquid.com', btn_label: 'Shop now', btn_style: 'primary', class: 'optional-class' %}
+{% endcomment %}
+
+{% liquid
+  if layout != blank
+    assign btn_label = layout.settings.button_label
+    assign btn_link = layout.settings.button_link
+
+    if layout.settings.button_style != blank
+      assign btn_style = layout.settings.button_style
+    else
+      assign btn_style = 'primary'
+    endif
+  endif
+
+  assign underline_arrow_class = false
+
+  if btn_style == 'link--primary' or btn_style == 'link--secondary' or btn_style == 'link--tertiary'
+    assign underline_arrow_class = true
+  endif
+%}
+
+{% if copy %}
+  <button
+    class="button button--{{ btn_style }} button--copy{% if class %} {{ class }}{% endif %}"
+    data-code="{{ promocode }}"
+  >
+    <span class="button__label">
+      {% render 'icon-copy-button' %}
+      {{ 'sections.button.copy_code' | t }}
+    </span>
+  </button>
+{% elsif shop_all %}
+  {%- if btn_label != blank -%}
+    <button
+      aria-label="{{- btn_label | escape -}}"
+      class="button button--{{ btn_style }}{% if class %} {{ class }}{% endif %}{% if shop_all_show_icon %} button--with-burger-icon{% endif %} {% if shop_all_enable_mobile %} header-shop-all-button-mobile{% endif %} focus-inset"
+      id="mega-menu-btn"
+      data-mega-menu-btn
+      data-button-link="{{ btn_link }}"
+    >
+      {%- if shop_all_show_icon -%}
+        {% render 'icon-burger' %}
+      {%- endif -%}
+      <span class="button__label">
+        {{- btn_label -}}
+      </span>
+    </button>
+  {%- endif -%}
+{% else %}
+  {%- if btn_label != blank -%}
+    <a
+      {% if btn_link != blank %}
+        href="{{ btn_link }}"
+        aria-label="{{- btn_label | escape -}}"
+      {% endif %}
+      class="button button--{{ btn_style }}{% if class %} {{ class }}{% endif %}{% if underline_arrow_class %} link--underline_arrow{% endif %}{% if shop_all_show_icon %} button--with-burger-icon{% endif %}{% if shop_all_enable_mobile %} header-shop-all-button-mobile{% endif %} focus-inset"
+      {% if btn_link == blank %}
+        aria-disabled="true"
+      {% endif %}
+    >
+      {%- if shop_all_show_icon -%}
+        {% render 'icon-burger' %}
+      {%- endif -%}
+      <span class="button__label">
+        {{- btn_label -}}
+      </span>
+      {%- if underline_arrow_class -%}
+        {% render 'icon-btn-arrow' %}
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+{% endif %}

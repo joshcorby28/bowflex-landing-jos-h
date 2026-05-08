@@ -1,0 +1,187 @@
+<div class="bfx-specs bfx-specs--{{ section.id }}" style="background:{{ section.settings.background_color }};">
+  <div class="container">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="bfx-specs__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="bfx-specs__grid">
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'product_specs' -%}
+          <div class="bfx-specs__col" {{ block.shopify_attributes }}>
+
+            {%- if block.settings.product_image != blank -%}
+              <div class="bfx-specs__product-img">
+                {{- block.settings.product_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: block.settings.product_name, style: 'width:100%;height:auto;object-fit:contain;display:block;margin:0 auto 20px;' -}}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.product_name != blank -%}
+              <h3 class="bfx-specs__product-name">{{ block.settings.product_name }}</h3>
+            {%- endif -%}
+
+            <ul class="bfx-specs__list">
+              {%- if block.settings.spec_1 != blank -%}<li>{{ block.settings.spec_1 }}</li>{%- endif -%}
+              {%- if block.settings.spec_2 != blank -%}<li>{{ block.settings.spec_2 }}</li>{%- endif -%}
+              {%- if block.settings.spec_3 != blank -%}<li>{{ block.settings.spec_3 }}</li>{%- endif -%}
+              {%- if block.settings.spec_4 != blank -%}<li>{{ block.settings.spec_4 }}</li>{%- endif -%}
+              {%- if block.settings.spec_5 != blank -%}<li>{{ block.settings.spec_5 }}</li>{%- endif -%}
+              {%- if block.settings.spec_6 != blank -%}<li>{{ block.settings.spec_6 }}</li>{%- endif -%}
+              {%- if block.settings.spec_7 != blank -%}<li>{{ block.settings.spec_7 }}</li>{%- endif -%}
+              {%- if block.settings.spec_8 != blank -%}<li>{{ block.settings.spec_8 }}</li>{%- endif -%}
+            </ul>
+
+            {%- if block.settings.read_more_label != blank and block.settings.read_more_link != blank -%}
+              <a href="{{ block.settings.read_more_link }}" class="bfx-specs__readmore">{{ block.settings.read_more_label }}</a>
+            {%- endif -%}
+
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .bfx-specs--{{ section.id }} {
+    padding-top: var(--spacing-{{ section.settings.padding_top }}, 48px);
+    padding-bottom: var(--spacing-{{ section.settings.padding_bottom }}, 48px);
+  }
+  .bfx-specs__heading {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 700;
+    margin: 0 0 40px;
+    text-align: center;
+  }
+  .bfx-specs__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+  .bfx-specs__product-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+  .bfx-specs__list {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0 0 20px;
+  }
+  .bfx-specs__list li {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .bfx-specs__readmore {
+    font-size: 14px;
+    color: #111;
+    text-decoration: underline;
+    font-weight: 600;
+  }
+  .bfx-specs__readmore:hover { opacity: 0.7; }
+  @media (max-width: 749px) {
+    .bfx-specs__grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BFX LP — Specifications",
+  "tag": "section",
+  "class": "bfx-lp-specs-section spaced-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Colour",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Specifications"
+    },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "options": [
+        {"value":"no-indent","label":"None"},{"value":"xs","label":"XS"},
+        {"value":"s","label":"S"},{"value":"m","label":"M"},
+        {"value":"l","label":"L"},{"value":"xl","label":"XL"}
+      ],
+      "default": "l",
+      "label": "Padding Top"
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "options": [
+        {"value":"no-indent","label":"None"},{"value":"xs","label":"XS"},
+        {"value":"s","label":"S"},{"value":"m","label":"M"},
+        {"value":"l","label":"L"},{"value":"xl","label":"XL"}
+      ],
+      "default": "l",
+      "label": "Padding Bottom"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_specs",
+      "name": "Product Specs Column",
+      "limit": 4,
+      "settings": [
+        { "type": "image_picker", "id": "product_image", "label": "Product Image" },
+        { "type": "text", "id": "product_name", "label": "Product Name", "default": "T9 BowFlex Treadmill" },
+        { "type": "text", "id": "spec_1", "label": "Spec 1", "default": "Running Area: 152 x 56 cm (60\" x 22\")" },
+        { "type": "text", "id": "spec_2", "label": "Spec 2", "default": "Incline Range: Up to 15% motorised incline" },
+        { "type": "text", "id": "spec_3", "label": "Spec 3", "default": "Speed Range: Up to 20 km/h (12 mph)" },
+        { "type": "text", "id": "spec_4", "label": "Spec 4", "default": "Console: High-contrast colour LCD" },
+        { "type": "text", "id": "spec_5", "label": "Spec 5", "default": "Extras: Bluetooth speakers, heart rate hand grips, media shelf, water bottle holder, dual cooling fans" },
+        { "type": "text", "id": "spec_6", "label": "Spec 6" },
+        { "type": "text", "id": "spec_7", "label": "Spec 7" },
+        { "type": "text", "id": "spec_8", "label": "Spec 8" },
+        { "type": "text", "id": "read_more_label", "label": "Read More Label", "default": "Read more" },
+        { "type": "url", "id": "read_more_link", "label": "Read More URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "BFX LP — Specifications",
+      "blocks": [
+        {
+          "type": "product_specs",
+          "settings": {
+            "product_name": "T9 BowFlex Treadmill",
+            "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
+            "spec_2": "Incline Range: Up to 15% motorised incline",
+            "spec_3": "Speed Range: Up to 20 km/h (12 mph)",
+            "spec_4": "Console: High-contrast colour LCD",
+            "spec_5": "Extras: Bluetooth speakers, heart rate hand grips, media shelf, water bottle holder, dual cooling fans",
+            "read_more_label": "Read more"
+          }
+        },
+        {
+          "type": "product_specs",
+          "settings": {
+            "product_name": "T6 BowFlex Treadmill",
+            "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
+            "spec_2": "Incline Range: Up to 15% motorised incline",
+            "spec_3": "Speed Range: Up to 20 km/h (12 mph)",
+            "spec_4": "Console: High-contrast colour LCD",
+            "spec_5": "Extras: Bluetooth speakers, heart rate hand grips, media shelf, water bottle holder, dual cooling fans",
+            "read_more_label": "Read more"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

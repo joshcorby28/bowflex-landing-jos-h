@@ -1,0 +1,189 @@
+.blog-posts {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+.blog-posts__content {
+  position: relative;
+}
+.blog-posts__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.6rem;
+}
+@media screen and (max-width: 576px) {
+  .blog-posts__top {
+    gap: 0.8rem;
+  }
+}
+.blog-posts__top-main {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.6rem;
+}
+.blog-posts__top-main .blog-posts__top-button {
+  align-self: flex-end;
+}
+@media screen and (max-width: 576px) {
+  .blog-posts__top-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  .blog-posts__top-main .blog-posts__top-button {
+    align-self: flex-start;
+  }
+}
+.blog-posts__top ~ .content {
+  margin-top: 2.4rem;
+}
+.blog-posts__top_only-heading ~ .content {
+  margin-top: 1.6rem;
+}
+@media screen and (min-width: 750px) {
+  .blog-posts__top_only-heading ~ .content {
+    margin-top: 2.4rem;
+  }
+}
+.blog-posts__top-button {
+  flex-shrink: 0;
+}
+.blog-posts__top--without-navigation .blog-posts__top-button {
+  align-self: flex-end;
+}
+@media screen and (max-width: 576px) {
+  .blog-posts__top--without-navigation {
+    flex-direction: column;
+  }
+  .blog-posts__top--without-navigation .blog-posts__top-button {
+    align-self: flex-start;
+  }
+}
+@media screen and (min-width: 576px) {
+  .blog-posts__top--without-description .blog-posts__top-button,
+  .blog-posts__top--without-description .blog-posts__top-main .blog-posts__top-button {
+    align-self: center;
+  }
+  .blog-posts__top--without-description .blog-posts__navigation {
+    align-self: center;
+  }
+}
+.blog-posts__description {
+  margin-bottom: 0;
+}
+.blog-posts__navigation {
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+@media screen and (max-width: 575px) {
+  .blog-posts__navigation .swiper-button-next,
+  .blog-posts__navigation .swiper-button-prev {
+    width: 4rem;
+    height: 4rem;
+  }
+  .blog-posts__navigation .swiper-button-next .icon,
+  .blog-posts__navigation .swiper-button-prev .icon {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+.blog-posts-container {
+  width: 100%;
+}
+.blog-posts-container.swiper {
+  overflow: visible;
+}
+.blog-posts-container.swiper .swiper-slide {
+  height: auto;
+}
+.blog-posts-container.swiper--blog-posts:not(.swiper-initialized) .blog-posts-grid {
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  overflow-x: hidden;
+  grid-auto-columns: 100%;
+}
+@media (min-width: 750px) {
+  .blog-posts-container.swiper--blog-posts:not(.swiper-initialized)[data-columns="2"] .blog-posts-grid {
+    grid-auto-columns: calc(50% - 0.4rem);
+  }
+}
+@media (min-width: 750px) {
+  .blog-posts-container.swiper--blog-posts:not(.swiper-initialized)[data-columns="3"] .blog-posts-grid {
+    grid-auto-columns: calc(50% - 0.4rem);
+  }
+}
+@media screen and (min-width: 1200px) {
+  .blog-posts-container.swiper--blog-posts:not(.swiper-initialized)[data-columns="3"] .blog-posts-grid {
+    grid-auto-columns: calc(33.3333333333% - 0.5333333333rem);
+  }
+}
+@media (min-width: 750px) {
+  .blog-posts-container.swiper--blog-posts:not(.swiper-initialized)[data-columns="4"] .blog-posts-grid {
+    grid-auto-columns: calc(50% - 0.4rem);
+  }
+}
+@media screen and (min-width: 1360px) {
+  .blog-posts-container.swiper--blog-posts:not(.swiper-initialized)[data-columns="4"] .blog-posts-grid {
+    grid-auto-columns: calc(25% - 0.6rem);
+  }
+}
+
+.blog-posts-grid {
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto;
+  gap: 0.8rem;
+}
+.blog-posts-grid.swiper-wrapper {
+  display: flex;
+  gap: 0;
+}
+@media (min-width: 750px) {
+  .blog-posts-grid {
+    gap: 2.4rem 0.8rem;
+  }
+}
+.blog-posts-grid--1 {
+  grid-template-columns: 1fr;
+}
+.blog-posts-grid--2 {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 750px) {
+  .blog-posts-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.blog-posts-grid--3 {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 750px) {
+  .blog-posts-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1200px) {
+  .blog-posts-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.blog-posts-grid--4 {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 750px) {
+  .blog-posts-grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1200px) {
+  .blog-posts-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.blog-posts-card {
+  display: block;
+}

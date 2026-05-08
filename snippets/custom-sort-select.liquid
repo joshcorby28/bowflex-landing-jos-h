@@ -1,0 +1,35 @@
+<div class="facet-sort-select">
+  <input
+    class="facet-sort-select__input"
+    type="hidden"
+    name="sort_by"
+    id="SortBy"
+    value="{{ sort_by }}"
+    aria-describedby="a11y-refresh-page-message"
+  >
+  <div class="facet-sort-select__select focus-inset" tabindex="0">
+    <span class="facet-sort-select__current">
+      {%- for option in sort_options -%}
+        {%- if option.value == sort_by -%}
+          {{- option.name | escape -}}
+        {%- endif -%}
+      {%- endfor -%}
+    </span>
+    <div class="facet-sort-select__icon">
+      {% render 'icon-caret' %}
+    </div>
+  </div>
+  <div class="facet-sort-select__options">
+    {%- for option in sort_options -%}
+      <div
+        class="facet-sort-select__option focus-inset{% if option.value == sort_by %} facet-sort-select__option--selected{% endif %}"
+        data-value="{{- option.value | escape -}}"
+        tabindex="0"
+      >
+        <span>{{- option.name | escape -}}</span>
+
+        {% render 'icon-checkmark' %}
+      </div>
+    {%- endfor -%}
+  </div>
+</div>

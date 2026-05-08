@@ -1,0 +1,159 @@
+<div style="border-radius:30px; background: linear-gradient(90deg, #FF5C7A 0%, #D95AA7 45%, #8B5CF6 100%);" class="bfx-jrny bfx-jrny--{{ section.id }} container">
+  <div class="container">
+    <div class="bfx-jrny__inner">
+
+      <div class="bfx-jrny__left">
+        {%- if section.settings.store_label != blank -%}
+          <span class="bfx-jrny__store-label">{{ section.settings.store_label }}</span>
+        {%- endif -%}
+        {%- if section.settings.cta_label != blank -%}
+          <a href="{{ section.settings.cta_link }}" class="bfx-jrny__cta-link" style="color:{{ section.settings.cta_color }};">
+            {{ section.settings.cta_label }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+
+      <div class="bfx-jrny__center">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="bfx-jrny__eyebrow" style="color:{{ section.settings.text_color }};">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        <p class="bfx-jrny__headline" style="color:{{ section.settings.text_color }};">{{ section.settings.headline }}</p>
+        {%- if section.settings.subtext != blank -%}
+          <p class="bfx-jrny__subtext" style="color:{{ section.settings.text_color }};">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="bfx-jrny__right">
+        {%- if section.settings.app_logo != blank -%}
+          <div style="    background: #1b1b1b;
+    padding: 20px;
+    border-radius: 30px;"class="bfx-jrny__app-logo">
+            {{- section.settings.app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'height:64px;width:auto;border-radius:14px;display:block;' -}}
+          </div>
+        {%- else -%}
+          <div class="bfx-jrny__app-logo-placeholder" aria-hidden="true">
+            <span style="display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,0.15);font-weight:900;font-size:20px;color:{{ section.settings.text_color }};letter-spacing:-0.02em;">J</span>
+          </div>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .bfx-jrny--{{ section.id }} {
+    padding: 18px 0;
+  }
+  .bfx-jrny__inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .bfx-jrny__left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 120px;
+  }
+  .bfx-jrny__store-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: {{ section.settings.text_color }};
+    opacity: 0.7;
+  }
+  .bfx-jrny__cta-link {
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .bfx-jrny__cta-link:hover { text-decoration: underline; }
+  .bfx-jrny__center {
+    flex: 1;
+    text-align: center;
+  }
+  .bfx-jrny__eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.75;
+    margin-bottom: 4px;
+  }
+  .bfx-jrny__headline {
+    font-size: clamp(22px, 3.5vw, 32px);
+    font-weight: 900;
+    margin: 0 0 4px;
+    line-height: 1.1;
+  }
+  .bfx-jrny__subtext {
+    font-size: 13px;
+    margin: 0;
+    opacity: 0.8;
+  }
+  .bfx-jrny__right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 80px;
+  }
+  @media (max-width: 749px) {
+    .bfx-jrny__inner {
+      flex-direction: column;
+      text-align: center;
+    }
+    .bfx-jrny__left, .bfx-jrny__right { align-items: center; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BFX LP — JRNY Banner",
+  "tag": "section",
+  "class": "bfx-lp-jrny-section spaced-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Colour",
+      "default": "#6B3FA0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Colour",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Left Column"
+    },
+    { "type": "text", "id": "store_label", "label": "Store Label", "default": "iOS & Google Store" },
+    { "type": "text", "id": "cta_label", "label": "CTA Link Label", "default": "View JRNY" },
+    { "type": "url", "id": "cta_link", "label": "CTA Link URL" },
+    { "type": "color", "id": "cta_color", "label": "CTA Colour", "default": "#FFFFFF" },
+    {
+      "type": "header",
+      "content": "Centre Content"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow Text", "default": "For New Members Download" },
+    { "type": "text", "id": "headline", "label": "Headline", "default": "2 Month FREE Trial" },
+    { "type": "text", "id": "subtext", "label": "Subtext", "default": "The App Now" },
+    {
+      "type": "header",
+      "content": "Right — App Logo"
+    },
+    { "type": "image_picker", "id": "app_logo", "label": "App Logo Image" }
+  ],
+  "presets": [{ "name": "BFX LP — JRNY Banner" }]
+}
+{% endschema %}

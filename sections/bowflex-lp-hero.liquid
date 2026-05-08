@@ -1,0 +1,123 @@
+{%- liquid
+  assign min_h_desktop = section.settings.min_height | append: 'px'
+  assign min_h_mobile  = section.settings.min_height_mobile | append: 'px'
+-%}
+
+<div class="bfx-hero bfx-hero--{{ section.id }}" style="position:relative;overflow:hidden;display:flex;align-items:center;min-height:{{ min_h_desktop }};">
+
+  {%- if section.settings.background_image != blank -%}
+    <div class="bfx-hero__bg" aria-hidden="true">
+      {{- section.settings.background_image | image_url: width: 1920 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920', style: 'width:100%;height:100%;object-fit:cover;object-position:center;position:absolute;inset:0;' -}}
+    </div>
+  {%- endif -%}
+
+  {%- assign overlay_decimal = section.settings.overlay_opacity | divided_by: 100.0 -%}
+  <div class="bfx-hero__overlay" aria-hidden="true" style="position:absolute;inset:0;background:rgba(0,0,0,{{ overlay_decimal }});"></div>
+
+  <div class="bfx-hero__inner container" style="margin-left:0;position:relative;z-index:2;padding-top:60px;padding-bottom:60px;max-width:600px;">
+
+    {%- if section.settings.brand_logo != blank -%}
+      <div style="margin-bottom:20px;">
+        {{- section.settings.brand_logo | image_url: width: 200 | image_tag: loading: 'eager', style: 'height:36px;width:auto;' -}}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.heading_line1 != blank or section.settings.heading_line2 != blank or section.settings.heading_line3 != blank -%}
+      <h1 class="bfx-hero__heading" style="font-size:clamp(52px,8vw,96px);font-weight:900;line-height:0.95;margin:0 0 20px;text-transform:uppercase;color:{{ section.settings.text_color }};">
+        {%- if section.settings.heading_line1 != blank -%}
+          <span style="display:block;">{{ section.settings.heading_line1 }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading_line2 != blank -%}
+          <span style="display:block;color:{{ section.settings.highlight_color }};">{{ section.settings.heading_line2 }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading_line3 != blank -%}
+          <span style="display:block;">{{ section.settings.heading_line3 }}</span>
+        {%- endif -%}
+      </h1>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p style="font-size:16px;font-weight:500;letter-spacing:0.08em;color:{{ section.settings.text_color }};margin:0 0 32px;opacity:0.9;text-transform:uppercase;">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      {%- if section.settings.badge_1_image != blank -%}
+        <a href="{{ section.settings.badge_1_link }}" target="_blank" rel="noopener" style="display:block;line-height:0;">
+          {{- section.settings.badge_1_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: section.settings.badge_1_alt, style: 'height:42px;width:auto;' -}}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.badge_2_image != blank -%}
+        <a href="{{ section.settings.badge_2_link }}" target="_blank" rel="noopener" style="display:block;line-height:0;">
+          {{- section.settings.badge_2_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: section.settings.badge_2_alt, style: 'height:42px;width:auto;' -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+
+  {%- if section.settings.connectivity_image != blank -%}
+    <div class="bfx-hero__connectivity" style="position:absolute;bottom:32px;right:32px;z-index:2;background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;padding:14px 18px;text-align:center;max-width:180px;">
+      {{- section.settings.connectivity_image | image_url: width: 200 | image_tag: loading: 'lazy', style: 'height:56px;width:100%;display:block;margin:0 auto 8px;' -}}
+      {%- if section.settings.connectivity_text != blank -%}
+        <span style="display:block;font-size:11px;color:#fff;line-height:1.4;">{{ section.settings.connectivity_text }}</span>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+</div>
+
+<style>
+  .bfx-hero--{{ section.id }} { min-height: {{ min_h_desktop }}; }
+  @media (max-width:749px) {
+    .bfx-hero--{{ section.id }} { min-height: {{ min_h_mobile }}; }
+    .bfx-hero--{{ section.id }} .bfx-hero__connectivity { display: none; }
+    .bfx-hero--{{ section.id }} .bfx-hero__inner { max-width: 100% !important; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BFX LP — Hero",
+  "tag": "section",
+  "class": "bfx-lp-hero-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    { "type": "image_picker", "id": "background_image", "label": "Background Image" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 80, "step": 5, "default": 10, "label": "Overlay Opacity (%)" },
+    { "type": "range", "id": "min_height", "min": 300, "max": 900, "step": 50, "default": 600, "label": "Min Height Desktop (px)" },
+    { "type": "range", "id": "min_height_mobile", "min": 300, "max": 700, "step": 50, "default": 450, "label": "Min Height Mobile (px)" },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    { "type": "image_picker", "id": "brand_logo", "label": "Brand Logo" },
+    { "type": "text", "id": "heading_line1", "label": "Heading Line 1", "default": "Let" },
+    { "type": "text", "id": "heading_line2", "label": "Heading Line 2 (highlighted)", "default": "Nothing" },
+    { "type": "color", "id": "highlight_color", "label": "Highlight Colour", "default": "#E8632B" },
+    { "type": "text", "id": "heading_line3", "label": "Heading Line 3", "default": "Stop You" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Tap. Connect. Run" },
+    { "type": "color", "id": "text_color", "label": "Text Colour", "default": "#FFFFFF" },
+    {
+      "type": "header",
+      "content": "App Store Badges"
+    },
+    { "type": "image_picker", "id": "badge_1_image", "label": "Badge 1 (e.g. App Store)" },
+    { "type": "text", "id": "badge_1_alt", "label": "Badge 1 Alt Text", "default": "Download on the App Store" },
+    { "type": "url", "id": "badge_1_link", "label": "Badge 1 Link" },
+    { "type": "image_picker", "id": "badge_2_image", "label": "Badge 2 (e.g. Google Play)" },
+    { "type": "text", "id": "badge_2_alt", "label": "Badge 2 Alt Text", "default": "Get it on Google Play" },
+    { "type": "url", "id": "badge_2_link", "label": "Badge 2 Link" },
+    {
+      "type": "header",
+      "content": "Connectivity Badge (bottom-right)"
+    },
+    { "type": "image_picker", "id": "connectivity_image", "label": "Connectivity Image" },
+    { "type": "text", "id": "connectivity_text", "label": "Connectivity Text", "default": "1-tap connection with Apple Watch and Samsung Watch" }
+  ],
+  "presets": [{ "name": "BFX LP — Hero" }]
+}
+{% endschema %}

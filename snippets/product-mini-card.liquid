@@ -1,0 +1,441 @@
+{% comment %}
+  Renders a product card
+  Accepts:
+  - product_card_product: {Object} Product Liquid object (optional)
+  - media_ratio: {String} The aspect ratio to use for the card. Default: '1:1'
+  - media_fit: {String} The media fit to use for the card. Default: 'cover'
+  - show_vendor: {Boolean} Show the product vendor. Default: true
+  - section_id: {String} The ID of the section that contains this card.
+  - class: {String} Additional classes to add to the card.
+  - scheme: {String} The color scheme to use for the card. Default: 'default'
+  - product_form_id: {String} The ID of the product form to use for the card.
+  Usage:
+  {% render 'product-mini-card', show_vendor: section.settings.show_vendor %}
+{% endcomment %}
+
+{% liquid
+  case media_ratio
+    when 'landscape'
+      assign ratio = '4/3'
+    when 'portrait'
+      assign ratio = '3/4'
+    when 'square'
+      assign ratio = '1/1'
+  endcase
+
+  assign aspect_ratio = ratio | split: '/'
+  assign temp = aspect_ratio[0] | append: '.0'
+  assign padding_bottom = aspect_ratio[1] | divided_by: temp | times: 100 | round: 2
+%}
+
+{% capture media_fit %}
+  {%- if settings.card_image_fit == 'contain' -%}
+    object-fit: contain;
+  {%- endif -%}
+  {%- if settings.card_image_fit == 'cover' -%}
+    object-fit: cover;
+  {%- endif -%}
+{% endcapture %}
+
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
+
+<div class="mini-card">
+  <div
+    class="mini-card__wrapper"
+    data-product="{{ product_card_product.handle }}"
+    data-id="{{ product_card_product.id }}"
+  >
+    <div class="mini-card__content">
+      <div class="mini-card__info">
+        {% comment %} Media block {% endcomment %}
+
+        <div class="mini-card__media-container js-mini-media-list">
+          {%- if product_card_product.media.size > 0 -%}
+            {%- if product_card_product.selected_or_first_available_variant.featured_media != null -%}
+              {% liquid
+                assign product_media = product_card_product.selected_or_first_available_variant.featured_media
+              %}
+
+              <div
+                class="mini-card__media-item media js-mini-media active featured"
+                style="padding-bottom: {{ padding_bottom }}%"
+                data-media-id="{{ section.id }}-{{ product_media.id }}"
+              >
+                <div class="media__wrapper">
+                  {% liquid
+                    if media_ratio == 'landscape'
+                      assign settings_aspect_ratio = 1.33
+                    elsif media_ratio == 'portrait'
+                      assign settings_aspect_ratio = 0.75
+                    else
+                      assign settings_aspect_ratio = 1
+                    endif
+
+                    assign calc_ratio = 1
+                    if settings.card_image_fit == 'cover' and product_media.aspect_ratio > settings_aspect_ratio
+                      assign calc_ratio = product_media.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+                    endif
+                  %}
+
+                  {%- capture sizes -%}calc({{ calc_ratio }} * 6rem){%- endcapture -%}
+                  {% capture media_position %}
+                  object-position: {% if product_media.presentation.focal_point != blank %}{{ product_media.presentation.focal_point }}{% else %}50% 50%{% endif %}
+                {% endcapture %}
+                  {% liquid
+                    assign media_styles = media_fit | append: media_position
+                  %}
+                  {{
+                    product_media
+                    | image_url: width: product_media.width
+                    | image_tag:
+                      loading: 'lazy',
+                      class: 'motion-reduce media--first',
+                      widths: '360, 535, 720, 940, 1066, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800',
+                      sizes: sizes,
+                      style: media_styles
+                  }}
+                </div>
+              </div>
+            {%- endif -%}
+            {%- for media in product_card_product.media -%}
+              {% liquid
+                if media_ratio == 'landscape'
+                  assign settings_aspect_ratio = 1.33
+                elsif media_ratio == 'portrait'
+                  assign settings_aspect_ratio = 0.75
+                else
+                  assign settings_aspect_ratio = 1
+                endif
+
+                assign calc_ratio = 1
+                if settings.card_image_fit == 'cover' and media.aspect_ratio > settings_aspect_ratio
+                  assign calc_ratio = media.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+                endif
+              %}
+
+              {%- capture sizes -%}calc({{ calc_ratio }} * 6rem){%- endcapture -%}
+              {% capture media_position %}
+                    object-position: {% if media.presentation.focal_point != blank %}{{ media.presentation.focal_point }}{% else %}50% 50%{% endif %}
+                  {% endcapture %}
+              {% liquid
+                assign media_styles = media_fit | append: media_position
+              %}
+              {%- unless media.id == product_card_product.selected_or_first_available_variant.featured_media.id -%}
+                <div
+                  class="mini-card__media-item media js-mini-media {% if product_card_product.selected_or_first_available_variant.featured_media == null and forloop.index == 1 %} active{% endif %}"
+                  style="padding-bottom: {{ padding_bottom }}%"
+                  data-media-id="{{ section.id }}-{{ media.id }}"
+                >
+                  <div class="media__wrapper">
+                    {{
+                      media
+                      | image_url: width: media.width
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'motion-reduce media--first',
+                        widths: '360, 535, 720, 940, 1066, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600, 3800',
+                        sizes: sizes,
+                        style: media_styles
+                    }}
+                  </div>
+                </div>
+              {%- endunless -%}
+            {%- endfor -%}
+          {%- else -%}
+            <div class="mini-card__media-item media active" style="padding-bottom: {{ padding_bottom }}%">
+              {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {%- endif -%}
+        </div>
+        <div class="mini-card__content-text">
+          <div class="mini-card__text-wrapper">
+            {%- if show_vendor -%}
+              <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+              <div class="mini-card__vendor  body-small {% if settings.enable_vendor_link %} card__vendor_link {% endif %}">
+                {% if settings.enable_vendor_link %}
+                  {{ product_card_product.vendor | link_to_vendor: class: 'focus-inset' }}
+                {% else %}
+                  {{ product_card_product.vendor }}
+                {% endif %}
+              </div>
+            {%- endif -%}
+            <span class="mini-card__title title">
+              {{- product_card_product.title | escape -}}
+            </span>
+
+            {%- unless product_card_product.has_only_default_variant -%}
+              <div class="mini-card__variant-mobile">
+                {%- for product_option in product_card_product.options_with_values -%}
+                  <p class="mini-card__variant" data-option="{{ product_option.name | escape }}">
+                    <span class="mini-card__variant-option">{{ product_option.name | escape }}: &nbsp;</span>
+                    {%- for value in product_option.values -%}
+                      {%- if product_option.selected_value == value -%}
+                        <span class="mini-card__variant-value" data>{{ value | escape }}</span>
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- unless forloop.last -%}{%- endunless -%}
+                  </p>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+          </div>
+
+          {% render 'price', product: product_card_product, price_class: '' %}
+        </div>
+      </div>
+
+      {% comment %} NOTE: Parameters {% endcomment %}
+      {% if product_card_product.has_only_default_variant != true %}
+        <div class="product-parameters product-parameters-desktop product-parameters--mini-card">
+          {% unless product_card_product.has_only_default_variant %}
+            <variant-selects
+              id="variant-selects-{{ section.id }}-mini-card"
+              class="no-js-hidden"
+              data-section="{{ section.id }}"
+              data-url="{{ product_card_product.url }}"
+              {{ block.shopify_attributes }}
+              data-mini-card="true"
+            >
+              {%- for option in product_card_product.options_with_values -%}
+                {% liquid
+                  assign is_color_option = false
+
+                  # for metafields color
+                  for value in option.values
+                    if settings.enable_color_swatch and value.swatch.color != blank
+                      assign is_color_option = true
+                    endif
+                  endfor
+
+                  # for custom option color
+                  assign color_trigger = settings.trigger_swatch | strip | newline_to_br | split: '<br />'
+                  assign name_option = option.name | handle | strip
+                  for item in color_trigger
+                    assign item_temp = item | handle | strip
+                    if settings.enable_color_swatch and name_option == item_temp
+                      assign is_color_option = true
+                    endif
+                  endfor
+
+                  # get color_value for selected color option
+                  if is_color_option
+                    assign color_value = blank
+                    for value in option.values
+                      if settings.enable_color_swatch and option.selected_value == value
+                        if value.swatch.image != blank
+                          assign color_image = value.swatch.image | image_url: width: 60
+                          assign color_value = 'url(' | append: color_image | append: ') no-repeat center/cover'
+                        elsif value.swatch.color != blank
+                          assign color_value = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                        else
+                          assign init_color_value = value.name | handle | strip
+                          assign color_value = init_color_value | remove: '-'
+
+                          if settings.custom_colors != blank
+                            assign custom_colors_string = settings.custom_colors | strip
+                            assign custom_colors_obj = custom_colors_string | newline_to_br | split: '<br />'
+
+                            for obj in custom_colors_obj
+                              assign obj_strip = obj | strip
+                              assign obj_key = obj_strip | split: ':' | first
+                              assign obj_value = obj_strip | split: ':' | last
+                              assign obj_color_name = obj_key | handle | strip
+
+                              if init_color_value == obj_color_name
+                                assign obj_color_value = obj_value | strip
+                                if obj_color_value contains 'gradient'
+                                  assign color_value = obj_color_value
+                                else
+                                  assign color_value = obj_color_value | remove: '-'
+                                endif
+                                break
+                              endif
+                            endfor
+                          endif
+                        endif
+                      endif
+                    endfor
+                  endif
+
+                  assign has_color_swatch = false
+                  if is_color_option and color_value != blank
+                    assign has_color_swatch = true
+                  endif
+                %}
+                <fieldset
+                  class="product-form__controls product-form__controls--dropdown"
+                  id="SingleOptionSelector-{{ forloop.index0 }}"
+                >
+                  <div class="product-form__group-wrapper">
+                    <legend class="product-form__group-name">
+                      {{- option.name | escape -}}
+                    </legend>
+                  </div>
+                  <div class="select dropdown-select focus-inset" form="{{ product_form_id }}" tabindex="0">
+                    <div
+                      class="select-label secondary_text {% if has_color_swatch %} select-label--with-color{% endif %}"
+                      {% if has_color_swatch %}
+                        style="--swatch-color: {{ color_value }}; --border-radius: {{ settings.swatch_border_radius }}px;"
+                      {% endif %}
+                    >
+                      <span>{{- option.selected_value -}}</span>
+                      <input
+                        id="HiddenInput-{{ section.id }}-{{ option.name }}-{{ forloop.index0 }}"
+                        type="hidden"
+                        name="{{ option.name }}"
+                        value="{{ option.selected_value }}"
+                        {% if is_color_option %}
+                          data-color-swatch="{{ color_value }}"
+                        {% endif %}
+                      >
+                    </div>
+                    <div class="select-wrapper" tabindex="0" aria-expanded="false">
+                      <ul class="product-form__controls-group">
+                        {%
+                          render 'product-variant-options',
+                          product: product_card_product,
+                          option: option,
+                          block: block,
+                          has_color_swatch: has_color_swatch,
+                          is_dropdown: true,
+                          is_mini_card: true,
+                        %}
+                      </ul>
+                    </div>
+
+                    {% render 'icon-caret' %}
+                  </div>
+                </fieldset>
+              {% endfor %}
+              <script type="application/json">
+                {{ product_card_product.variants | json }}
+              </script>
+            </variant-selects>
+          {% endunless %}
+          <noscript class="product-form__noscript-wrapper-{{ section.id }}-mini-card">
+            <fieldset class="product-form__controls {% if product_card_product.has_only_default_variant %} hidden{% endif %}">
+              <label for="Variants-{{ section.id }}-mini-card" class="product-form__group-name">
+                {{- 'products.product.product_variants' | t -}}
+                :</label
+              >
+              <div class="product-form__controls-group">
+                <div class="select">
+                  <select
+                    name="id"
+                    id="Variants-{{ section.id }}-mini-card"
+                    class="select__select"
+                    form="{{ product_form_id }}"
+                  >
+                    {%- for variant in product_card_product.variants -%}
+                      <option
+                        {% if variant == product_card_product.selected_or_first_available_variant %}
+                          selected="selected"
+                        {% endif %}
+                        {% if variant.available == false %}
+                          disabled
+                        {% endif %}
+                        value="{{ variant.id }}"
+                      >
+                        {%- liquid
+                          echo variant.title
+                          if settings.currency_code_enabled
+                            echo variant.price | money_with_currency | strip_html | prepend: ' - '
+                          else
+                            echo variant.price | money | strip_html | prepend: ' - '
+                          endif
+                          if variant.available == false
+                            echo 'products.product.sold_out' | t | prepend: ' - '
+                          endif
+                          if variant.quantity_rule.increment > 1
+                            echo 'products.product.quantity.multiples_of' | t: quantity: variant.quantity_rule.increment | prepend: ' - '
+                          endif
+                          if variant.quantity_rule.min > 1
+                            echo 'products.product.quantity.minimum_of' | t: quantity: variant.quantity_rule.min | prepend: ' - '
+                          endif
+                          if variant.quantity_rule.max != null
+                            echo 'products.product.quantity.maximum_of' | t: quantity: variant.quantity_rule.max | prepend: ' - '
+                          endif
+                          assign cart_quantity = cart | item_count_for_variant: variant.id
+                          if cart_quantity > 0
+                            echo 'products.product.quantity.in_cart_html' | t: quantity: cart_quantity | prepend: ' - '
+                          endif
+                        -%}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                  {% render 'icon-caret' %}
+                </div>
+              </div>
+            </fieldset>
+          </noscript>
+        </div>
+      {% endif %}
+      <div class="product__buy-buttons" {{ block.shopify_attributes }}>
+        {%- liquid
+          assign gift_card_recipient_feature_active = false
+          if block.settings.show_gift_card_recipient and product_card_product.gift_card?
+            assign gift_card_recipient_feature_active = true
+          endif
+
+          assign show_dynamic_checkout = false
+          if block.settings.show_dynamic_checkout and gift_card_recipient_feature_active == false
+            assign show_dynamic_checkout = true
+          endif
+        -%}
+
+        <product-form class="product-form" data-hide-errors="{{ gift_card_recipient_feature_active }}">
+          <div class="product-form__error-message-wrapper" role="alert" hidden>
+            {% render 'icon-error' %}
+            <span class="product-form__error-message"></span>
+          </div>
+          {%- form 'product',
+            product,
+            id: product_form_id,
+            class: 'form',
+            novalidate: 'novalidate',
+            data-type: 'add-to-cart-form'
+          -%}
+            <input
+              type="hidden"
+              name="id"
+              value="{{ product_card_product.selected_or_first_available_variant.id }}"
+              {% if product_card_product.selected_or_first_available_variant.available == false %}
+                disabled
+              {% endif %}
+            >
+
+            {%- if gift_card_recipient_feature_active -%}
+              {%- render 'gift-card-recipient-form', product: product, form: form, section: section -%}
+            {%- endif -%}
+
+            <button
+              type="submit"
+              name="add"
+              class="product-form__submit button button--{%- if show_dynamic_checkout -%}transparent{% else %}primary{%- endif -%}"
+              {% if product_card_product.selected_or_first_available_variant.available == false %}
+                disabled
+              {% endif %}
+            >
+              {%- if product_card_product.selected_or_first_available_variant.available -%}
+                <div class="button__content">
+                  <span class="button__label" data-label="{{ 'products.product.add_to_cart' | t }}">
+                    {{ 'products.product.add_to_cart' | t }}
+                  </span>
+                </div>
+              {%- else -%}
+                <div class="button__content">
+                  <span class="button__label">
+                    {{ 'products.product.sold_out' | t }}
+                  </span>
+                </div>
+              {%- endif -%}
+              <div class="loading-overlay__spinner hidden">
+                {%- render 'icon-loading' -%}
+              </div>
+            </button>
+          {%- endform -%}
+        </product-form>
+      </div>
+    </div>
+  </div>
+</div>

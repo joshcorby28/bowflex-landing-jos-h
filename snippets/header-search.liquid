@@ -1,0 +1,196 @@
+{% liquid
+  assign has_modal_content = false
+  assign search_modal_block = blank
+
+  for block in section.blocks
+    if block.type == 'search_modal'
+      if block.settings.search_menu.links.size > 0 or block.settings.recommended_products != blank or block.settings.enable_search_banner
+        assign has_modal_content = true
+        assign search_modal_block = block
+      endif
+    endif
+  endfor
+%}
+
+<header-search class="header-search{% if has_modal_content %} predictive-initially-opened{% endif %}">
+  <div class="header-search__wrapper">
+    {%- if settings.predictive_search_header_enabled -%}
+      <predictive-search class="search-wrapper" data-loading-text="{{- 'accessibility.loading' | t -}}">
+    {%- else -%}
+      <search-form class="search-wrapper">
+    {%- endif -%}
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search search__form">
+      <div class="header-search__field field">
+        <button
+          class="search__button field__button focus-inset"
+          aria-label="{{- 'general.search.search' | t -}}"
+        >
+          {% render 'icon-search' %}
+        </button>
+        <input
+          class="search__input field__input"
+          id="Search-In-Header"
+          type="search"
+          dir="ltr"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          {%- if settings.predictive_search_header_enabled -%}
+            role="combobox"
+            aria-expanded="false"
+            aria-owns="predictive-search-results-list"
+            aria-controls="predictive-search-results-list"
+            aria-haspopup="listbox"
+            aria-autocomplete="list"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          {%- elsif has_modal_content -%}
+            role="combobox"
+            aria-expanded="false"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          {%- endif -%}
+        >
+        <label class="visually-hidden" for="Search-In-Header">
+          {{- 'general.search.search' | t -}}
+        </label>
+        <input type="hidden" name="options[prefix]" value="last">
+      </div>
+
+      <div
+        class="predictive-search predictive-search--header color-background-1"
+        tabindex="-1"
+        {% if has_modal_content and search_modal_block != blank %}
+          {{ search_modal_block.shopify_attributes }}
+        {% endif %}
+      >
+        {%- if settings.predictive_search_header_enabled -%}
+          <div class="predictive-search-results-container" data-predictive-search></div>
+        {%- endif -%}
+
+        {% comment %} SEARCH MODAL CONTENT (POPULAR SEARCHES, RECOMMENDED PRODUCTS, BANNER) {% endcomment %}
+        {%- if has_modal_content and search_modal_block != blank -%}
+          <div class="predictive-search-initial-content">
+            {% comment %} POPULAR SEARCHES AND RECOMMENDED PRODUCTS {% endcomment %}
+            {%- if search_modal_block.settings.search_menu.links.size > 0
+              or search_modal_block.settings.recommended_products != blank
+            %}
+              <div class="predictive-search-main{% if search_modal_block.settings.enable_search_banner != true %} predictive-search-main--full-width{%- endif -%}">
+                {% comment %} POPULAR SEARCHES {% endcomment %}
+                {%- if search_modal_block.settings.search_menu.links.size > 0 -%}
+                  <div class="predictive-search-popular">
+                    <span class="predictive-search-popular__title h5">
+                      {{- 'general.search.popular_searches' | t -}}
+                    </span>
+                    <ul class="predictive-search-popular-list list-unstyled">
+                      {%- for link in search_modal_block.settings.search_menu.links -%}
+                        <li class="predictive-search-popular-list__item">
+                          <a
+                            href="{{ link.url }}"
+                            {% if settings.links_blank and link.type == 'http_link' %}
+                              target="_blank"
+                            {% endif %}
+                            class="predictive-search-popular-list__link"
+                            aria-label="{{- link.title -}}"
+                          >
+                            <span class="predictive-search-popular-list__link-title">{{- link.title -}}</span>
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+
+                {% comment %} RECOMMENDED PRODUCTS {% endcomment %}
+                {%- if search_modal_block.settings.recommended_products != blank -%}
+                  <div class="predictive-search-recommended">
+                    {%- if search_modal_block.settings.recommended_products_heading != blank -%}
+                      <span class="predictive-search-recommended__title h5">
+                        {{- search_modal_block.settings.recommended_products_heading -}}
+                      </span>
+                    {%- endif -%}
+                    <ul class="predictive-search-recommended-list list-unstyled">
+                      {%- for search_product in search_modal_block.settings.recommended_products -%}
+                        <li class="predictive-search-recommended-list__item">
+                          {% render 'product-card-horizontal',
+                            show_image: true,
+                            product_card_product: search_product,
+                            show_vendor: search_modal_block.settings.recommended_product_show_vendor,
+                            color_scheme: 'background-1'
+                          %}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {% comment %} SEARCH PROMO BANNER {% endcomment %}
+            {%- if search_modal_block.settings.enable_search_banner -%}
+              {% liquid
+                assign banner_placement = 'header-' | append: section.settings.desktop_header_layout | append: '-search'
+              %}
+              <div class="predictive-search-banner">
+                {% render 'header-banner',
+                  banner_color_scheme: search_modal_block.settings.search_banner_color_scheme,
+                  banner_overlay_link: search_modal_block.settings.search_banner_overlay_link,
+                  banner_button_link: search_modal_block.settings.search_banner_button_link,
+                  banner_button_label: search_modal_block.settings.search_banner_button_label,
+                  banner_button_style: search_modal_block.settings.search_banner_button_style,
+                  banner_show_buton: search_modal_block.settings.search_banner_show_button,
+                  banner_show_video: search_modal_block.settings.search_banner_show_video,
+                  banner_video: search_modal_block.settings.search_banner_video,
+                  banner_image_overlay_opacity: search_modal_block.settings.search_banner_image_overlay_opacity,
+                  banner_image: search_modal_block.settings.search_banner_image,
+                  banner_image_mobile: search_modal_block.settings.search_banner_image_mobile,
+                  banner_aspect_ratio: search_modal_block.settings.search_banner_aspect_ratio,
+                  banner_aspect_ratio_mobile: search_modal_block.settings.search_banner_aspect_ratio_mobile,
+                  banner_subheading: search_modal_block.settings.search_banner_subheading,
+                  banner_subheading_style: search_modal_block.settings.search_banner_subheading_style,
+                  banner_content_position: search_modal_block.settings.banner_content_position,
+                  banner_badge_subheading: search_modal_block.settings.search_banner_badge_subheading,
+                  banner_badge_subheading_color: search_modal_block.settings.search_banner_badge_subheading_color,
+                  banner_badge_heading: search_modal_block.settings.search_banner_badge_heading,
+                  banner_badge_heading_size: search_modal_block.settings.search_banner_badge_heading_size,
+                  badge_heading_font: search_modal_block.settings.badge_heading_font,
+                  banner_badge_prefix: search_modal_block.settings.search_banner_badge_prefix,
+                  banner_badge_prefix_size: search_modal_block.settings.search_banner_badge_prefix_size,
+                  banner_badge_suffix: search_modal_block.settings.search_banner_badge_suffix,
+                  banner_heading: search_modal_block.settings.search_banner_heading,
+                  banner_heading_size: search_modal_block.settings.search_banner_heading_size,
+                  banner_heading_size_custom: search_modal_block.settings.search_banner_heading_size_custom,
+                  banner_description: search_modal_block.settings.search_banner_description,
+                  banner_placement: banner_placement
+                %}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+        {%- if settings.predictive_search_header_enabled -%}
+          <div class="predictive-search__loading-state">
+            {% render 'icon-loading' %}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if settings.predictive_search_header_enabled -%}
+        <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+      {%- endif -%}
+    </form>
+    {%- if settings.predictive_search_header_enabled -%}
+      </predictive-search>
+    {%- else -%}
+      </search-form>
+    {%- endif -%}
+    {%- if settings.predictive_search_header_enabled or has_modal_content -%}
+      <button class="header-search__close-btn focus-inset" aria-label="{{- 'general.search.close' | t -}}">
+        {% render 'icon-close' %}
+      </button>
+    {%- endif -%}
+  </div>
+</header-search>

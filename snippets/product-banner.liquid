@@ -1,0 +1,285 @@
+{% comment %}
+{% endcomment %}
+{% liquid
+  assign image_loading = 'lazy'
+  assign fetch_priority = 'auto'
+  if block.index == 1
+    assign image_loading = 'eager'
+    assign fetch_priority = 'high'
+  endif
+
+  assign widths = '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600'
+
+  if block.settings.image != blank
+    assign adapt_aspect_ratio = block.settings.image.aspect_ratio
+  endif
+
+  if block.settings.mobile_image != blank
+    assign adapt_aspect_ratio_mobile = block.settings.mobile_image.aspect_ratio
+  endif
+
+  if block.settings.mobile_aspect_ratio != 'adapt'
+    assign aspect_ratio_mobile = block.settings.mobile_aspect_ratio | split: '/'
+    assign temp = aspect_ratio_mobile[0] | append: '.0'
+    assign padding_bottom_mobile = aspect_ratio_mobile[1] | divided_by: temp | times: 100 | round: 2
+  elsif block.settings.mobile_aspect_ratio == 'adapt'
+    if block.settings.mobile_image != blank
+      assign padding_bottom_mobile = 1 | divided_by: block.settings.mobile_image.aspect_ratio | times: 100 | round: 2
+    elsif block.settings.image != blank
+      assign padding_bottom_mobile = 1 | divided_by: block.settings.image.aspect_ratio | times: 100 | round: 2
+    else
+      assign padding_bottom_mobile = 0
+    endif
+  else
+    assign padding_bottom_mobile = 0
+  endif
+
+  if block.settings.desktop_aspect_ratio != 'adapt'
+    assign aspect_ratio_desktop = block.settings.desktop_aspect_ratio | split: '/'
+    assign temp_desktop = aspect_ratio_desktop[0] | append: '.0'
+    assign padding_bottom_desktop = aspect_ratio_desktop[1] | divided_by: temp_desktop | times: 100 | round: 2
+  elsif block.settings.desktop_aspect_ratio == 'adapt'
+    if block.settings.image != blank
+      assign padding_bottom_desktop = 1 | divided_by: block.settings.image.aspect_ratio | times: 100 | round: 2
+    elsif block.settings.mobile_image != blank
+      assign padding_bottom_desktop = 1 | divided_by: block.settings.mobile_image.aspect_ratio | times: 100 | round: 2
+    else
+      assign padding_bottom_desktop = 0
+    endif
+  else
+    assign padding_bottom_desktop = 0
+  endif
+%}
+
+<div class="product-banner" {{ block.shopify_attributes }}>
+  <h5 class="product-banner__title h4">{{ block.settings.product_banner_text }}</h5>
+  <div
+    class="product-banner__content product-banner__content--{{ block.settings.content_position }} color-{{ block.settings.color_scheme }} content"
+    style="--padding-bottom-mobile: {{ padding_bottom_mobile }}%; --padding-bottom-desktop: {{ padding_bottom_desktop }}%;"
+  >
+    <div class="product-banner__text-content">
+      <div class="product-banner__left">
+        <div class="product-banner__info">
+          {% if block.settings.content_position == "stretch" %}
+            <div class="product-banner__info-text">
+          {% endif %}
+            {%- if block.settings.subheading != blank -%}
+              <div
+                class="
+                  product-banner__subheading {{ block.settings.subheading_style }} {% if block.settings.subheading_style == 'simple' %} h4 {% endif %}
+                  product-banner__subheading--{{ block.settings.type_overlay }}
+                  {% if block.settings.subheading_style == 'badge' %} {{ block.settings.badge_subheading_color }} mobile-{{ block.settings.badge_subheading_color_mobile }} {% endif %}
+                "
+              >
+                {{- block.settings.subheading -}}
+              </div>
+            {%- endif -%}
+            {%- if block.settings.heading != blank -%}
+              <h2
+                class="product-banner__heading {{ block.settings.heading_size }}"
+                {% if block.settings.heading_size == 'custom' %}
+                  style="--font-size: {{ block.settings.heading_size_custom }}px;"
+                {% endif %}
+              >
+                {{- block.settings.heading | newline_to_br -}}
+              </h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <div class="product-banner__text body-medium rte">
+                {{- block.settings.text | newline_to_br -}}
+              </div>
+            {%- endif -%}
+          {% if block.settings.content_position == "stretch" %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.content_position == "stretch" %}
+            {% if block.settings.badge_heading != blank %}
+              <div class="product-banner__badge">
+                {% if block.settings.badge_subheading != blank %}
+                  <span class="product-banner__badge-subheading subtitle">
+                    {{ block.settings.badge_subheading }}
+                  </span>
+                {% endif %}
+                {% if block.settings.badge_heading != blank %}
+                  <h3
+                    class="product-banner__badge-heading{% if block.settings.badge_heading_font == 'accent' %} accent-font{% endif %}"
+                    style="--font-size: {{ block.settings.badge_heading_size }}px;"
+                  >
+                    {% if block.settings.prefix %}
+                      <span
+                        class="product-banner__badge-prefix"
+                        style="--font-size: {{ block.settings.prefix_size }}px;"
+                      >
+                        {{ block.settings.prefix }}
+                      </span>
+                    {% endif %}
+
+                    {{ block.settings.badge_heading }}
+
+                    {% if block.settings.suffix %}
+                      <span
+                        class="product-banner__badge-prefix"
+                        style="--font-size: {{ block.settings.prefix_size }}px;"
+                      >
+                        {{ block.settings.suffix }}
+                      </span>
+                    {% endif %}
+                  </h3>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+        {%- if block.settings.show_button -%}
+          <div class="product-banner__bottom">
+            {%- if block.settings.show_button -%}
+              {% render 'button',
+                btn_label: block.settings.button_label,
+                btn_style: block.settings.button_style,
+                btn_link: block.settings.button_link,
+                class: 'product-banner__button'
+              %}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+      {% if block.settings.badge_subheading != blank or block.settings.badge_heading != blank %}
+        {% if block.settings.content_position != "stretch" %}
+          {% if block.settings.badge_heading != blank %}
+            <div class="product-banner__badge">
+              {% if block.settings.badge_subheading != blank %}
+                <span class="product-banner__badge-subheading subtitle">
+                  {{ block.settings.badge_subheading }}
+                </span>
+              {% endif %}
+              {% if block.settings.badge_heading != blank %}
+                <h3
+                  class="product-banner__badge-heading{% if block.settings.badge_heading_font == 'accent' %} accent-font{% endif %}"
+                  style="--font-size: {{ block.settings.badge_heading_size }}px;"
+                >
+                  {% if block.settings.prefix %}
+                    <span
+                      class="product-banner__badge-prefix"
+                      style="--font-size: {{ block.settings.prefix_size }}px;"
+                    >
+                      {{ block.settings.prefix }}
+                    </span>
+                  {% endif %}
+
+                  {{ block.settings.badge_heading }}
+
+                  {% if block.settings.suffix %}
+                    <span
+                      class="product-banner__badge-prefix"
+                      style="--font-size: {{ block.settings.prefix_size }}px;"
+                    >
+                      {{ block.settings.suffix }}
+                    </span>
+                  {% endif %}
+                </h3>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if block.settings.overlay_link and block.settings.button_link != blank %}
+      <a
+        href="{{ block.settings.button_link }}"
+        class="product-banner__link_overlay focus-inset"
+        aria-label="{{ 'accessibility.link' | t }}"
+      >
+      </a>
+    {% endif %}
+    <div class="product-banner__media-wrapper product-banner__media-wrapper--{{ block.settings.type_overlay }}" style="--overlay-opacity: {{ block.settings.overlay_opacity }}">
+      {%- if block.settings.image != blank or block.settings.mobile_image != blank -%}
+        {% liquid
+          if block.settings.mobile_aspect_ratio != 'adapt'
+            assign settings_mobile_aspect_ratio = temp | divided_by: aspect_ratio_mobile[1] | round: 2
+          else
+            if block.settings.mobile_image != blank
+              assign settings_mobile_aspect_ratio = adapt_aspect_ratio_mobile
+            endif
+          endif
+
+          if block.settings.desktop_aspect_ratio != 'adapt'
+            assign settings_desktop_aspect_ratio = temp | divided_by: aspect_ratio_desktop[1] | round: 2
+          else
+            if block.settings.image != blank
+              assign settings_desktop_aspect_ratio = adapt_aspect_ratio
+            endif
+          endif
+
+          # get calc ratio mobile
+          assign calc_ratio_mobile = 1
+          if block.settings.image.aspect_ratio > settings_mobile_aspect_ratio
+            assign calc_ratio_mobile = block.settings.image.aspect_ratio | divided_by: settings_mobile_aspect_ratio | round: 2
+          endif
+
+          # get calc ratio  desktop
+          assign calc_ratio_desktop = 1
+          if block.settings.image.aspect_ratio > settings_desktop_aspect_ratio
+            assign calc_ratio_desktop = block.settings.image.aspect_ratio | divided_by: settings_desktop_aspect_ratio | round: 2
+          endif
+        %}
+
+        {%- capture img_sizes -%}
+            (min-width: 1920px) calc({{ calc_ratio_desktop }} * 916px), (min-width: 990px) calc({{ calc_ratio_desktop }} * 47vw), (min-width: 576px) calc({{ calc_ratio_desktop }} * 100vw), calc({{ calc_ratio_mobile }} * 100vw)
+        {%- endcapture -%}
+
+         {% assign one_image = false %}
+        {% if block.settings.image != blank and block.settings.mobile_image == blank %}
+          {% assign one_image = true %}
+          {% assign banner_image = block.settings.image %}
+        {% elsif block.settings.image == blank and block.settings.mobile_image != blank %}
+          {% assign one_image = true %}
+          {% assign banner_image = block.settings.mobile_image %}
+        {% endif %}
+
+        {% if one_image %}
+          {{
+            banner_image
+            | image_url: width: block.settings.image.width
+            | image_tag:
+              loading: image_loading,
+              fetchpriority: fetch_priority,
+              sizes: img_sizes,
+              widths: widths,
+              class: 'product-banner__image'
+          }}
+        {% else %}
+          {% assign widths = '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946, 2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600'
+            | split: ', '
+          %}
+
+          <picture>
+            <source
+              srcset="{% for width in widths %}{{ block.settings.mobile_image | image_url: width: width }} {{ width }}w{% if forloop.last == false %}, {% endif %}{% endfor %}"
+              media="(max-width: 749px)"
+              sizes="{{ sizes }}"
+            >
+            <source
+              srcset="{% for width in widths %}{{ block.settings.image | image_url: width: width }} {{ width }}w{% if forloop.last == false %}, {% endif %}{% endfor %}"
+              media="(min-width: 750px)"
+              sizes="{{ sizes }}"
+            >
+            <img
+              src="{{ block.settings.image | image_url: width: block.settings.image.width }}"
+              alt="{{ block.settings.image.alt }}"
+              width="{{ block.settings.image.width }}"
+              height="{{ block.settings.image.height }}"
+              sizes="{{ sizes }}"
+              class="product-banner__image"
+              style="--focal_point_desktop: {{ block.settings.image.presentation.focal_point }}; --focal_point_mobile: {{ block.settings.mobile_image.presentation.focal_point }};"
+              loading="{{ image_loading }}"
+            >
+          </picture>
+        {% endif %}
+      {%- else -%}
+        {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg product-banner__placeholder' }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

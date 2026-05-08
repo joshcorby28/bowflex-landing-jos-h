@@ -1,0 +1,62 @@
+{% liquid
+  case settings.card_image_ratio
+    when 'landscape'
+      assign padding_bottom = '75%'
+    when 'portrait'
+      assign padding_bottom = '133.3%'
+    when 'square'
+      assign padding_bottom = '100%'
+    else
+      assign padding_bottom = '100%'
+  endcase
+
+  if product_number == blank
+    assign product_number = 2
+  endif
+
+  assign has_sale_price = false
+  if product_number == 3
+    assign has_sale_price = true
+  endif
+%}
+
+<div
+  class="
+    card-horizontal-wrapper {% if show_image != true %} card-horizontal-wrapper_no-image {% endif %}
+    {% if color_scheme %} color-{{ color_scheme }} {% else %} color-{{ settings.card_color_scheme }} {% endif %}
+  "
+>
+  {% if show_image == true %}
+    <div class="card-horizontal__image" tabindex="-1">
+      <div
+        class="media"
+        style="padding-bottom: {{ padding_bottom }}; object-fit: {{ settings.card_image_fit }};"
+      >
+        {{ 'product-apparel-' | append: product_number | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="card-horizontal__information">
+    <div class="card-horizontal__text">
+      {%- if show_vendor -%}
+        <span class="visually-hidden">{{- 'accessibility.vendor' | t -}}</span>
+        <div class="card-horizontal__vendor body-xs">
+          {{- 'products.product.vendor' | t -}}
+        </div>
+      {%- endif -%}
+
+      <h3 class="card-horizontal__title">
+        {{- 'products.product.product_heading' | t -}}
+      </h3>
+
+      {% render 'price', is_placeholder_sale_price: has_sale_price %}
+    </div>
+
+    {% if show_arrow == true %}
+      <span class="card-horizontal__arrow">
+        {% render 'icon-btn-arrow' %}
+      </span>
+    {% endif %}
+  </div>
+</div>

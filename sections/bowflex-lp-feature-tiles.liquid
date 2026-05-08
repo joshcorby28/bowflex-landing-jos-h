@@ -1,0 +1,279 @@
+<div class="bfx-features bfx-features--{{ section.id }}" style="background:{{ section.settings.background_color }};">
+
+  <div class="bfx-features__header container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="bfx-features__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="bfx-features__nav" aria-label="Feature slider controls">
+      <button class="bfx-features__btn bfx-features__btn--prev" aria-label="Previous" data-slider="{{ section.id }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="bfx-features__btn bfx-features__btn--next" aria-label="Next" data-slider="{{ section.id }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="bfx-features__track-wrap">
+    <ul class="bfx-features__track" id="bfx-slider-{{ section.id }}" role="list">
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'tile' -%}
+          <li class="bfx-features__tile" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              <div class="bfx-features__tile-img">
+                {{- block.settings.image | image_url: width: 500 | image_tag:
+                    loading: 'lazy',
+                    alt: block.settings.caption,
+                    style: 'width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block;'
+                -}}
+              </div>
+            {%- else -%}
+              <div class="bfx-features__tile-img bfx-features__tile-img--placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+            {%- if block.settings.caption != blank -%}
+              <p class="bfx-features__tile-caption">{{ block.settings.caption }}</p>
+            {%- endif -%}
+            {%- if block.settings.subcaption != blank -%}
+              <p class="bfx-features__tile-subcaption">{{ block.settings.subcaption }}</p>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+
+    </ul>
+  </div>
+
+</div>
+
+<style>
+  .bfx-features--{{ section.id }} {
+    padding-top: var(--spacing-{{ section.settings.padding_top }}, 48px);
+    padding-bottom: var(--spacing-{{ section.settings.padding_bottom }}, 48px);
+    overflow: hidden;
+  }
+  .bfx-features__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .bfx-features__heading {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .bfx-features__nav {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .bfx-features__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid #222;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    color: #222;
+    padding: 0;
+  }
+  .bfx-features__btn:hover {
+    background: #222;
+    color: #fff;
+  }
+  .bfx-features__btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .bfx-features__track-wrap {
+    /* start flush with the page-width left edge, overflow right */
+    padding-left: max(16px, calc((100vw - 1280px) / 2 + 16px));
+  }
+  .bfx-features__track {
+    display: flex;
+    gap: {{ section.settings.gap }}px;
+    list-style: none;
+    margin: 0;
+    padding: 0 max(16px, calc((100vw - 1280px) / 2 + 16px)) 0 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .bfx-features__track::-webkit-scrollbar { display: none; }
+  .bfx-features__tile {
+    flex: 0 0 {{ section.settings.tile_width }}px;
+    scroll-snap-align: start;
+  }
+  .bfx-features__tile-img {
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .bfx-features__tile-img--placeholder .placeholder-svg {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f0f0f0;
+    border-radius: 8px;
+  }
+  .bfx-features__tile-caption {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 5px;
+    line-height: 1.4;
+  }
+  .bfx-features__tile-subcaption {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+  }
+  @media (max-width: 749px) {
+    .bfx-features__tile { flex: 0 0 {{ section.settings.tile_width_mobile }}px; }
+    .bfx-features__track-wrap { padding-left: 16px; }
+    .bfx-features__track { padding-right: 16px; }
+  }
+</style>
+
+<script>
+  (function() {
+    var track = document.getElementById('bfx-slider-{{ section.id }}');
+    if (!track) return;
+
+    var prevBtn = document.querySelector('[data-slider="{{ section.id }}"].bfx-features__btn--prev');
+    var nextBtn = document.querySelector('[data-slider="{{ section.id }}"].bfx-features__btn--next');
+
+    function getScrollAmount() {
+      var tile = track.querySelector('.bfx-features__tile');
+      if (!tile) return 300;
+      var gap = parseInt('{{ section.settings.gap }}') || 20;
+      return tile.offsetWidth + gap;
+    }
+
+    function updateButtons() {
+      if (!prevBtn || !nextBtn) return;
+      prevBtn.disabled = track.scrollLeft <= 2;
+      nextBtn.disabled = track.scrollLeft + track.offsetWidth >= track.scrollWidth - 2;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+
+    track.addEventListener('scroll', updateButtons, { passive: true });
+    updateButtons();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "BFX LP — Feature Tiles",
+  "tag": "section",
+  "class": "bfx-lp-features-section spaced-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Colour",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Product Features"
+    },
+    {
+      "type": "range",
+      "id": "tile_width",
+      "min": 200,
+      "max": 500,
+      "step": 10,
+      "default": 280,
+      "label": "Tile Width Desktop (px)"
+    },
+    {
+      "type": "range",
+      "id": "tile_width_mobile",
+      "min": 160,
+      "max": 320,
+      "step": 10,
+      "default": 220,
+      "label": "Tile Width Mobile (px)"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 20,
+      "label": "Gap Between Tiles (px)"
+    },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "options": [
+        {"value":"no-indent","label":"None"},{"value":"xs","label":"XS"},
+        {"value":"s","label":"S"},{"value":"m","label":"M"},
+        {"value":"l","label":"L"},{"value":"xl","label":"XL"}
+      ],
+      "default": "l",
+      "label": "Padding Top"
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "options": [
+        {"value":"no-indent","label":"None"},{"value":"xs","label":"XS"},
+        {"value":"s","label":"S"},{"value":"m","label":"M"},
+        {"value":"l","label":"L"},{"value":"xl","label":"XL"}
+      ],
+      "default": "l",
+      "label": "Padding Bottom"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Feature Tile",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "Feature name" },
+        { "type": "text", "id": "subcaption", "label": "Sub-caption", "default": "Supporting detail about this feature." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "BFX LP — Feature Tiles",
+      "blocks": [
+        { "type": "tile", "settings": { "caption": "Change speed and incline in 4 heart beats", "subcaption": "Quick Response Technology." } },
+        { "type": "tile", "settings": { "caption": "Plenty of runway", "subcaption": "22\"W x 60\"L running path." } },
+        { "type": "tile", "settings": { "caption": "Connect to Apple Watch®", "subcaption": "Get an easy, secure way to connect your Apple Watch." } },
+        { "type": "tile", "settings": { "caption": "Your next peak is just ahead", "subcaption": "Up to 15% motorised incline." } },
+        { "type": "tile", "settings": { "caption": "Stay motivated", "subcaption": "Media shelf and dual cooling fans included." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

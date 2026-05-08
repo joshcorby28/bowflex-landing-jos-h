@@ -1,0 +1,427 @@
+{{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  {% render 'section-margin' %}
+{%- endstyle -%}
+
+{% liquid
+  assign collection_image = collection.image
+  if section.settings.image != blank and collection.id != blank
+    assign collection_image = section.settings.image
+  endif
+
+  if collection_image == blank and collection.id == blank
+    assign collection_image = section.settings.image_products
+  endif
+
+  if section.settings.image_ratio != 'adapt' and section.settings.image_ratio != 'adapt_content'
+    assign aspect_ratio = section.settings.image_ratio | split: '/'
+    assign temp = aspect_ratio[0] | append: '.0'
+    assign padding_bottom = aspect_ratio[1] | divided_by: temp | times: 100 | round: 2
+  elsif section.settings.image_ratio == 'adapt' and collection_image != blank
+    assign padding_bottom = 1 | divided_by: collection_image.aspect_ratio | times: 100 | round: 2
+  elsif section.settings.image_ratio == 'adapt_content'
+    if section.settings.image_position == 'bottom' or section.settings.image_position == 'top'
+      assign padding_bottom = 20
+    else
+      assign padding_bottom = 0
+    endif
+  else
+    assign padding_bottom = 0
+  endif
+-%}
+
+<div class="collection-hero">
+  <div class="container">
+    {% if section.settings.type_overlay != 'all'
+      and section.settings.show_collection_image
+      and collection_image != blank
+      and section.settings.image_position == 'background'
+      and section.settings.color_scheme != section.settings.color_scheme_mobile
+    %}
+      {%- capture media_screens -%}
+        {%- if section.settings.type_overlay == 'mobile' -%}
+          (max-width: 990px)
+        {%- endif -%}
+      {%- endcapture -%}
+      <style>
+        @media screen and {{ media_screens }} {
+          {% assign scheme = section.settings.color_scheme_mobile %}
+
+          [data-scheme=light] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} {
+            --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+            --color-background-secondary: {{ scheme.settings.colors_background_2.red }},{{ scheme.settings.colors_background_2.green }},{{ scheme.settings.colors_background_2.blue }};
+            --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+            {% if scheme.settings.background_gradient != empty %}
+              --overwrite-background: {{ scheme.settings.background_gradient }};
+            {% else %}
+              --overwrite-background: {{ scheme.settings.colors_background_1 }};
+            {% endif %}
+            --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+            --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+          }
+
+          [data-scheme=dark] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} .collection-hero__text-wrapper,
+          [data-scheme=dark] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} .collection-hero__image-wrapper {
+            --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+            --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+            --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+            --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+          }
+
+          @media (prefers-color-scheme: light) {
+            [data-scheme=auto] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} {
+              --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+              --color-background-secondary: {{ scheme.settings.colors_background_2.red }},{{ scheme.settings.colors_background_2.green }},{{ scheme.settings.colors_background_2.blue }};
+              --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+              {% if scheme.settings.background_gradient != empty %}
+                --overwrite-background: {{ scheme.settings.background_gradient }};
+              {% else %}
+                --overwrite-background: {{ scheme.settings.colors_background_1 }};
+              {% endif %}
+              --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+              --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+            }
+          }
+
+          @media (prefers-color-scheme: dark) {
+             [data-scheme=auto] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} .collection-hero__text-wrapper,
+             [data-scheme=auto] .collection-hero__wrapper--with-image.color-{{ section.settings.color_scheme }} .collection-hero__image-wrapper {
+              --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+              --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+              --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+              --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+            }
+          }
+        }
+      </style>
+    {% endif %}
+
+    <div
+      class="collection-hero__wrapper{% if section.settings.show_collection_image and collection_image != blank %}{% if section.settings.image_position == 'background' %} color-{{ section.settings.color_scheme }} background collection-hero__wrapper--with-image{% endif %}{% if section.settings.image_position == 'right' or section.settings.image_position == 'left' %}{% if section.settings.image_ratio != 'adapt_content' %} collection-hero__wrapper--without-stretch{% endif %}{% endif %}{% endif %}"
+      style="--padding-bottom: {{ padding_bottom }}%;"
+    >
+      <div class="collection-hero__text-wrapper">
+        <div class="page-header">
+          <div class="page-header__inner">
+            <{{ section.settings.heading_level | default: "h1" }} class="collection-hero__title title--page {{ section.settings.heading_size }}">
+              {{- collection.title | escape -}}
+            </{{ section.settings.heading_level | default: "h1" }}>
+          </div>
+        </div>
+
+        {%- if section.settings.show_collection_description and collection.description != blank -%}
+          <div class="collection-hero__description body-large rte">
+            {{- collection.description -}}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_collection_image and collection_image -%}
+        {% liquid
+          # get calc ratio image
+          if section.settings.image_ratio != 'adapt' and section.settings.image_ratio != 'adapt_content'
+            assign settings_aspect_ratio = temp | divided_by: aspect_ratio[1] | round: 2
+          else
+            assign settings_aspect_ratio = collection_image.aspect_ratio
+          endif
+
+          assign calc_ratio = 1
+          if collection_image.aspect_ratio > settings_aspect_ratio
+            assign calc_ratio = collection_image.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+          endif
+        %}
+        {%- capture sizes -%}
+          {%- if section.settings.image_position == 'right' or section.settings.image_position == 'left' -%}
+            (min-width: 1920px) calc(920px * {{ calc_ratio }}), (min-width: 750px) calc(50vw * {{ calc_ratio }}), calc(100vw * {{ calc_ratio }})
+          {%- else -%}
+            (min-width: 1920px) calc(1840px * {{ calc_ratio }}), (min-width: 1200px) calc(100vw * {{ calc_ratio }}), calc(100vw * {{ calc_ratio }})
+          {%- endif -%}
+          
+        {%- endcapture -%}
+        <div
+          class="collection-hero__image-wrapper collection-hero__image-wrapper--{{ section.settings.image_position }}"
+          style="--padding-bottom: {{ padding_bottom }}%;"
+        >
+          <div class="media">
+            {{
+              collection_image
+              | image_url: width: collection_image.width
+              | image_tag:
+                loading: 'lazy',
+                widths: '360, 535, 720, 940, 1100, 1200, 1440, 1600, 1800, 2000, 2100, 2200, 2880, 3200, 3600, 4000, 4200, 4400',
+                sizes: sizes
+            }}
+          </div>
+
+          {%- if section.settings.overlay_opacity != 0 -%}
+            <div
+              class="collection-hero__overlay collection-hero__overlay--{{ section.settings.type_overlay }}"
+              style="opacity: {{ section.settings.overlay_opacity }}"
+            ></div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-collection-banner.name",
+  "class": "collection-banner-section",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.main-collection-banner.settings.paragraph.content"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h2",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_level",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_level.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_level.options__2.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_level.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_level.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "default": false,
+      "label": "t:sections.main-collection-banner.settings.show_collection_description.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-banner.settings.header_image.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "default": false,
+      "label": "t:sections.main-collection-banner.settings.show_collection_image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:sections.overlay-group.popup.settings.image_position.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.overlay-group.popup.settings.image_position.options__1.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.overlay-group.popup.settings.image_position.options__2.label"
+        },
+        {
+          "value": "top",
+          "label": "t:sections.overlay-group.popup.settings.image_position.options__3.label"
+        },
+        {
+          "value": "bottom",
+          "label": "t:sections.overlay-group.popup.settings.image_position.options__4.label"
+        },
+        {
+          "value": "background",
+          "label": "t:sections.overlay-group.popup.settings.image_position.options__5.label"
+        }
+      ],
+      "default": "background"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "background-3",
+      "label": "t:sections.all.color_scheme.label",
+      "visible_if": "{{ section.settings.image_position == 'background' }}"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_mobile",
+      "default": "background-3",
+      "label": "t:sections.banner-grid.blocks.card.settings.color_scheme_mobile.label",
+      "visible_if": "{{ section.settings.image_position == 'background' and section.settings.overlay_opacity != 0 and section.settings.type_overlay != 'all' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.main-collection-banner.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_products",
+      "label": "t:sections.main-collection-banner.settings.image_products.label",
+      "info": "t:sections.main-collection-banner.settings.image_products.info"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "1/1",
+          "label": "t:sections.all.aspect_ratio.options__1.label"
+        },
+        {
+          "value": "2/1",
+          "label": "t:sections.all.aspect_ratio.options__13.label"
+        },
+        {
+          "value": "3/2",
+          "label": "t:sections.all.aspect_ratio.options__2.label"
+        },
+        {
+          "value": "4/5",
+          "label": "t:sections.all.aspect_ratio.options__7.label"
+        },
+        {
+          "value": "16/9",
+          "label": "t:sections.all.aspect_ratio.options__4.label"
+        },
+        {
+          "value": "21/9",
+          "label": "t:sections.all.aspect_ratio.options__5.label"
+        },
+        {
+          "value": "adapt",
+          "label": "t:sections.all.aspect_ratio.options__6.label"
+        },
+        {
+          "value": "adapt_content",
+          "label": "t:sections.all.aspect_ratio.options__11.label"
+        }
+      ],
+      "default": "adapt_content",
+      "label": "t:sections.all.aspect_ratio.label"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "t:sections.all.overlay_opacity.label",
+      "default": 0.2
+    },
+    {
+      "type": "select",
+      "id": "type_overlay",
+      "options": [
+        {
+          "value": "all",
+          "label": "t:sections.countdown.settings.type_overlay.options__1.label"
+        },
+        {
+          "value": "mobile",
+          "label": "t:sections.countdown.settings.type_overlay.options__2.label"
+        }
+      ],
+      "default": "all",
+      "label": "t:sections.countdown.settings.type_overlay.label",
+      "visible_if": "{{ section.settings.overlay_opacity != 0 }}"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-margin.header.content"
+    },
+    {
+      "type": "select",
+      "id": "margin_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_top.label"
+    },
+    {
+      "type": "select",
+      "id": "margin_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_bottom.label"
+    }
+  ]
+}
+{% endschema %}

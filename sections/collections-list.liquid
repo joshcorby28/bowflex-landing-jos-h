@@ -1,0 +1,1006 @@
+{{ 'section-collections-list.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  {% render 'section-padding' %}
+  {% render 'section-margin' %}
+{%- endstyle -%}
+
+{% if section.settings.enable_slider %}
+  <script src="{{ 'collections-list.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
+{% liquid
+  assign columns_desktop = section.settings.columns | times: 1
+
+  if section.settings.card_layout != 'column' and section.settings.columns > 4
+    assign columns_desktop = 4
+  endif
+
+  assign columns_mobile = 1
+
+  if section.settings.card_layout == 'column'
+    assign columns_mobile = section.settings.columns_mobile | times: 1
+  endif
+
+  assign columns_mobile_slider = columns_mobile | plus: 0.3
+
+  assign sm_columns = 1.3
+
+  if columns_desktop == 2 or columns_desktop == 3 or columns_desktop == 4
+    assign sm_columns = columns_mobile | plus: 0.3
+  elsif columns_desktop == 5 or columns_desktop == 6 or columns_desktop == 7 or columns_desktop == 8 or columns_desktop == 10
+    assign sm_columns = 2.3
+  elsif columns_desktop == 9 or columns_desktop == 11 or columns_desktop == 12
+    assign sm_columns = 3.3
+  endif
+
+  assign md_columns = 2.3
+
+  if columns_desktop == 2 or columns_desktop == 3 or columns_desktop == 4 or columns_desktop == 7 or columns_desktop == 8 or columns_desktop == 10
+    assign md_columns = 2.3
+  elsif columns_desktop == 5 or columns_desktop == 6 or columns_desktop == 9 or columns_desktop == 11 or columns_desktop == 12
+    assign md_columns = 3.3
+  endif
+
+  if section.settings.card_layout == 'row'
+    assign md_columns = 1.3
+  endif
+
+  assign lg_columns = 3.3
+
+  if columns_desktop == 2 or columns_desktop == 3 or columns_desktop == 4
+    assign lg_columns = 2.3
+  elsif columns_desktop == 5 or columns_desktop == 6
+    assign lg_columns = 3.3
+  elsif columns_desktop == 7 or columns_desktop == 8
+    assign lg_columns = 4.3
+  elsif columns_desktop == 9 or columns_desktop == 11 or columns_desktop == 12
+    assign lg_columns = 6.3
+  elsif columns_desktop == 10
+    assign lg_columns = 5.3
+  endif
+
+  assign xl_columns = 3
+
+  if columns_desktop == 2 or columns_desktop == 3 or columns_desktop == 4
+    assign xl_columns = 2
+  elsif columns_desktop == 5 or columns_desktop == 6
+    assign xl_columns = 3
+  elsif columns_desktop == 7 or columns_desktop == 8
+    assign xl_columns = 4
+  elsif columns_desktop == 9 or columns_desktop == 11 or columns_desktop == 12
+    assign xl_columns = 6
+  elsif columns_desktop == 10
+    assign xl_columns = 5
+  endif
+
+  assign xxl_columns = 4
+
+  if columns_desktop == 2 or columns_desktop == 4
+    assign xxl_columns = 2
+  elsif columns_desktop == 3
+    assign xxl_columns = 3
+  elsif columns_desktop == 5
+    assign xxl_columns = 5
+  elsif columns_desktop == 6 or columns_desktop == 9 or columns_desktop == 10
+    assign xxl_columns = 6
+  elsif columns_desktop == 7
+    assign xxl_columns = 7
+  elsif columns_desktop == 8 or columns_desktop == 11 or columns_desktop == 12
+    assign xxl_columns = 8
+  endif
+%}
+
+<div class="collections-list color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  <div class="container">
+    {% render 'heading-group', section: section, class: 'collection-list' %}
+    <div class="content collections-list__container{% if section.settings.enable_slider and section.blocks.size > 1 %} has-right-shadow{% endif %}">
+      <div
+        class="collections-list__layout{% if section.settings.enable_slider %} swiper{% endif %}"
+        {% if section.settings.enable_slider %}
+          data-collections-list-slider="true"
+        {% endif %}
+        data-grid-mobile-columns="{{- columns_mobile -}}"
+        data-mobile-columns="{{- columns_mobile_slider -}}"
+        data-sm-columns="{{- sm_columns -}}"
+        data-md-columns="{{- md_columns -}}"
+        data-lg-columns="{{- lg_columns -}}"
+        data-xl-columns="{{- xl_columns -}}"
+        data-xxl-columns="{{- xxl_columns -}}"
+        data-desktop-columns="{{- columns_desktop -}}"
+        data-card-layout="{{- section.settings.card_layout -}}"
+        style="
+          --columns-mobile: {{ columns_mobile_slider }};
+          --columns-sm: {{ sm_columns }};
+          --columns-md: {{ md_columns }};
+          --columns-lg: {{ lg_columns }};
+          --columns-xl: {{ xl_columns }};
+          --columns-xxl: {{ xxl_columns }};
+          --columns-desktop: {{ columns_desktop }};
+        "
+      >
+        <div
+          class="
+            collections-list__wrapper collections-list__wrapper--card-{{ section.settings.card_layout }}
+            {% if section.settings.card_layout != 'column' and section.settings.columns > 4 %}
+              collections-list__wrapper--4
+            {% else %}
+              collections-list__wrapper--{{ section.settings.columns }}
+            {% endif %}
+            collections-list__wrapper--{{ columns_mobile }}-mobile
+            {% if section.settings.enable_slider %}
+              swiper-wrapper
+            {% endif %}
+          "
+        >
+          {%- for block in section.blocks -%}
+            {% case block.type %}
+              {% when 'collection' %}
+                {% if section.settings.card_layout == 'overlay'
+                  and block.settings.type_overlay == 'mobile'
+                  and block.settings.color_scheme != block.settings.color_scheme_mobile
+                %}
+                  <style>
+                    @media screen and (max-width: 576px) {
+                      {% assign scheme = block.settings.color_scheme_mobile %}
+
+                      [data-scheme=light] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} {
+                        --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+                        --color-background-secondary: {{ scheme.settings.colors_background_2.red }},{{ scheme.settings.colors_background_2.green }},{{ scheme.settings.colors_background_2.blue }};
+                        --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+                        {% if scheme.settings.background_gradient != empty %}
+                          --overwrite-background: {{ scheme.settings.background_gradient }};
+                        {% else %}
+                          --overwrite-background: {{ scheme.settings.colors_background_1 }};
+                        {% endif %}
+                        --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+                        --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+                        --color-accent: {{ scheme.settings.color_accent.red }}, {{ scheme.settings.color_accent.green }}, {{ scheme.settings.color_accent.blue }};
+                        --color-border: {{ scheme.settings.color_border.red }}, {{ scheme.settings.color_border.green }}, {{ scheme.settings.color_border.blue }};
+                      }
+
+                      [data-scheme=dark] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} .collections-list__title,
+                      [data-scheme=dark] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} .collections-list__desc {
+                        --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+                        --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+                        --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+                        --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+                        --color-accent: {{ scheme.settings.color_accent.red }}, {{ scheme.settings.color_accent.green }}, {{ scheme.settings.color_accent.blue }};
+                        --color-border: {{ scheme.settings.color_border.red }}, {{ scheme.settings.color_border.green }}, {{ scheme.settings.color_border.blue }};
+                      }
+
+                      @media (prefers-color-scheme: light) {
+                        [data-scheme=auto] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} {
+                          --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+                          --color-background-secondary: {{ scheme.settings.colors_background_2.red }},{{ scheme.settings.colors_background_2.green }},{{ scheme.settings.colors_background_2.blue }};
+                          --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+                          {% if scheme.settings.background_gradient != empty %}
+                            --overwrite-background: {{ scheme.settings.background_gradient }};
+                          {% else %}
+                            --overwrite-background: {{ scheme.settings.colors_background_1 }};
+                          {% endif %}
+                          --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+                          --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+                          --color-accent: {{ scheme.settings.color_accent.red }}, {{ scheme.settings.color_accent.green }}, {{ scheme.settings.color_accent.blue }};
+                          --color-border: {{ scheme.settings.color_border.red }}, {{ scheme.settings.color_border.green }}, {{ scheme.settings.color_border.blue }};
+                        }
+                      }
+
+                      @media (prefers-color-scheme: dark) {
+                         [data-scheme=auto] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} .collections-list__title,
+                         [data-scheme=auto] .collections-list__item--overlay.color-{{ block.settings.card_color_scheme }} .collections-list__desc {
+                          --color-background: {{ scheme.settings.colors_background_1.red }},{{ scheme.settings.colors_background_1.green }},{{ scheme.settings.colors_background_1.blue }};
+                          --color-foreground: {{ scheme.settings.colors_text.red }}, {{ scheme.settings.colors_text.green }}, {{ scheme.settings.colors_text.blue }};
+                          --color-foreground-secondary: {{ scheme.settings.colors_secondary_text.red }}, {{ scheme.settings.colors_secondary_text.green }}, {{ scheme.settings.colors_secondary_text.blue }};
+                          --color-overlay: {{ scheme.settings.colors_background_overlay.red }},{{ scheme.settings.colors_background_overlay.green }},{{ scheme.settings.colors_background_overlay.blue }};
+                          --color-accent: {{ scheme.settings.color_accent.red }}, {{ scheme.settings.color_accent.green }}, {{ scheme.settings.color_accent.blue }};
+                          --color-border: {{ scheme.settings.color_border.red }}, {{ scheme.settings.color_border.green }}, {{ scheme.settings.color_border.blue }};
+                        }
+                      }
+                    }
+                  </style>
+                {% endif %}
+
+                {% assign collection = block.settings.collection %}
+                <div
+                  class="collections-list__item collections-list__item--{{ section.settings.card_layout }} collections-list__item--{{- section.settings.image_ratio }}{% if section.settings.card_layout != 'column' %} color-{{ block.settings.card_color_scheme }}{% endif %} collections-list__item--{{ block.id }}{% if section.settings.enable_slider %} swiper-slide{% endif %}"
+                  {{ block.shopify_attributes }}
+                  {% if section.settings.card_layout == 'overlay' %}
+                    style="--overlay-opacity: {{ block.settings.overlay_opacity }};"
+                  {% endif %}
+                >
+                  <div class="collections-list__item-content collections-list__item-content-overlay--{{ block.settings.type_overlay }}">
+                    {% if collection != blank %}
+                      <a
+                        href="{{ collection.url | default: '#' }}"
+                        class="collections-list__link_overlay{% if section.settings.card_layout != 'column' %} without-hover-effect-on-title{% endif %}"
+                        aria-label="{{ collection.title }}"
+                      >
+                        <span class="visibility-hidden">{{ collection.title }}</span>
+                      </a>
+                    {% endif %}
+
+                    {% liquid
+                      assign collection_product_image = collection.featured_image
+
+                      if block.settings.image
+                        assign collection_product_image = block.settings.image
+                      endif
+                    %}
+
+                    {% if section.settings.image_ratio == 'adapt' and collection_product_image != blank %}
+                      {% style %}
+                        .collections-list__item--{{ block.id }} .collections-list__image::before {
+                          padding-bottom: {{ 1 | divided_by: collection_product_image.aspect_ratio | times: 100 }}%;
+                        }
+
+                        .collections-list__item--overlay.collections-list__item--{{ block.id }} .collections-list__item-content::after {
+                          padding-bottom: {{ 1 | divided_by: collection_product_image.aspect_ratio | times: 100 }}%;
+                        }
+                      {% endstyle %}
+                    {% endif %}
+
+                    <div
+                      class="collections-list__image collections-list__image--{{ section.settings.image_ratio }} collections-list__image--{{ section.settings.image_fit }}"
+                    >
+                      {%- if collection_product_image != blank -%}
+                        {% liquid
+                          if section.settings.card_layout != 'column' and section.settings.columns > 4
+                            assign columns = 4
+                          else
+                            assign columns = section.settings.columns | times: 1
+                          endif
+
+                          assign image_loading = 'lazy'
+
+                          if section.index == 1
+                            assign image_loading = 'eager'
+                          endif
+
+                          assign settings_aspect_ratio = 1
+
+                          if section.settings.image_ratio == 'landscape'
+                            assign settings_aspect_ratio = 1.33
+                          elsif section.settings.image_ratio == 'portrait'
+                            assign settings_aspect_ratio = 0.75
+                          elsif section.settings.image_ratio == 'adapt'
+                            assign settings_aspect_ratio = article.image.aspect_ratio
+                          endif
+
+                          assign calc_ratio = 1
+
+                          if collection_product_image.aspect_ratio > settings_aspect_ratio
+                            assign calc_ratio = collection_product_image.aspect_ratio | divided_by: settings_aspect_ratio | round: 2
+                          endif
+                        %}
+
+                        {% comment %} --- IMG SIZES --- {% endcomment %}
+                        {%- if section.settings.card_layout == 'column' -%}
+                          {%- capture sizes -%}
+                          {%- if columns == 12 -%}
+                            (min-width: 1920px) calc(146px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 12 * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 8 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 6 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 3 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 11 -%}
+                            (min-width: 1920px) calc(160px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 11 * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 8 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 6 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 3 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 10 -%}
+                            (min-width: 1920px) calc(177px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 10 * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 5 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 5 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 9 -%}
+                            (min-width: 1920px) calc(198px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 9 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 6 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 3 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 8 -%}
+                            (min-width: 1920px) calc(223px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 8 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 4 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 7 -%}
+                            (min-width: 1920px) calc(256px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 7 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 990px) calc((100vw - 40px) / 4 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 6 -%}
+                            (min-width: 1920px) calc(300px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 3 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 3 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 5 -%}
+                            (min-width: 1920px) calc(362px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 5 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 3 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 3 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 4 -%}
+                            (min-width: 1920px) calc(454px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 3 -%}
+                            (min-width: 1920px) calc(608px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 3 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 2 -%}
+                            (min-width: 1920px) calc(916px * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns_mobile == 1 -%}
+                            calc((100vw - 16px) * {{ calc_ratio }})
+                          {%- else -%}
+                            calc((100vw - 24px) / 2 * {{ calc_ratio }})
+                          {%- endif -%}
+                        {%- endcapture -%}
+                        {% elsif section.settings.card_layout == 'overlay' %}
+                          {%- capture sizes -%}
+                          {%- if columns == 4 -%}
+                            (min-width: 1920px) calc(454px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 3 -%}
+                            (min-width: 1920px) calc(608px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 3 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 2 -%}
+                            (min-width: 1920px) calc(916px * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 2 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                            calc((100vw - 16px) * {{ calc_ratio }})
+                        {%- endcapture -%}
+                        {% elsif section.settings.card_layout == 'row' %}
+                          {%- capture sizes -%}
+                          {%- if columns == 4 -%}
+                            (min-width: 1920px) calc(227px * {{ calc_ratio }}),
+                            (min-width: 1600px) calc((100vw - 80px) / 8 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 4 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 3 -%}
+                            (min-width: 1920px) calc(304px * {{ calc_ratio }}),
+                            (min-width: 1360px) calc((100vw - 80px) / 6 * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 4 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                          {%- if columns == 2 -%}
+                            (min-width: 1920px) calc(458px * {{ calc_ratio }}),
+                            (min-width: 1200px) calc((100vw - 80px) / 4 * {{ calc_ratio }}),
+                            (min-width: 750px) calc((100vw - 40px) / 4 * {{ calc_ratio }}),
+                            (min-width: 576px) calc((100vw - 40px) / 2 * {{ calc_ratio }}),
+                          {%- endif -%}
+                            calc((100vw - 16px) * {{ calc_ratio }})
+                        {%- endcapture -%}
+                        {%- endif -%}
+
+                        {{
+                          collection_product_image
+                          | image_url: width: collection_product_image.width
+                          | image_tag:
+                            loading: image_loading,
+                            sizes: sizes,
+                            widths: '150, 200, 250, 300, 360, 420, 500, 550, 640, 750, 900, 1100, 1420, 1700, 1920, 2200, 2400, 2600'
+                        }}
+                      {% elsif collection == blank or collection.all_products_count == 0 %}
+                        {% assign placeholder_index = forloop.index | modulo: 4 | plus: 1 %}
+                        {{ 'collection-apparel-' | append: placeholder_index | placeholder_svg_tag: 'placeholder-svg' }}
+                      {% endif %}
+                    </div>
+                    <div class="collections-list__information">
+                      <h3 class="collections-list__title {% if collection != blank %} link--hover-underline {% endif %} {{ section.settings.heading_size_card }}">
+                        {% if collection != blank %}
+                          {{- collection.title -}}
+                        {% else %}
+                          {{- 'general.card.collection_name' | t -}}
+                        {% endif %}
+                      </h3>
+                      {%- if section.settings.show_desc -%}
+                        {%- if block.settings.overwrite_description != blank -%}
+                          <p class="collections-list__desc">
+                            {{- block.settings.overwrite_description | truncatewords: 30, '...' -}}
+                          </p>
+                        {%- elsif collection.description != blank -%}
+                          <p class="collections-list__desc">
+                            {{-
+                              collection.description
+                              | strip_html
+                              | replace: ' ', ' '
+                              | strip_newlines
+                              | truncatewords: 30, '...'
+                            -}}
+                          </p>
+                        {%- else -%}
+                          {% if collection == blank %}
+                            <p class="collections-list__desc">
+                              {{- 'general.card.collection_description' | t | truncatewords: 30, '...' -}}
+                            </p>
+                          {% endif %}
+                        {%- endif -%}
+                      {%- endif -%}
+                      {%- if block.settings.button_show -%}
+                        <div class="collections-list__button-wrapper">
+                          {% render 'button',
+                            btn_label: block.settings.button_label,
+                            btn_style: block.settings.button_style,
+                            btn_link: collection.url,
+                            class: 'collections-list__button'
+                          %}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- else -%}
+                <div
+                  class="collections-list__item collections-list__item--link collections-list__item--link--{{ section.settings.card_layout }} collections-list__item--link--{{ section.settings.image_ratio }}{% if section.settings.enable_slider %} swiper-slide{% endif %}"
+                >
+                  <div class="collections-list__item-link-wrapper">
+                    <a
+                      class="collections-list__item-link collections-list__item-link--{{ block.settings.style }}"
+                      {% if block.settings.link != blank %}
+                        href="{{ block.settings.link }}"
+                      {% else %}
+                        disabled
+                      {% endif %}
+                    >
+                      {% if block.settings.label %}
+                        <span class="link-wrapper">
+                          <span class="link--hover-underline">
+                            {{ block.settings.label }}
+                          </span>
+                        </span>
+                      {% endif %}
+                    </a>
+                  </div>
+                </div>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+      {%- if section.settings.enable_slider -%}
+        <button class="collections-list__nav-button collections-list__nav-button--prev">
+          {%- render 'icon-btn-arrow' -%}
+        </button>
+        <button class="collections-list__nav-button collections-list__nav-button--next">
+          {%- render 'icon-btn-arrow' -%}
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.collections-list.name",
+  "tag": "section",
+  "class": "section-collections-list",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "background-1",
+      "label": "t:sections.all.color_scheme.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.all.heading.label",
+      "default": "t:sections.collections-list.settings.heading.default"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__2.label"
+        }
+      ],
+      "default": "h3",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_level",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_level.options__1.label"
+        },
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_level.options__2.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_level.options__3.label"
+        }
+      ],
+      "default": "h2",
+      "label": "t:sections.all.heading_level.label"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.all.text.label"
+    },
+    {
+      "type": "select",
+      "id": "card_layout",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:sections.collections-list.settings.layout.options__1.label"
+        },
+        {
+          "value": "row",
+          "label": "t:sections.collections-list.settings.layout.options__2.label"
+        },
+        {
+          "value": "overlay",
+          "label": "t:sections.collections-list.settings.layout.options__3.label"
+        }
+      ],
+      "default": "column",
+      "label": "t:sections.collections-list.settings.layout.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_slider",
+      "default": true,
+      "label": "t:sections.all.enable_slider.label"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 12,
+      "label": "t:sections.collections-list.settings.columns.label",
+      "info": "t:sections.collections-list.settings.columns.info"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "1",
+      "label": "t:sections.collections-list.settings.columns_mobile.label",
+      "info": "t:sections.collections-list.settings.columns_mobile.info",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.all.mobile_options.columns.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.all.mobile_options.columns.options__2.label"
+        }
+      ],
+      "visible_if": "{{ section.settings.card_layout == 'column' }}"
+    },
+    {
+      "type": "select",
+      "id": "heading_size_card",
+      "options": [
+        {
+          "value": "h5",
+          "label": "t:sections.all.heading_size.options__5.label"
+        },
+        {
+          "value": "h4",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "h3",
+          "label": "t:sections.all.heading_size.options__1.label"
+        }
+      ],
+      "default": "h5",
+      "label": "t:sections.collections-list.settings.heading_size_card.label"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "landscape",
+          "label": "t:sections.all.card.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.all.card.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.all.card.image_ratio.options__3.label"
+        },
+        {
+          "value": "adapt",
+          "label": "t:sections.all.aspect_ratio.options__6.label"
+        }
+      ],
+      "default": "square",
+      "label": "t:sections.all.card.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "t:sections.all.card.image_fit.label",
+      "options": [
+        {
+          "value": "contain",
+          "label": "t:sections.all.card.image_fit.options__1.label"
+        },
+        {
+          "value": "cover",
+          "label": "t:sections.all.card.image_fit.options__2.label"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_desc",
+      "default": true,
+      "label": "t:sections.collections-list.settings.show_desc.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-padding.header.content"
+    },
+    {
+      "type": "select",
+      "id": "padding_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "l",
+      "label": "t:sections.all.section-padding.padding_top.label"
+    },
+    {
+      "type": "select",
+      "id": "padding_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-padding.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-padding.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-padding.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-padding.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-padding.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-padding.options__6.label"
+        }
+      ],
+      "default": "l",
+      "label": "t:sections.all.section-padding.padding_bottom.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.section-margin.header.content"
+    },
+    {
+      "type": "select",
+      "id": "margin_top",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_top.label"
+    },
+    {
+      "type": "select",
+      "id": "margin_bottom",
+      "options": [
+        {
+          "value": "no-indent",
+          "label": "t:sections.all.section-margin.options__1.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:sections.all.section-margin.options__2.label"
+        },
+        {
+          "value": "s",
+          "label": "t:sections.all.section-margin.options__3.label"
+        },
+        {
+          "value": "m",
+          "label": "t:sections.all.section-margin.options__4.label"
+        },
+        {
+          "value": "l",
+          "label": "t:sections.all.section-margin.options__5.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.all.section-margin.options__6.label"
+        }
+      ],
+      "default": "no-indent",
+      "label": "t:sections.all.section-margin.margin_bottom.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.collections-list.blocks.collection.name",
+      "settings": [
+        {
+          "type": "color_scheme",
+          "id": "card_color_scheme",
+          "default": "background-2",
+          "label": "t:sections.collections-list.settings.card_color_scheme.label",
+          "info": "t:sections.collections-list.settings.card_color_scheme.info",
+          "visible_if": "{{ section.settings.card_layout != 'column' }}"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme_mobile",
+          "default": "background-3",
+          "label": "t:sections.banner-grid.blocks.card.settings.color_scheme_mobile.label",
+          "visible_if": "{{ section.settings.card_layout == 'overlay' and block.settings.type_overlay == 'mobile' }}"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.collections-list.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.collections-list.blocks.collection.settings.image.label",
+          "info": "t:sections.collections-list.blocks.collection.settings.image.info"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "label": "t:sections.all.overlay_opacity.label",
+          "info": "t:sections.collections-list.blocks.collection.settings.overlay_opacity.info",
+          "default": 0,
+          "visible_if": "{{ section.settings.card_layout == 'overlay' }}"
+        },
+        {
+          "type": "select",
+          "id": "type_overlay",
+          "label": "t:sections.banner-grid.blocks.card.settings.type_overlay.label",
+          "options": [
+            {
+              "value": "all",
+              "label": "t:sections.banner-grid.blocks.card.settings.type_overlay.options__2.label"
+            },
+            {
+              "value": "mobile",
+              "label": "t:sections.banner-grid.blocks.card.settings.type_overlay.options__3.label"
+            }
+          ],
+          "default": "all",
+          "visible_if": "{{ section.settings.card_layout == 'overlay' }}"
+        },
+        {
+          "type": "text",
+          "id": "overwrite_description",
+          "label": "t:sections.collections-list.blocks.collection.settings.overwrite_description.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_show",
+          "default": false,
+          "label": "t:sections.all.button.button_show.label"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Shop Now",
+          "label": "t:sections.all.button.button_label.label"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "t:sections.all.button.button_style.options__1.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:sections.all.button.button_style.options__2.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:sections.all.button.button_style.options__3.label"
+            }
+          ],
+          "default": "primary",
+          "label": "t:sections.all.button.button_style.label"
+        }
+      ]
+    },
+    {
+      "type": "link",
+      "name": "t:sections.collections-list.blocks.link.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.collections-list.blocks.link.settings.label.label",
+          "default": "t:sections.all.button.button_label.default_shop_all"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.collections-list.blocks.link.settings.link.label"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "t:sections.all.button.button_style.options__1.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:sections.all.button.button_style.options__2.label"
+            },
+            {
+              "value": "tertiary",
+              "label": "t:sections.all.button.button_style.options__3.label"
+            }
+          ],
+          "default": "secondary",
+          "label": "t:sections.collections-list.blocks.link.settings.style.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.collections-list.name",
+      "category": "t:sections.categories.collections",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

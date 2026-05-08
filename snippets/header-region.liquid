@@ -1,0 +1,277 @@
+{% comment %}
+  Renders header region (language and country) selector
+
+  Accepts:
+  * button_font_size: Font size: small/normal/large (default: small)
+      - small corresponds to 'body-small' class font size
+      - normal corresponds to 'body-normal' class font size
+      - large corresponds to 'body-large' class font size
+  Usage:
+  {% render 'header-region', button_font_size: 'small'%}
+{% endcomment %}
+
+{% liquid
+  assign font_size_class = 'body-normal'
+  assign icon_size = 'normal'
+
+  if button_font_size == 'small'
+    assign font_size_class = 'body-small'
+    assign icon_size = 'small'
+  endif
+
+  if button_font_size == 'large'
+    assign font_size_class = 'body-large'
+    assign icon_size = 'large'
+  endif
+
+  assign has_language = false
+  if section.settings.enable_language_selector and localization.available_languages.size > 1
+    assign has_language = true
+  endif
+
+  assign has_country = false
+  if section.settings.enable_country_selector and localization.available_countries.size > 1
+    assign has_country = true
+  endif
+
+  assign button_label = 'localization.region' | t
+  if has_country == false and has_language == true
+    assign button_label = localization.language.iso_code | upcase
+  endif
+%}
+
+<details-disclosure class="header-region" id="header-language-region-modal" data-details-type="region">
+  <details>
+    <summary
+      class="header-region-summary header-region-summary--btn-type-{{ section.settings.region_selector_button_type }} header-region-summary--icon-{{ icon_size }} modal__toggle focus-inset"
+      aria-haspopup="dialog"
+      role="button"
+    >
+      {%- if section.settings.region_selector_button_type == 'icon_and_text' -%}
+        {% render 'icon-region' %}
+        <span class="header-region-summary__span {{ font_size_class }} link--hover-underline">
+          {{ button_label }}
+        </span>
+      {%- elsif section.settings.region_selector_button_type == 'icon' -%}
+        {% render 'icon-region' %}
+      {%- elsif section.settings.region_selector_button_type == 'text' -%}
+        <span class="header-region-summary__span {{ font_size_class }} link--hover-underline">
+          {{ button_label }}
+        </span>
+      {%- else -%}
+        {% render 'icon-region' %}
+        <span class="header-region-summary__span {{ font_size_class }} link--hover-underline">
+          {{ button_label }}
+        </span>
+      {%- endif -%}
+    </summary>
+    <div class="header-region-content modal__toggle color-background-1" role="dialog" aria-modal="true">
+      {% comment %} ----- LOCALIZATION LANGUAGE WITH NO JS ----- {% endcomment %}
+      {%- if has_language -%}
+        <noscript>
+          {%- form 'localization', id: 'HeaderLanguageFormNoScript', class: 'localization-form' -%}
+            <div class="localization-form__select">
+              <select
+                class="localization-selector link"
+                name="locale_code"
+                aria-labelledby="HeaderLanguageFormNoScript"
+              >
+                {%- for language in localization.available_languages -%}
+                  <option
+                    value="{{ language.iso_code }}"
+                    lang="{{ language.iso_code }}"
+                    {%- if language.iso_code == localization.language.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ language.endonym_name | capitalize }}
+                  </option>
+                {%- endfor -%}
+              </select>
+              {% render 'icon-caret' %}
+            </div>
+            <button
+              type="submit"
+              class="button button--primary focus-inset"
+            >
+              <div class="button__content">
+                <span class="button__label" data-label="{{ 'localization.update_language' | t }}">
+                  {{ 'localization.update_language' | t }}
+                </span>
+              </div>
+            </button>
+          {%- endform -%}
+        </noscript>
+      {%- endif -%}
+
+      {% comment %} ----- LOCALIZATION COUNTRY WITH NO JS ----- {% endcomment %}
+      {%- if has_country -%}
+        <noscript>
+          {%- form 'localization', id: 'HeaderCountryFormNoScript', class: 'localization-form' -%}
+            <div class="localization-form__select">
+              <select
+                class="localization-selector link"
+                name="country_code"
+                aria-labelledby="HeaderCountryFormNoScript"
+              >
+                {%- for country in localization.available_countries -%}
+                  <option
+                    value="{{ country.iso_code }}"
+                    {%- if country.iso_code == localization.country.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ country.name }} (
+                    {{- country.currency.iso_code }}
+                    {{ country.currency.symbol }})
+                  </option>
+                {%- endfor -%}
+              </select>
+              {% render 'icon-caret' %}
+            </div>
+            <button
+              type="submit"
+              class="button button--primary focus-inset"
+            >
+              <span class="button__label">
+                {{ 'localization.update_country' | t }}
+              </span>
+            </button>
+          {%- endform -%}
+        </noscript>
+      {%- endif -%}
+
+      {% comment %} ----- LOCALIZATION TABS BUTTONS ----- {% endcomment %}
+      <div class="header-region-buttons no-js-hidden">
+        {% comment %} ----- LOCALIZATION LANGUAGE TAB BUTTON ----- {% endcomment %}
+        {%- if has_language -%}
+          <button class="header-region-button header-link-style active" data-tab="header-language-tab">
+            {{ 'localization.language' | t }}
+          </button>
+        {%- endif -%}
+
+        {% comment %} ----- LOCALIZATION COUNTRY TAB BUTTON ----- {% endcomment %}
+        {%- if has_country -%}
+          <button
+            class="header-region-button header-link-style{% if has_language != true %} active{% endif %}"
+            data-tab="header-country-tab"
+          >
+            {{ 'localization.region' | t }}
+          </button>
+        {%- endif -%}
+      </div>
+
+      {% comment %} ----- LOCALIZATION TABS ----- {% endcomment %}
+      <div class="header-region-tabs no-js-hidden">
+        {% comment %} ----- LOCALIZATION LANGUAGE TAB ----- {% endcomment %}
+        {%- if has_language -%}
+          <div class="header-region-tab header-region-tab--language active" id="header-language-tab">
+            <header-localization-form>
+              {%- form 'localization', id: 'HeaderLanguageForm', class: 'localization-form' -%}
+                <ul
+                  id="HeaderLanguageList"
+                  role="list"
+                  class="header-region-tab-list header-region-tab-list--language list-unstyled"
+                >
+                  {%- for language in localization.available_languages -%}
+                    <li
+                      class="header-region-tab-list__item{% if language.iso_code == localization.language.iso_code %} header-region-tab-list__item--active{% endif %}"
+                      tabindex="-1"
+                    >
+                      <a
+                        class="header-region-tab-list__link focus-inset"
+                        href="#"
+                        hreflang="{{ language.iso_code }}"
+                        lang="{{ language.iso_code }}"
+                        {% if language.iso_code == localization.language.iso_code %}
+                          aria-current="true"
+                        {% endif %}
+                        data-value="{{ language.iso_code }}"
+                      >
+                        <div class="header-region-tab-list__link-content">
+                          <span>
+                            <span class="header-region-tab-list__link-title header-link-style link--hover-underline">
+                              {{ language.endonym_name | capitalize }}
+                            </span>
+                          </span>
+                          <span class="header-region-tab-list__link-language body-normal">
+                            {{ language.name | capitalize }}
+                          </span>
+                        </div>
+                        {%- if language.iso_code == localization.language.iso_code -%}
+                          {% render 'icon-checkmark' %}
+                        {%- endif -%}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+                <input
+                  type="hidden"
+                  name="locale_code"
+                  value="{{ localization.language.iso_code }}"
+                >
+              {%- endform -%}
+            </header-localization-form>
+          </div>
+        {%- endif -%}
+
+        {% comment %} ----- LOCALIZATION COUNTRY TAB ----- {% endcomment %}
+        {%- if has_country -%}
+          <div
+            class="header-region-tab header-region-tab--country{% if has_language != true %} active{% endif %}"
+            id="header-country-tab"
+          >
+            <header-localization-form>
+              {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
+                <ul
+                  id="HeaderCountryList"
+                  role="list"
+                  class="header-region-tab-list header-region-tab-list--country list-unstyled"
+                >
+                  {%- for country in localization.available_countries -%}
+                    <li
+                      class="header-region-tab-list__item{% if country.iso_code == localization.country.iso_code %} header-region-tab-list__item--active{% endif %}"
+                      tabindex="-1"
+                    >
+                      <a
+                        class="header-region-tab-list__link focus-inset"
+                        href="#"
+                        {% if country.iso_code == localization.country.iso_code %}
+                          aria-current="true"
+                        {% endif %}
+                        data-value="{{ country.iso_code }}"
+                      >
+                        <div class="disclosure__link--flag" data-value="{{ country.iso_code }}"></div>
+                        <span
+                          class="header-region-tab-list__country"
+                        >
+                          <span class="header-region-tab-list__link-title header-region-tab-list__link-title--country header-link-style link--hover-underline">
+                            {{ country.name }}
+                          </span>
+                          <span class="header-region-tab-list__country-code body-normal">
+                            (
+                            {{- country.currency.iso_code }}
+                            {{ country.currency.symbol -}}
+                            )
+                          </span>
+                        </span>
+                        {%- if country.iso_code == localization.country.iso_code -%}
+                          {% render 'icon-checkmark' %}
+                        {%- endif -%}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+                <input
+                  type="hidden"
+                  name="country_code"
+                  value="{{ localization.country.iso_code }}"
+                >
+              {%- endform -%}
+            </header-localization-form>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </details>
+</details-disclosure>

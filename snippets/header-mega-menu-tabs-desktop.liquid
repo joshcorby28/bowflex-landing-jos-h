@@ -1,0 +1,246 @@
+{%- for block in blocks -%}
+  {% assign mega_menu_tabs_trigger = block.settings.mega_menu_tabs_trigger | handle | strip %}
+
+  {%- if link.handle == mega_menu_tabs_trigger and block.type == 'mega_menu_tabs' -%}
+    {%- liquid
+      assign has_tabs = false
+      for i in (1..8)
+        assign enable_card_setting = 'enable_tab_' | append: i
+        assign heading_setting = 'tab_title_' | append: i
+        if block.settings[enable_card_setting] and block.settings[heading_setting] != blank
+          assign has_tabs = true
+        endif
+      endfor
+    -%}
+
+    {%- if has_tabs -%}
+      <div class="mega-menu mega-menu--tabs color-background-1" {{ block.shopify_attributes }}>
+        <div
+          class="mega-menu-content"
+          tabindex="-1"
+          role="dialog"
+        >
+          <div class="mega-menu-main mega-menu-main--with-nav">
+            <nav class="mega-menu-nav">
+              <ul class="mega-menu-nav-list list-unstyled">
+                {%- for i in (1..8) -%}
+                  {%- liquid
+                    assign is_visible_tab = false
+                    assign enable_tab_setting = 'enable_tab_' | append: i
+                    assign heading_setting = 'tab_title_' | append: i
+                    assign link_setting = 'tab_link_' | append: i
+                    assign highlighted_setting = 'tab_highlighted_' | append: i
+                    assign icon_setting = 'tab_icon_' | append: i
+                    assign custom_icon_setting = 'tab_custom_icon_' | append: i
+                    assign custom_icon_dm_setting = 'tab_custom_icon_dm_' | append: i
+                    if block.settings[enable_tab_setting] and block.settings[heading_setting] != blank
+                      assign is_visible_tab = true
+                    endif
+                  -%}
+                  {%- if is_visible_tab -%}
+                    {% liquid
+                      assign has_custom_dm_icon = false
+
+                      if block.settings[custom_icon_dm_setting] != blank
+                        assign has_custom_dm_icon = true
+                      endif
+                    %}
+                    <li class="mega-menu-nav-list__item{% if has_custom_dm_icon %} mega-menu-nav-list__item--with_dm_icon{% endif %}">
+                      {%- if block.settings[link_setting] != blank -%}
+                        <a
+                          class="mega-menu-nav-list__tab{% if forloop.first %} active{% endif %}{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                          href="{{ block.settings[link_setting] }}"
+                          aria-label="{{ block.settings[heading_setting] | strip }}"
+                          data-tab-id="mega-menu-tab-{{ block.id }}-{{ forloop.index }}"
+                        >
+                          {%- if block.settings[custom_icon_setting] != blank -%}
+                            {%- assign height = 24
+                              | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                              | round: 2
+                            -%}
+                            {{
+                              block.settings[custom_icon_setting]
+                              | image_url: width: 96
+                              | image_tag:
+                                width: 24,
+                                height: height,
+                                widths: '24, 48, 72, 96',
+                                class: 'mega-menu-nav-list__tab-icon'
+                            }}
+                          {%- elsif block.settings[icon_setting] != 'none' -%}
+                            {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                          {%- endif -%}
+                          {%- if has_custom_dm_icon -%}
+                            {%- assign height = 24
+                              | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                              | round: 2
+                            -%}
+                            {{
+                              block.settings[custom_icon_dm_setting]
+                              | image_url: width: 96
+                              | image_tag:
+                                width: 24,
+                                height: height,
+                                widths: '24, 48, 72, 96',
+                                class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                            }}
+                          {%- endif -%}
+
+                          {%- if block.settings[heading_setting] != blank -%}
+                            <span class="mega-menu-nav-list__tab-title header-link-style">
+                              {{- block.settings[heading_setting] | strip -}}
+                            </span>
+                          {%- endif -%}
+                        </a>
+                      {%- else -%}
+                        <button
+                          class="mega-menu-nav-list__tab{% if forloop.first %} active{% endif %}{% if block.settings[highlighted_setting] %} mega-menu-nav-list__tab--highlighted{% endif %} focus-inset"
+                          aria-label="{{ block.settings[heading_setting] | strip }}"
+                          data-tab-id="mega-menu-tab-{{ block.id }}-{{ forloop.index }}"
+                        >
+                          {%- if block.settings[custom_icon_setting] != blank -%}
+                            {%- assign height = 24
+                              | divided_by: block.settings[custom_icon_setting].aspect_ratio
+                              | round: 2
+                            -%}
+                            {{
+                              block.settings[custom_icon_setting]
+                              | image_url: width: 96
+                              | image_tag:
+                                width: 24,
+                                height: height,
+                                widths: '24, 48, 72, 96',
+                                class: 'mega-menu-nav-list__tab-icon'
+                            }}
+                          {%- elsif block.settings[icon_setting] != 'none' -%}
+                            {% render 'icon-pack', icon: block.settings[icon_setting] %}
+                          {%- endif -%}
+                          {%- if has_custom_dm_icon -%}
+                            {%- assign height = 24
+                              | divided_by: block.settings[custom_icon_dm_setting].aspect_ratio
+                              | round: 2
+                            -%}
+                            {{
+                              block.settings[custom_icon_dm_setting]
+                              | image_url: width: 96
+                              | image_tag:
+                                width: 24,
+                                height: height,
+                                widths: '24, 48, 72, 96',
+                                class: 'mega-menu-nav-list__tab-icon mega-menu-nav-list__tab-icon--dark-mode'
+                            }}
+                          {%- endif -%}
+                          {%- if block.settings[heading_setting] != blank -%}
+                            <span class="mega-menu-nav-list__tab-title header-link-style">
+                              {{- block.settings[heading_setting] | strip -}}
+                            </span>
+                          {%- endif -%}
+                        </button>
+                      {%- endif -%}
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </nav>
+
+            <div class="mega-menu-tabs">
+              <div class="mega-menu-tab">
+                {%- for i in (1..8) -%}
+                  {%- liquid
+                    assign is_visible_tab = false
+                    assign enable_tab_setting = 'enable_tab_' | append: i
+                    assign heading_setting = 'tab_title_' | append: i
+                    assign title_size_setting = 'tab_title_size_' | append: i
+                    assign menu_setting = 'tab_menu_' | append: i
+                    if block.settings[enable_tab_setting] and block.settings[heading_setting] != blank
+                      assign is_visible_tab = true
+                    endif
+                  -%}
+                  {%- if is_visible_tab -%}
+                    <div
+                      class="mega-menu-tab__nav-container{% if forloop.first %} active{% endif %}"
+                      id="mega-menu-tab-{{ block.id }}-{{ forloop.index }}"
+                    >
+                      <span class="mega-menu-tab__title {{ block.settings[title_size_setting] }}">
+                        {{- block.settings[heading_setting] | strip -}}
+                      </span>
+
+                      {%- if block.settings[menu_setting] != blank -%}
+                        <nav class="mega-menu-tab-nav">
+                          {% liquid
+                            assign has_second_menu = false
+                            assign submenu_links_count = block.settings[menu_setting].links.size
+
+                            assign first_menu_count = submenu_links_count
+
+                            if submenu_links_count > 9
+                              assign has_second_menu = true
+                              assign half = submenu_links_count | divided_by: 2
+                              assign mod = submenu_links_count | modulo: 2
+
+                              if mod == 0
+                                assign first_menu_count = half
+                              else
+                                assign first_menu_count = half | plus: 1
+                              endif
+                            endif
+                          %}
+                          <ul class="mega-menu-tab-nav__list list-unstyled">
+                            {%- for link in block.settings[menu_setting].links -%}
+                              {%- if forloop.index <= first_menu_count -%}
+                                <li class="mega-menu-tab-nav__list-item">
+                                  <a
+                                    href="{{ link.url }}"
+                                    class="mega-menu-tab-nav__list-link focus-inset"
+                                    aria-label="{{ link.title | strip }}"
+                                  >
+                                    <span>
+                                      <span class="mega-menu-tab-nav__list-link-title body-normal link--hover-underline">
+                                        {{- link.title | strip -}}
+                                      </span>
+                                    </span>
+                                    <div class="mega-menu-tab-nav__list-link-arrow">
+                                      {% render 'icon-btn-arrow' %}
+                                    </div>
+                                  </a>
+                                </li>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          </ul>
+                          {%- if has_second_menu -%}
+                            <ul class="mega-menu-tab-nav__list list-unstyled">
+                              {%- for link in block.settings[menu_setting].links -%}
+                                {%- if forloop.index > first_menu_count -%}
+                                  <li class="mega-menu-tab-nav__list-item">
+                                    <a
+                                      href="{{ link.url }}"
+                                      class="mega-menu-tab-nav__list-link focus-inset"
+                                      aria-label="{{ link.title | strip }}"
+                                    >
+                                      <span>
+                                        <span class="mega-menu-tab-nav__list-link-title body-normal link--hover-underline">
+                                          {{- link.title | strip -}}
+                                        </span>
+                                      </span>
+                                      <div class="mega-menu-tab-nav__list-link-arrow">
+                                        {% render 'icon-btn-arrow' %}
+                                      </div>
+                                    </a>
+                                  </li>
+                                {%- endif -%}
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </nav>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
