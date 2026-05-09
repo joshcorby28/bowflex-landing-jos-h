@@ -233,14 +233,14 @@
           "settings": {
             "product_image": "shopify://shop_images/T9_landing_page_specs_1.png",
             "product_name": "T9 BowFlex Treadmill",
-            "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
+            "spec_1": "Running Area: 152.4 cm x 56 cm cushioned Flex Zone deck for joint protection",
             "spec_2": "Incline Range: Up to 15% motorised incline",
             "spec_3": "Speed Range: Up to 20 km/h (12 mph)",
-            "spec_4": "Console: High-contrast colour LCD",
-            "spec_5": "Extras: Bluetooth speakers, heart rate hand grips, media shelf, water bottle holder, dual cooling fans",
-            "spec_6": "",
-            "spec_7": "",
-            "spec_8": "",
+            "spec_4": "Console: Backlit 7\" LCD (17.8 cm)",
+            "spec_5": "Bluetooth®-Enabled Speakers – Stream music or fitness classes with clear, immersive sound.",
+            "spec_6": "Apple Watch® & Samsung Galaxy Watch® Syncing – Keep all your fitness metrics connected.",
+            "spec_7": "Dual Built-In Fans – Stay cool during intense workouts.",
+            "spec_8": "Media Shelf & Water Bottle Holder – Keep your essentials within reach.",
             "read_more_label": "Read more",
             "read_more_link": ""
           }
@@ -250,14 +250,14 @@
           "settings": {
             "product_image": "shopify://shop_images/T6_landing_page_specs.png",
             "product_name": "T6 BowFlex Treadmill",
-            "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
-            "spec_2": "Incline Range: Up to 15% motorised incline",
-            "spec_3": "Speed Range: Up to 20 km/h (12 mph)",
-            "spec_4": "Console: High-contrast colour LCD",
-            "spec_5": "Extras: Bluetooth speakers, heart rate hand grips, media shelf, water bottle holder, dual cooling fans",
-            "spec_6": "",
-            "spec_7": "",
-            "spec_8": "",
+            "spec_1": "Running Area: 152 × 50 cm cushioned Flex Zone deck for joint protection",
+            "spec_2": "Incline Range: Up to 15% motorised incline",
+            "spec_3": "Speed Range: Up to 20 km/h (12 mph",
+            "spec_4": "Console Display: Dual LED / LCD windows showing speed, time, distance, calories & heart rate",
+            "spec_5": "Connectivity: Bluetooth® enabled, syncs with Apple Watch® & Samsung Galaxy Watch®",
+            "spec_6": "Heart Rate Monitoring: Hand grip sensors and Bluetooth® chest strap included",
+            "spec_7": "Comfort Features: Cooling fan, water bottle holder, tablet/phone stand",
+            "spec_8": "Frame Design: Folding frame with soft-drop mechanism for safe storage",
             "read_more_label": "Read more",
             "read_more_link": ""
           }
