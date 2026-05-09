@@ -214,7 +214,7 @@
         "heading_size": "h2",
         "heading_level": "h2",
         "opacity_overlay": 0.4,
-        "video": "shopify://files/videos/a36014ba8e294fb2aa26d6a8c4507607.mp4",
+        "video": "shopify://files/videos/BowFlex_Product-Demo_T6-21-Treadmill_1080x1080.mp4",
         "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
         "video_autoplay": false,
         "video_loop": true,
@@ -231,7 +231,7 @@
         "specs_t9": {
           "type": "product_specs",
           "settings": {
-            "product_image": "shopify://shop_images/20.png",
+            "product_image": "shopify://shop_images/T9_landing_page_specs_1.png",
             "product_name": "T9 BowFlex Treadmill",
             "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
             "spec_2": "Incline Range: Up to 15% motorised incline",
@@ -248,7 +248,7 @@
         "specs_t6": {
           "type": "product_specs",
           "settings": {
-            "product_image": "shopify://shop_images/21.png",
+            "product_image": "shopify://shop_images/T6_landing_page_specs.png",
             "product_name": "T6 BowFlex Treadmill",
             "spec_1": "Running Area: 152 x 56 cm (60\" x 22\")",
             "spec_2": "Incline Range: Up to 15% motorised incline",
