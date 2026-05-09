@@ -174,6 +174,7 @@
         "tile_cDzE9q": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/t9-feature-fan-2x.png",
             "caption": "Undeniably cool",
             "subcaption": "Two built-in fans with 3 speeds"
           }
