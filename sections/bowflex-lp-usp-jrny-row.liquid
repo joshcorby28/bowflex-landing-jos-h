@@ -58,7 +58,7 @@
             {%- if section.settings.jrny_eyebrow != blank -%}
               <span style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.75;margin-bottom:4px;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_eyebrow }}</span>
             {%- endif -%}
-            <p style="font-size:clamp(24px,3vw,34px);font-weight:900;margin:0 0 4px;line-height:1.1;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_headline }}</p>
+            <p style="font-family:var(--font-body-family);font-size:clamp(24px,3vw,34px);font-weight:900;margin:0 0 4px;line-height:1.1;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_headline }}</p>
             {%- if section.settings.jrny_subtext != blank -%}
               <p style="font-size:15px;margin:0 0 16px;opacity:0.85;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_subtext }}</p>
             {%- endif -%}
@@ -82,6 +82,11 @@
 </div>
 
 <style>
+  .bfx-usp-jrny--{{ section.id }},
+  .bfx-usp-jrny--{{ section.id }} strong,
+  .bfx-usp-jrny--{{ section.id }} p,
+  .bfx-usp-jrny--{{ section.id }} span,
+  .bfx-usp-jrny--{{ section.id }} a { font-family: var(--font-body-family); }
   .bfx-usp-jrny--{{ section.id }} {
     padding: 24px 0;
   }
