@@ -280,7 +280,7 @@
   .bfx-products__thumbs::-webkit-scrollbar { width: 4px; }
   .bfx-products__thumbs::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
   .bfx-products__thumbs { cursor: grab; }
-  .bfx-products__thumb { cursor: pointer; transition: border-color 0.15s; }
+  .bfx-products__thumb { cursor: pointer; transition: border-color 0.15s; -webkit-user-drag: none; user-drag: none; }
   .bfx-products__price {
     display: flex;
     align-items: baseline;
@@ -521,6 +521,7 @@
     var isHoriz = window.innerWidth <= 749;
 
     thumbs.addEventListener('mousedown', function(e) {
+      e.preventDefault();
       isDown = true; didDrag = false;
       isHoriz = window.innerWidth <= 749;
       startPos = isHoriz ? e.clientX : e.clientY;
