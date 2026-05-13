@@ -221,7 +221,7 @@
     flex-direction: column;
     gap: 6px;
   }
-  .bfx-products__thumb { cursor: pointer; }
+  .bfx-products__thumb { cursor: pointer; transition: border-color 0.15s; }
   .bfx-products__price {
     display: flex;
     align-items: baseline;
@@ -375,6 +375,19 @@
 </style>
 
 <script>
+  document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__thumb').forEach(function(thumb) {
+    thumb.addEventListener('click', function() {
+      var card = this.closest('.bfx-products__card');
+      var mainImg = card.querySelector('.bfx-products__main-img img');
+      if (!mainImg) return;
+      var thumbs = card.querySelectorAll('.bfx-products__thumb');
+      thumbs.forEach(function(t) { t.style.borderColor = '#e5e5e5'; });
+      this.style.borderColor = '#111';
+      mainImg.src = this.src.replace(/width=\d+/, 'width=600');
+      mainImg.srcset = '';
+    });
+  });
+
   document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__qty-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var input = this.closest('.bfx-products__qty').querySelector('.bfx-products__qty-input');
