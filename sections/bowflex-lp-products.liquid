@@ -56,7 +56,7 @@
               <div class="bfx-products__media">
                 {%- if product.images.size > 1 -%}
                   <div class="bfx-products__thumbs">
-                    {%- for img in product.images limit: 4 -%}
+                    {%- for img in product.images -%}
                       <img src="{{ img | image_url: width: 90 }}" alt="{{ img.alt | escape }}" loading="lazy" width="64" height="64" class="bfx-products__thumb" style="width:64px;height:64px;object-fit:contain;border:1px solid #e5e5e5;border-radius:4px;">
                     {%- endfor -%}
                   </div>
@@ -272,7 +272,13 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    max-height: 380px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
   }
+  .bfx-products__thumbs::-webkit-scrollbar { width: 4px; }
+  .bfx-products__thumbs::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
   .bfx-products__thumb { cursor: pointer; transition: border-color 0.15s; }
   .bfx-products__price {
     display: flex;
@@ -498,7 +504,10 @@
     }
     .bfx-products__thumbs {
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
     .bfx-products__atc-row { flex-wrap: wrap; }
     .bfx-products__btn { min-width: 0; }
