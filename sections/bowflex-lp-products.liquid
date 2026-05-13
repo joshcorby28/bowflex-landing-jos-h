@@ -230,6 +230,10 @@
     margin-bottom: 16px;
     align-items: flex-start;
   }
+  .bfx-products__header-thumb,
+  .bfx-products__header-price,
+  .bfx-products__header-meta { display: none; }
+
   .bfx-products__main-img { flex: 1; }
   .bfx-products__thumbs {
     display: flex;
@@ -382,6 +386,7 @@
       padding-bottom: 0;
     }
     .bfx-products__header-thumb {
+      display: block;
       width: 52px;
       height: 52px;
       object-fit: contain;
@@ -393,6 +398,7 @@
     }
     .bfx-products__card.is-open .bfx-products__header-thumb { display: none; }
     .bfx-products__header-text { flex: 1; min-width: 0; }
+    .bfx-products__header-meta { display: flex; }
     .bfx-products__header-price {
       display: inline-block;
       font-size: 13px;
