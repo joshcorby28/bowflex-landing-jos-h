@@ -43,7 +43,7 @@
               {%- endif -%}
               <div class="bfx-products__header-text">
                 <p class="bfx-products__vendor">{{ product.vendor }}</p>
-                <h3 class="bfx-products__title">{{ product.title }}</h3>
+                <h3 class="bfx-products__title">{{ fb_title | default: product.title }}</h3>
                 <span class="bfx-products__header-price">{{ product.price | money }}</span>
               </div>
               <div class="bfx-products__header-meta">
