@@ -52,6 +52,9 @@
       <div class="bfx-usp-jrny__jrny">
         <div class="bfx-usp-jrny__jrny-inner">
           <div>
+            {%- if section.settings.jrny_store_label != blank -%}
+              <span style="display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:{{ section.settings.jrny_text_color }};opacity:0.75;margin-bottom:8px;">{{ section.settings.jrny_store_label }}</span>
+            {%- endif -%}
             {%- if section.settings.jrny_eyebrow != blank -%}
               <span style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.75;margin-bottom:4px;color:{{ section.settings.jrny_text_color }};">{{ section.settings.jrny_eyebrow }}</span>
             {%- endif -%}
@@ -67,8 +70,8 @@
             {%- endif -%}
           </div>
           {%- if section.settings.jrny_app_logo != blank -%}
-            <div style="background:#1b1b1b;padding:16px;border-radius:24px;flex-shrink:0;">
-              {{- section.settings.jrny_app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'height:64px;width:auto;border-radius:14px;display:block;' -}}
+            <div class="bfx-usp-jrny__app-logo" style="border-radius:24px;">
+              {{- section.settings.jrny_app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'border-radius:14px;' -}}
             </div>
           {%- endif -%}
         </div>
@@ -89,6 +92,8 @@
     align-items: stretch;
   }
   .bfx-usp-jrny__usp {
+    border: 1px solid #1b1b1b;
+    border-radius: 20px;
     padding: 28px;
     display: flex;
     flex-direction: column;
@@ -140,6 +145,7 @@
     { "type": "color", "id": "usp_background", "label": "USP Background", "default": "#FFFFFF" },
     { "type": "header", "content": "JRNY Banner" },
     { "type": "color", "id": "jrny_text_color", "label": "Text Colour", "default": "#FFFFFF" },
+    { "type": "text", "id": "jrny_store_label", "label": "Store Label", "default": "iOS & Google Store" },
     { "type": "text", "id": "jrny_eyebrow", "label": "Eyebrow", "default": "For New Members Download" },
     { "type": "text", "id": "jrny_headline", "label": "Headline", "default": "2 Month FREE Trial" },
     { "type": "text", "id": "jrny_subtext", "label": "Subtext", "default": "The App Now" },

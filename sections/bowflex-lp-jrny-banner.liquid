@@ -26,10 +26,8 @@
 
       <div class="bfx-jrny__right">
         {%- if section.settings.app_logo != blank -%}
-          <div style="    background: #1b1b1b;
-    padding: 20px;
-    border-radius: 30px;"class="bfx-jrny__app-logo">
-            {{- section.settings.app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'height:64px;width:auto;border-radius:14px;display:block;' -}}
+          <div class="bfx-jrny__app-logo" style="border-radius:30px;">
+            {{- section.settings.app_logo | image_url: width: 100 | image_tag: loading: 'lazy', alt: 'JRNY App', style: 'border-radius:14px;' -}}
           </div>
         {%- else -%}
           <div class="bfx-jrny__app-logo-placeholder" aria-hidden="true">
@@ -98,6 +96,16 @@
     font-size: 14px;
     margin: 0;
     opacity: 0.8;
+  }
+  .bfx-jrny__app-logo {
+    background: #1b1b1b;
+    padding: 20px;
+    display: flex;
+  }
+  .bfx-jrny__app-logo img {
+    height: 64px;
+    width: auto;
+    display: block;
   }
   .bfx-jrny__right {
     display: flex;
