@@ -279,6 +279,7 @@
   }
   .bfx-products__thumbs::-webkit-scrollbar { width: 4px; }
   .bfx-products__thumbs::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  .bfx-products__thumbs { cursor: grab; }
   .bfx-products__thumb { cursor: pointer; transition: border-color 0.15s; }
   .bfx-products__price {
     display: flex;
@@ -515,6 +516,36 @@
 </style>
 
 <script>
+  document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__thumbs').forEach(function(thumbs) {
+    var isDown = false, startPos = 0, scrollStart = 0, didDrag = false;
+    var isHoriz = window.innerWidth <= 749;
+
+    thumbs.addEventListener('mousedown', function(e) {
+      isDown = true; didDrag = false;
+      isHoriz = window.innerWidth <= 749;
+      startPos = isHoriz ? e.clientX : e.clientY;
+      scrollStart = isHoriz ? thumbs.scrollLeft : thumbs.scrollTop;
+      thumbs.style.cursor = 'grabbing';
+      thumbs.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!isDown) return;
+      var delta = isHoriz ? e.clientX - startPos : e.clientY - startPos;
+      if (Math.abs(delta) > 4) didDrag = true;
+      if (isHoriz) thumbs.scrollLeft = scrollStart - delta;
+      else thumbs.scrollTop = scrollStart - delta;
+    });
+    document.addEventListener('mouseup', function() {
+      if (!isDown) return;
+      isDown = false;
+      thumbs.style.cursor = '';
+      thumbs.style.userSelect = '';
+    });
+    thumbs.addEventListener('click', function(e) {
+      if (didDrag) e.stopPropagation();
+    }, true);
+  });
+
   document.querySelectorAll('.bfx-products--{{ section.id }} .bfx-products__thumb').forEach(function(thumb) {
     thumb.addEventListener('click', function() {
       var card = this.closest('.bfx-products__card');
