@@ -38,11 +38,18 @@
           {%- if product != blank -%}
 
             <div class="bfx-products__card-header">
-              <div>
+              {%- if product.featured_image -%}
+                <img class="bfx-products__header-thumb" src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title | escape }}" width="52" height="52" loading="lazy">
+              {%- endif -%}
+              <div class="bfx-products__header-text">
                 <p class="bfx-products__vendor">{{ product.vendor }}</p>
                 <h3 class="bfx-products__title">{{ product.title }}</h3>
+                <span class="bfx-products__header-price">{{ product.price | money }}</span>
               </div>
-              <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              <div class="bfx-products__header-meta">
+                <span class="bfx-products__counter">{{ forloop.index }} of 2</span>
+                <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
             </div>
 
             <div class="bfx-products__body">
@@ -95,11 +102,18 @@
           {%- else -%}
 
             <div class="bfx-products__card-header">
-              <div>
+              {%- if fb_image != blank -%}
+                <img class="bfx-products__header-thumb" src="{{ fb_image | image_url: width: 80 }}" alt="{{ fb_title | escape }}" width="52" height="52" loading="lazy">
+              {%- endif -%}
+              <div class="bfx-products__header-text">
                 <p class="bfx-products__vendor">BowFlex</p>
                 <h3 class="bfx-products__title">{{ fb_title }}</h3>
+                {%- if fb_price != blank -%}<span class="bfx-products__header-price">{{ fb_price }}</span>{%- endif -%}
               </div>
-              <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              <div class="bfx-products__header-meta">
+                <span class="bfx-products__counter">{{ forloop.index }} of 2</span>
+                <svg class="bfx-products__arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
             </div>
 
             <div class="bfx-products__body">
@@ -344,16 +358,68 @@
     text-decoration: underline;
   }
   @media (max-width: 749px) {
-    .bfx-products__grid { grid-template-columns: 1fr; }
+    .bfx-products__grid { grid-template-columns: 1fr; gap: 0; }
     .bfx-products__card {
-      border-bottom: 1px solid #e5e5e5;
-      padding: 16px 0;
+      border-radius: 10px;
+      border: 1.5px solid #e5e5e5;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: #fafafa;
+      transition: background 0.2s;
+    }
+    .bfx-products__card.is-open {
+      background: #fff;
+      border-color: #ccc;
     }
     .bfx-products__card-header {
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       padding-bottom: 0;
     }
-    .bfx-products__title { margin-bottom: 0; }
+    .bfx-products__header-thumb {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      border-radius: 6px;
+      flex-shrink: 0;
+      border: 1px solid #eee;
+      background: #fff;
+      transition: opacity 0.2s;
+    }
+    .bfx-products__card.is-open .bfx-products__header-thumb { display: none; }
+    .bfx-products__header-text { flex: 1; min-width: 0; }
+    .bfx-products__header-price {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #E8632B;
+      margin-top: 2px;
+    }
+    .bfx-products__card.is-open .bfx-products__header-price { display: none; }
+    .bfx-products__header-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .bfx-products__counter {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #999;
+      white-space: nowrap;
+    }
+    .bfx-products__title {
+      margin-bottom: 0;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .bfx-products__arrow {
       display: block;
       flex-shrink: 0;
