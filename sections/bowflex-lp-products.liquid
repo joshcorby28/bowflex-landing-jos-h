@@ -491,7 +491,6 @@
     .bfx-products__media { flex-direction: column; height: auto; }
     .bfx-products__main-img {
       width: 100%;
-      max-height: 200px;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -499,9 +498,11 @@
     }
     .bfx-products__main-img img,
     .bfx-products__main-img a img {
-      max-height: 200px !important;
-      width: auto !important;
-      aspect-ratio: unset !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      aspect-ratio: 1/1 !important;
+      object-fit: contain !important;
     }
     .bfx-products__thumbs {
       flex-direction: row;
