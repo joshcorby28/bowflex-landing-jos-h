@@ -48,40 +48,6 @@
         "padding_bottom": "s"
       }
     },
-    "text_cols_bfx": {
-      "type": "bowflex-lp-text-columns",
-      "blocks": {
-        "col_t9": {
-          "type": "column",
-          "settings": {
-            "heading": "A Premium Running Experience with Ultimate App Freedom",
-            "text": "<p>The BFX T9 Treadmill delivers a high-performance workout experience, blending power, connectivity, and comfort.</p>",
-            "link_label": "Read more",
-            "link": ""
-          }
-        },
-        "col_t6": {
-          "type": "column",
-          "settings": {
-            "heading": "Built for Performance, Designed for Results",
-            "text": "<p>Elevate your home fitness with the BowFlex T6 Folding Treadmill, designed for runners, walkers, and serious home gym users.</p>",
-            "link_label": "Read more",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "col_t9",
-        "col_t6"
-      ],
-      "name": "Features Text — Two Columns",
-      "settings": {
-        "background_color": "#ffffff",
-        "columns": 2,
-        "padding_top": "l",
-        "padding_bottom": "l"
-      }
-    },
     "usp_jrny_bfx": {
       "type": "bowflex-lp-usp-jrny-row",
       "blocks": {
@@ -97,6 +63,7 @@
         "usp_klarna": {
           "type": "klarna",
           "settings": {
+            "klarna_logo": "shopify://shop_images/rtaImage.png",
             "text": "Pay over 12 months with Klarna",
             "learn_more_link": "",
             "small_print": "18+. T&C apply. Credit subject to status."
@@ -107,17 +74,21 @@
         "usp_shipping",
         "usp_klarna"
       ],
+      "custom_css": [
+        "img {background: none !important; padding: 0;}"
+      ],
       "name": "USP + JRNY Row",
       "settings": {
         "usp_background": "#ffffff",
         "jrny_text_color": "#ffffff",
-        "jrny_eyebrow": "For New Members Download",
+        "jrny_store_label": "iOS & Google Store",
+        "jrny_eyebrow": "",
         "jrny_headline": "2 Month FREE Trial",
         "jrny_subtext": "The App Now",
         "jrny_cta_label": "View JRNY",
         "jrny_cta_link": "",
         "jrny_cta_color": "#ffffff",
-        "jrny_app_logo": "shopify://shop_images/6.png"
+        "jrny_app_logo": "shopify://shop_images/unnamed.png"
       }
     },
     "features_bfx": {
@@ -144,7 +115,7 @@
           "settings": {
             "image": "shopify://shop_images/t9-feature-apple-watch-2x_600x600_80e411b6-29d7-4703-a3fc-00e39831259e.webp",
             "caption": "Connect to Apple Watch®",
-            "subcaption": "Get an easy, secure way to connect your Apple Watch."
+            "subcaption": "Get an easy, secure way to connect your Apple Watch®."
           }
         },
         "tile_4": {
@@ -304,7 +275,6 @@
     "main",
     "hero_bfx",
     "products_bfx",
-    "text_cols_bfx",
     "usp_jrny_bfx",
     "features_bfx",
     "video_bfx",
